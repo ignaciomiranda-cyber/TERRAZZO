@@ -170,7 +170,9 @@ const STONES=[
 ];
 
 const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"5":{minR:30,maxR:56,label:"N°5"}};
-const RS=640, COVERAGE=0.88;
+const RS=640;
+// Total coverage fija: 75% del área cubierta por piedras
+const TOTAL_COVERAGE = 0.75;
 
 function h2r(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
@@ -217,6 +219,8 @@ function renderTerrazzo(canvas, baseHex, stonesArr){
   const ctx=canvas.getContext('2d');
   canvas.width=RS;canvas.height=RS;
   const [br,bg,bb]=h2r(baseHex);
+
+  // Base con textura
   const id=ctx.createImageData(RS,RS);const d=id.data;
   const sc=0.006;
   for(let y=0;y<RS;y++)for(let x=0;x<RS;x++){
@@ -225,31 +229,50 @@ function renderTerrazzo(canvas, baseHex, stonesArr){
     d[i]=clamp(br+g,0,255);d[i+1]=clamp(bg+g,0,255);d[i+2]=clamp(bb+g,0,255);d[i+3]=255;
   }
   ctx.putImageData(id,0,0);
+
   const active=stonesArr.filter(s=>s.pct>0);
   if(!active.length)return;
+
   const totalPct=active.reduce((a,s)=>a+s.pct,0);
-  const totalArea=RS*RS*COVERAGE;
+  const totalArea=RS*RS*TOTAL_COVERAGE;
+
+  // Calcular cantidad de piedras por tipo basado en área proporcional
+  // Área de una piedra promedio para cada tamaño
   const specs=active.map(s=>{
     const sp=SZP[s.size];
-    const avgA=Math.PI*((sp.minR+sp.maxR)/2)**2*0.68;
-    return{s,sp,count:Math.max(1,Math.round(totalArea*(s.pct/totalPct)/avgA))};
+    const avgR=(sp.minR+sp.maxR)/2;
+    // Área promedio de una piedra (elipse aproximada con factor de forma angular)
+    const avgStoneArea = Math.PI * avgR * avgR * 0.65;
+    // Área asignada a este tipo de piedra
+    const assignedArea = totalArea * (s.pct / totalPct);
+    const count = Math.max(1, Math.round(assignedArea / avgStoneArea));
+    return{s, sp, count};
   }).sort((a,b)=>b.sp.maxR-a.sp.maxR);
-  const placer=makePlacer();const all=[];
+
+  const placer=makePlacer();
+  const all=[];
+
   specs.forEach(({s,sp,count},si)=>{
     let placed=0;
-    for(let i=0;i<count*15&&placed<count;i++){
+    const maxTries=count*20;
+    for(let i=0;i<maxTries&&placed<count;i++){
       const rx=sp.minR+Math.random()*(sp.maxR-sp.minR);
-      const ry=rx*(0.6+Math.random()*0.8);
-      const md=Math.max(rx,ry),pad=md+1;
-      const x=pad+Math.random()*(RS-pad*2),y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md*0.80)){
-        placer.add(x,y,md*0.80,{});
+      const ry=rx*(0.55+Math.random()*0.7);
+      const md=Math.max(rx,ry);
+      const pad=md+2;
+      if(pad*2>=RS) continue;
+      const x=pad+Math.random()*(RS-pad*2);
+      const y=pad+Math.random()*(RS-pad*2);
+      if(!placer.overlaps(x,y,md*0.82)){
+        placer.add(x,y,md*0.82,{});
         all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});
         placed++;
       }
     }
   });
+
   all.sort((a,b)=>b.r-a.r);
+
   all.forEach(p=>{
     const st=STONES.find(s=>s.name===p.st.name)||STONES[0];
     const [r,g,b]=h2r(st.h),[r2,g2,b2]=h2r(st.h2),[r3,g3,b3]=h2r(st.h3);
@@ -287,6 +310,7 @@ function renderTerrazzo(canvas, baseHex, stonesArr){
     ctx.fillStyle=hg;ctx.fillRect(p.x-p.rx-2,p.y-p.ry-2,p.rx*2+4,p.ry*2+4);ctx.restore();
     ctx.restore();
   });
+
   const sheen=ctx.createLinearGradient(0,0,RS*.45,RS*.45);
   sheen.addColorStop(0,'rgba(255,255,255,0.055)');sheen.addColorStop(.4,'rgba(255,255,255,0.02)');sheen.addColorStop(1,'rgba(255,255,255,0)');
   ctx.fillStyle=sheen;ctx.fillRect(0,0,RS,RS);
@@ -350,10 +374,9 @@ function addStone(){
 function removeStone(key){customStones=customStones.filter(s=>s.key!==key);renderList();renderCustom();}
 function renderList(){
   const c=document.getElementById('slist');c.innerHTML='';
-  const st=STONES;
   customStones.forEach(s=>{
     const sk=s.key.replace(/[^a-zA-Z0-9]/g,'_');
-    const sd=st.find(x=>x.name===s.name)||st[0];
+    const sd=STONES.find(x=>x.name===s.name)||STONES[0];
     const row=document.createElement('div');row.className='stone-row';
     row.innerHTML=`<div class="sdot" style="background:${sd.h}"></div>
     <div class="si"><span class="snl">${s.name}</span><span class="ssl">${SZP[s.size].label}</span></div>
