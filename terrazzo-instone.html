@@ -115,6 +115,41 @@ button.abtn:hover{background:#f5f5f5}
 .mb-cabinet-brand{font-size:9px;color:rgba(255,255,255,.65);text-shadow:0 1px 3px rgba(0,0,0,.5);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
 .mb-cabinet-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.6);letter-spacing:.05em}
 .mb-hint{font-size:12px;color:#ccc;text-align:center;padding:20px 0;letter-spacing:.03em}
+/* ── Scene Viewer ─────────────────────────────────────────────── */
+.scene-wrap{margin-top:20px}
+.scene-controls{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.scene-tab{font-size:10px;padding:4px 12px;border-radius:3px;border:1px solid #e0e0e0;background:transparent;cursor:pointer;color:#aaa;font-family:inherit;font-weight:700;letter-spacing:.07em;text-transform:uppercase;transition:all .15s}
+.scene-tab.scene-tab-active{background:#000;color:#fff;border-color:#000}
+.scene-hint-txt{font-size:10px;color:#bbb;margin-left:auto;letter-spacing:.03em}
+.scene-viewport{position:relative;width:100%;aspect-ratio:16/7;overflow:hidden;border-radius:4px;border:1px solid #e0e0e0}
+.scene-layer{position:absolute;left:0;width:100%}
+.scene-wall{top:0;bottom:0;background:linear-gradient(150deg,#F2F0EA 0%,#ECEAE4 100%)}
+.scene-upper-cab{top:0;height:48%;transition:background .35s ease}
+.scene-cab-grid-u{top:0;height:48%;
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) calc(25% - 1px),rgba(0,0,0,.07) calc(25% - 1px),rgba(0,0,0,.07) 25%),
+  linear-gradient(to bottom,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 20%),
+  linear-gradient(to top,rgba(0,0,0,.07) 0%,rgba(0,0,0,0) 14%);
+  border-bottom:1px solid rgba(0,0,0,.12)}
+.scene-counter-edge{top:48%;height:2%;background:linear-gradient(to bottom,rgba(0,0,0,.22) 0%,rgba(0,0,0,.06) 100%)}
+.scene-counter-wrap{top:50%;height:14%;overflow:hidden}
+#scene-counter-canvas{display:block;width:100%;height:100%}
+.scene-counter-lip{top:64%;height:1.2%;background:linear-gradient(to bottom,rgba(0,0,0,.14) 0%,rgba(0,0,0,0) 100%)}
+.scene-lower-cab{top:65.2%;height:28%;transition:background .35s ease}
+.scene-cab-grid-l{top:65.2%;height:28%;
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) calc(25% - 1px),rgba(0,0,0,.07) calc(25% - 1px),rgba(0,0,0,.07) 25%),
+  linear-gradient(to bottom,rgba(255,255,255,.10) 0%,rgba(255,255,255,0) 22%);
+  border-bottom:1px solid rgba(0,0,0,.09)}
+.scene-floor{top:93.2%;height:6.8%;background:linear-gradient(to bottom,#D0CEC8 0%,#C4C2BC 100%)}
+.scene-badge{position:absolute;background:rgba(0,0,0,.52);color:#fff;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;font-weight:700;pointer-events:none;backdrop-filter:blur(4px)}
+.scene-badge-terrazzo{top:52%;left:10px}
+.scene-badge-cabinet{top:8px;right:8px}
+.scene-photo-layer{top:0;bottom:0;background-size:cover;background-position:center;display:none}
+.scene-combo{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 14px;background:#f9f9f9;border-radius:4px;border:1px solid #e0e0e0}
+.scene-combo-block{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.scene-combo-swatch{width:28px;height:28px;border-radius:2px;border:1px solid rgba(0,0,0,.08);flex-shrink:0}
+.scene-combo-type{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;font-weight:700}
+.scene-combo-name{font-size:11px;color:#333;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene-combo-sep{font-size:14px;color:#ddd;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -203,13 +238,37 @@ button.abtn:hover{background:#f5f5f5}
     </div>
     <div class="mb-body" id="mb-body">
       <div class="faplac-grid" id="faplac-grid"></div>
-      <div class="mb-hint" id="mb-hint">Seleccioná una terminación para ver la combinación</div>
-      <div class="mb-preview" id="mb-preview" style="display:none">
-        <div class="mb-terrazzo-thumb" id="mb-terrazzo-thumb"></div>
-        <div class="mb-divider"></div>
-        <div class="mb-cabinet-panel" id="mb-cabinet">
-          <div class="mb-cabinet-brand">Faplac</div>
-          <div class="mb-cabinet-label" id="mb-cabinet-label"></div>
+      <div class="mb-hint" id="mb-hint">Seleccioná una terminación para visualizar la escena</div>
+      <!-- Scene Viewer: Pre-rendered Fixed Scene with dynamic canvas zones -->
+      <div class="scene-wrap" id="scene-wrap" style="display:none">
+        <div class="scene-controls">
+          <button class="scene-tab scene-tab-active" onclick="switchScene('cocina',this)">Cocina</button>
+          <button class="scene-tab" onclick="switchScene('bano',this)">Baño</button>
+          <span class="scene-hint-txt" id="scene-hint-txt">Mesada ~3m · Vista frontal</span>
+        </div>
+        <div class="scene-viewport" id="scene-viewport">
+          <div class="scene-layer scene-wall"></div>
+          <div class="scene-layer scene-upper-cab" id="scene-upper-cab"></div>
+          <div class="scene-layer scene-cab-grid-u"></div>
+          <div class="scene-layer scene-counter-edge"></div>
+          <div class="scene-layer scene-counter-wrap"><canvas id="scene-counter-canvas"></canvas></div>
+          <div class="scene-layer scene-counter-lip"></div>
+          <div class="scene-layer scene-lower-cab" id="scene-lower-cab"></div>
+          <div class="scene-layer scene-cab-grid-l"></div>
+          <div class="scene-layer scene-floor"></div>
+          <span class="scene-badge scene-badge-terrazzo">Terrazzo</span>
+          <span class="scene-badge scene-badge-cabinet" id="scene-badge-cabinet">Faplac</span>
+        </div>
+        <div class="scene-combo">
+          <div class="scene-combo-block">
+            <div class="scene-combo-swatch" id="scene-swatch-terrazzo"></div>
+            <div><div class="scene-combo-type">Terrazzo Instone</div><div class="scene-combo-name" id="scene-combo-terrazzo">—</div></div>
+          </div>
+          <div class="scene-combo-sep">×</div>
+          <div class="scene-combo-block">
+            <div class="scene-combo-swatch" id="scene-swatch-faplac"></div>
+            <div><div class="scene-combo-type">Faplac · Gabinetes</div><div class="scene-combo-name" id="scene-combo-faplac">—</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -636,19 +695,100 @@ function selectFaplac(slug){
   document.getElementById('fs_'+slug).classList.add('selected');
   updateMbPreview();
 }
+// ── Scene Viewer ──────────────────────────────────────────────────
+let selScene='cocina';
+// To use real photos when available, set URLs here:
+// const SCENE_PHOTOS={cocina:'photos/cocina.jpg',bano:'photos/bano.jpg'};
+const SCENE_CFG={
+  cocina:{realWidthMm:3000,hint:'Mesada ~3m · Vista frontal'},
+  bano:{realWidthMm:1200,hint:'Vanitory ~1.2m · Vista frontal'}
+};
+function renderSceneCounter(){
+  const canvas=document.getElementById('scene-counter-canvas');
+  if(!canvas||canvas.offsetWidth<=0)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=Math.round(canvas.offsetWidth*dpr);
+  const H=Math.round(canvas.offsetHeight*dpr);
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const isPresets=document.getElementById('tab-presets').style.display!=='none';
+  const src=document.getElementById(isPresets?'result-canvas':'custom-canvas');
+  // Scale: RS=640px ≈ 500mm sample; scene counter = realWidthMm at offsetWidth px
+  const cfg=SCENE_CFG[selScene];
+  const ratio=(canvas.offsetWidth/cfg.realWidthMm)/(RS/500)*dpr;
+  let drawn=false;
+  try{
+    const pat=ctx.createPattern(src,'repeat');
+    if(pat){
+      if(typeof DOMMatrix!=='undefined'){
+        try{pat.setTransform(new DOMMatrix([ratio,0,0,ratio,0,0]));}catch(e){}
+      }
+      ctx.fillStyle=pat;ctx.fillRect(0,0,W,H);drawn=true;
+    }
+  }catch(e){}
+  if(!drawn){
+    // Fallback: manual tile
+    const tw=Math.max(1,Math.round(src.width*ratio)),th=Math.max(1,Math.round(src.height*ratio));
+    for(let x=0;x<W;x+=tw)for(let y=0;y<H;y+=th)ctx.drawImage(src,x,y,tw,th);
+  }
+  // Depth shadow at top edge + polished sheen
+  const sh=ctx.createLinearGradient(0,0,0,H*.4);
+  sh.addColorStop(0,'rgba(0,0,0,.18)');sh.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=sh;ctx.fillRect(0,0,W,H);
+  const gl=ctx.createLinearGradient(0,0,W*.5,H*.5);
+  gl.addColorStop(0,'rgba(255,255,255,.10)');gl.addColorStop(.5,'rgba(255,255,255,.03)');gl.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=gl;ctx.fillRect(0,0,W,H);
+}
+function renderSceneCabinets(){
+  const f=selFaplac?FAPLAC.find(x=>x.slug===selFaplac):null;
+  const bg=f?(f.grad||f.bg):'#D8D4CE';
+  const u=document.getElementById('scene-upper-cab'),l=document.getElementById('scene-lower-cab');
+  if(u)u.style.background=bg;if(l)l.style.background=bg;
+  const b=document.getElementById('scene-badge-cabinet');
+  if(b)b.textContent=f?f.name+' · Faplac':'Faplac';
+}
+function updateSceneInfo(){
+  const isPresets=document.getElementById('tab-presets').style.display!=='none';
+  const f=selFaplac?FAPLAC.find(x=>x.slug===selFaplac):null;
+  const sf=document.getElementById('scene-swatch-faplac'),cf=document.getElementById('scene-combo-faplac');
+  if(sf)sf.style.background=f?(f.grad||f.bg):'#D8D4CE';
+  if(cf)cf.textContent=f?f.name:'—';
+  const st=document.getElementById('scene-swatch-terrazzo'),ct=document.getElementById('scene-combo-terrazzo');
+  if(isPresets){
+    const code=document.getElementById('result-code').textContent;
+    const p=PRESETS.find(x=>x.code===code);
+    if(st&&p)st.style.background=p.baseHex;
+    if(ct)ct.textContent=code&&code!=='—'?code:'—';
+  }else{
+    if(st&&selBase!==null)st.style.background=BASES[selBase].hex;
+    const lbl=document.getElementById('custom-label');
+    if(ct)ct.textContent=lbl?lbl.textContent.split(' · ')[0]:'—';
+  }
+}
+function updateSceneView(){
+  renderSceneCabinets();
+  setTimeout(renderSceneCounter,16);
+  updateSceneInfo();
+}
+function switchScene(name,btn){
+  selScene=name;
+  document.querySelectorAll('.scene-tab').forEach(t=>t.classList.remove('scene-tab-active'));
+  btn.classList.add('scene-tab-active');
+  const el=document.getElementById('scene-hint-txt');
+  if(el)el.textContent=SCENE_CFG[name].hint;
+  updateSceneView();
+}
+window.addEventListener('resize',()=>{
+  const sw=document.getElementById('scene-wrap');
+  if(sw&&sw.style.display!=='none')setTimeout(renderSceneCounter,80);
+});
 function updateMbPreview(){
   const hint=document.getElementById('mb-hint');
-  const preview=document.getElementById('mb-preview');
-  if(!selFaplac){hint.style.display='';preview.style.display='none';return;}
-  const f=FAPLAC.find(x=>x.slug===selFaplac);
-  hint.style.display='none';preview.style.display='flex';
-  const cabinet=document.getElementById('mb-cabinet');
-  cabinet.style.background=f.grad||f.bg;
-  document.getElementById('mb-cabinet-label').textContent=f.name;
-  // Sync terrazzo thumbnail from whichever canvas is active
-  const isPresets=document.getElementById('tab-presets').style.display!=='none';
-  const activeCanvas=document.getElementById(isPresets?'result-canvas':'custom-canvas');
-  try{document.getElementById('mb-terrazzo-thumb').style.backgroundImage='url('+activeCanvas.toDataURL()+')';}catch(e){}
+  const sw=document.getElementById('scene-wrap');
+  if(!selFaplac){if(hint)hint.style.display='';if(sw)sw.style.display='none';return;}
+  if(hint)hint.style.display='none';
+  if(sw)sw.style.display='block';
+  updateSceneView();
 }
 function toggleMoodboard(){
   const body=document.getElementById('mb-body');
