@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurador de Terrazzo — Instone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-serif;background:#f9f9f9;color:#333;min-height:100vh}
+.app{max-width:960px;margin:0 auto;padding:40px 24px;background:#fff;min-height:100vh}
+h1{font-size:18px;font-weight:700;letter-spacing:.1em;margin-bottom:4px;color:#000;text-transform:uppercase}
+.subtitle{font-size:12px;color:#999;margin-bottom:40px;letter-spacing:.03em}
+.tabs{display:flex;gap:0;margin-bottom:32px;border-bottom:1px solid #e0e0e0}
+.tab{font-size:11px;padding:10px 20px;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;letter-spacing:.08em;text-transform:uppercase;font-weight:600;font-family:inherit}
+.tab.active{color:#000;border-bottom-color:#000}
+.presets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px;margin-bottom:40px}
+.preset-card{cursor:pointer;border-radius:2px;overflow:hidden;border:2px solid transparent;transition:border-color .15s,transform .1s}
+.preset-card:hover{transform:scale(1.02)}
+.preset-card.selected{border-color:#000}
+.preset-canvas{display:block;width:100%;aspect-ratio:1}
+.preset-label{font-size:10px;text-align:center;padding:8px 4px;background:#fff;color:#333;letter-spacing:.08em;font-weight:700;text-transform:uppercase}
+.custom-layout{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start}
+.custom-ctrl{flex:1;min-width:220px}
+.custom-preview{display:flex;flex-direction:column;align-items:center;gap:12px}
+#custom-canvas{display:block;border-radius:2px;border:1px solid #e0e0e0;image-rendering:auto}
+.slabel{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin-bottom:12px;font-weight:700}
+.base-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.bsw{width:32px;height:32px;border-radius:2px;cursor:pointer;border:2px solid transparent;transition:transform .1s,border-color .15s}
+.bsw:hover{transform:scale(1.1)}
+.bsw.on{border-color:#000}
+.bname{font-size:11px;color:#666;margin-top:6px;margin-bottom:20px;min-height:16px}
+.stone-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sdot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.12)}
+.si{display:flex;flex-direction:column;min-width:76px}
+.snl{font-size:11px;color:#333;line-height:1.3}
+.ssl{font-size:10px;color:#aaa}
+.spct{font-size:11px;font-weight:700;min-width:30px;text-align:right;color:#000}
+input[type=range]{flex:1;accent-color:#000}
+.totrow{font-size:11px;color:#aaa;padding-top:8px;border-top:1px solid #eee;margin-top:6px}
+.tok{color:#4a8a5a}.terr{color:#c04040}
+.addrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+select{font-size:12px;padding:7px 10px;border-radius:4px;border:1px solid #e0e0e0;background:#fff;color:#333;cursor:pointer;font-family:inherit}
+button.abtn{font-size:12px;padding:7px 14px;border-radius:4px;border:1px solid #e0e0e0;background:transparent;cursor:pointer;color:#333;transition:background .15s;font-family:inherit;font-weight:500}
+button.abtn:hover{background:#f5f5f5}
+.rbtn{font-size:11px;background:none;border:none;color:#ccc;cursor:pointer;padding:0 2px;transition:color .1s}
+.rbtn:hover{color:#c04040}
+.result-area{margin-top:40px;padding-top:32px;border-top:1px solid #e0e0e0}
+.result-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;color:#aaa}
+.result-canvas-wrap{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start}
+#result-canvas{display:block;border-radius:2px;border:1px solid #e0e0e0;image-rendering:auto}
+.result-info{flex:1;min-width:180px}
+.result-code{font-size:28px;font-weight:700;letter-spacing:.08em;color:#000;margin-bottom:6px;text-transform:uppercase}
+.result-desc{font-size:12px;color:#666;line-height:1.7;margin-bottom:20px}
+.wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;border:none;border-radius:4px;padding:10px 18px;font-size:12px;cursor:pointer;text-decoration:none;font-weight:600;transition:opacity .15s;letter-spacing:.03em}
+.wa-btn:hover{opacity:.85}
+.wa-btn svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+.preview-label{font-size:10px;color:#aaa;text-align:center;margin-top:6px;max-width:320px;line-height:1.5;letter-spacing:.02em}
+.action-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.act-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #e0e0e0;background:transparent;color:#333;border-radius:4px;padding:9px 16px;font-size:12px;cursor:pointer;transition:background .15s;font-family:inherit;font-weight:500}
+.act-btn:hover{background:#f5f5f5}
+.act-btn svg{width:14px;height:14px;flex-shrink:0}
+.quote-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#000;color:#fff;border:none;border-radius:4px;padding:13px 20px;font-size:12px;cursor:pointer;font-weight:700;transition:opacity .15s;width:100%;margin-top:14px;font-family:inherit;letter-spacing:.08em;text-transform:uppercase}
+.quote-btn:hover{opacity:.8}
+.quote-btn svg{width:16px;height:16px;flex-shrink:0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:4px;padding:32px;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.1);border:1px solid #e0e0e0;animation:modal-in .18s ease;max-height:90vh;overflow-y:auto}
+@keyframes modal-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:6px;color:#000;letter-spacing:.02em}
+.modal-sub{font-size:13px;color:#666;margin-bottom:24px;line-height:1.6}
+.mfield{margin-bottom:16px}
+.mfield label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin-bottom:6px;font-weight:700}
+.mfield input,.mfield select,.mfield textarea{width:100%;padding:11px 13px;border:1px solid #e0e0e0;border-radius:4px;font-size:14px;outline:none;font-family:inherit;background:#fff;color:#333;transition:border-color .15s}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:#000}
+.mfield textarea{min-height:64px;resize:vertical}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mbtn{width:100%;padding:13px;background:#000;color:#fff;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:700;font-family:inherit;transition:opacity .15s;letter-spacing:.08em;text-transform:uppercase}
+.mbtn:hover:not(:disabled){opacity:.8}
+.mbtn:disabled{background:#aaa;cursor:not-allowed}
+.mskip{background:none;border:none;color:#bbb;font-size:12px;cursor:pointer;width:100%;margin-top:12px;font-family:inherit;padding:4px}
+.mskip:hover{color:#666}
+.merr{color:#c04040;font-size:12px;margin-bottom:10px;display:none}
+.mlead-hint{font-size:11px;color:#4a8a5a;margin-bottom:16px;padding:10px 14px;background:#f0f8f2;border-radius:4px;display:none}
+.share-panel{background:#f5f5f5;border-radius:4px;padding:14px;margin-top:16px}
+.share-panel p{font-size:11px;color:#aaa;margin-bottom:8px;letter-spacing:.03em}
+.share-row{display:flex;gap:8px}
+.share-input{flex:1;font-size:11px;padding:7px 10px;border:1px solid #e0e0e0;border-radius:4px;background:#fff;color:#666;outline:none;cursor:text}
+.copy-btn{font-size:11px;padding:7px 14px;border:1px solid #000;background:#fff;border-radius:4px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s;font-weight:600}
+.copy-btn:hover{background:#f5f5f5}
+.copy-btn.copied{background:#000;color:#fff}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:4px;font-size:12px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap;letter-spacing:.03em}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.moodboard-section{margin-top:40px;padding-top:32px;border-top:1px solid #e0e0e0}
+.mb-toggle-row{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:4px 0}
+.mb-toggle-row:hover .mb-toggle-label{opacity:.7}
+.mb-caret{font-size:10px;color:#ccc;transition:transform .2s;display:inline-block;line-height:1}
+.mb-toggle-row.open .mb-caret{transform:rotate(90deg)}
+.mb-toggle-label{font-size:11px;font-weight:700;color:#000;letter-spacing:.08em;text-transform:uppercase}
+.mb-toggle-sub{font-size:10px;color:#ccc;margin-left:auto;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.mb-body{display:none;margin-top:20px}
+.mb-body.open{display:block}
+.faplac-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:10px;margin-bottom:18px}
+.faplac-swatch{cursor:pointer;border-radius:2px;overflow:hidden;border:2px solid transparent;transition:border-color .15s,transform .1s}
+.faplac-swatch:hover{transform:scale(1.04)}
+.faplac-swatch.selected{border-color:#000}
+.faplac-color{height:52px;width:100%}
+.faplac-name{font-size:10px;text-align:center;padding:5px 3px;background:#fff;color:#333;letter-spacing:.02em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.mb-preview{border-radius:4px;overflow:hidden;border:1px solid #e0e0e0;height:160px;display:flex}
+.mb-terrazzo-thumb{flex:1;background:#f5f5f5 no-repeat center/cover}
+.mb-divider{width:2px;background:#fff;flex-shrink:0}
+.mb-cabinet-panel{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:14px}
+.mb-cabinet-brand{font-size:9px;color:rgba(255,255,255,.65);text-shadow:0 1px 3px rgba(0,0,0,.5);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.mb-cabinet-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.6);letter-spacing:.05em}
+.mb-hint{font-size:12px;color:#ccc;text-align:center;padding:20px 0;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Configurador de terrazzo</h1>
+  <p class="subtitle">Elegí una mezcla existente o creá la tuya</p>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('presets',this)">Muestras del catálogo</button>
+    <button class="tab" onclick="switchTab('custom',this)">Crear mezcla</button>
+  </div>
+  <div id="tab-presets">
+    <div class="presets-grid" id="presets-grid"></div>
+    <div class="result-area" id="preset-result" style="display:none">
+      <div class="result-title">Muestra seleccionada</div>
+      <div class="result-canvas-wrap">
+        <canvas id="result-canvas" width="640" height="640" style="width:280px;height:280px"></canvas>
+        <div class="result-info">
+          <div class="result-code" id="result-code">—</div>
+          <div class="result-desc" id="result-desc">—</div>
+          <a class="wa-btn" id="wa-link" href="#" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Consultar por WhatsApp
+          </a>
+          <div class="action-row">
+            <button class="act-btn" onclick="saveDesign('preset')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Guardar diseño
+            </button>
+          </div>
+          <button class="quote-btn" onclick="openQuote('preset')">
+            <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            Solicitar cotización
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-custom" style="display:none">
+    <div class="custom-layout">
+      <div class="custom-ctrl">
+        <div class="slabel">Base de cemento</div>
+        <div class="base-grid" id="base-grid"></div>
+        <div class="bname" id="bname">—</div>
+        <div class="slabel">Piedras</div>
+        <div id="slist"></div>
+        <div class="addrow">
+          <select id="spick"></select>
+          <select id="szpick">
+            <option value="1">N°1 · 2-5mm</option>
+            <option value="2" selected>N°2/3 · 5-15mm</option>
+            <option value="5">N°5 · ~30mm</option>
+          </select>
+          <button class="abtn" onclick="addStone()">+ Agregar</button>
+        </div>
+        <div class="totrow" id="tot"></div>
+      </div>
+      <div class="custom-preview">
+        <canvas id="custom-canvas" width="640" height="640" style="width:280px;height:280px"></canvas>
+        <div class="preview-label" id="custom-label">Elegí una base para comenzar</div>
+        <div style="margin-top:12px;width:100%;max-width:280px">
+          <a class="wa-btn" id="custom-wa" href="#" target="_blank" style="width:100%;justify-content:center">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="#fff"/></svg>
+            Consultar mezcla personalizada
+          </a>
+          <div class="action-row" style="justify-content:center">
+            <button class="act-btn" onclick="saveDesign('custom')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Guardar diseño
+            </button>
+          </div>
+          <button class="quote-btn" onclick="openQuote('custom')">
+            <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            Solicitar cotización
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Moodboard / Cabinet Pairing -->
+  <div class="moodboard-section">
+    <div class="mb-toggle-row" id="mb-toggle" onclick="toggleMoodboard()">
+      <span class="mb-caret">▶</span>
+      <span class="mb-toggle-label">Moodboard · Combinación de Gabinetes</span>
+      <span class="mb-toggle-sub">Faplac</span>
+    </div>
+    <div class="mb-body" id="mb-body">
+      <div class="faplac-grid" id="faplac-grid"></div>
+      <div class="mb-hint" id="mb-hint">Seleccioná una terminación para ver la combinación</div>
+      <div class="mb-preview" id="mb-preview" style="display:none">
+        <div class="mb-terrazzo-thumb" id="mb-terrazzo-thumb"></div>
+        <div class="mb-divider"></div>
+        <div class="mb-cabinet-panel" id="mb-cabinet">
+          <div class="mb-cabinet-brand">Faplac</div>
+          <div class="mb-cabinet-label" id="mb-cabinet-label"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lead Capture Modal (B2B) -->
+<div class="modal-overlay" id="lead-modal">
+  <div class="modal-box">
+    <div class="modal-title">Identificate para continuar</div>
+    <div class="modal-sub">Completá tus datos para guardar, compartir o solicitar cotización.</div>
+    <div class="mrow">
+      <div class="mfield">
+        <label>Nombre *</label>
+        <input type="text" id="lead-name" placeholder="Tu nombre" autocomplete="given-name">
+      </div>
+      <div class="mfield">
+        <label>Email *</label>
+        <input type="email" id="lead-email" placeholder="tu@email.com" autocomplete="email">
+      </div>
+    </div>
+    <div class="mrow">
+      <div class="mfield">
+        <label>Empresa / Estudio *</label>
+        <input type="text" id="lead-company" placeholder="Nombre del estudio" autocomplete="organization">
+      </div>
+      <div class="mfield">
+        <label>Teléfono</label>
+        <input type="tel" id="lead-phone" placeholder="351 123 4567" autocomplete="tel">
+      </div>
+    </div>
+    <div class="mfield">
+      <label>Rol *</label>
+      <select id="lead-role">
+        <option value="">— Seleccioná tu rol —</option>
+        <option value="Arquitecto/a">Arquitecto/a</option>
+        <option value="Diseñador/a de Interiores">Diseñador/a de Interiores</option>
+        <option value="Contratista / Constructor">Contratista / Constructor</option>
+        <option value="Cliente Particular">Cliente Particular</option>
+      </select>
+    </div>
+    <div class="merr" id="lead-err"></div>
+    <button class="mbtn" onclick="submitLead()">Continuar</button>
+    <button class="mskip" onclick="closeModal('lead-modal')">Ahora no</button>
+  </div>
+</div>
+
+<!-- Quote Modal -->
+<div class="modal-overlay" id="quote-modal">
+  <div class="modal-box">
+    <div class="modal-title">Solicitar cotización</div>
+    <div id="quote-design-summary" style="font-size:12px;background:#f5f2ee;padding:8px 12px;border-radius:6px;color:#666;margin-bottom:16px"></div>
+    <div class="mlead-hint" id="quote-lead-hint"></div>
+    <div id="quote-contact-fields">
+      <div class="mrow">
+        <div class="mfield">
+          <label>Nombre *</label>
+          <input type="text" id="q-name" autocomplete="given-name">
+        </div>
+        <div class="mfield">
+          <label>Email *</label>
+          <input type="email" id="q-email" autocomplete="email">
+        </div>
+      </div>
+      <div class="mrow">
+        <div class="mfield">
+          <label>Empresa / Estudio *</label>
+          <input type="text" id="q-company" autocomplete="organization">
+        </div>
+        <div class="mfield">
+          <label>Teléfono</label>
+          <input type="tel" id="q-phone" autocomplete="tel">
+        </div>
+      </div>
+      <div class="mfield">
+        <label>Rol *</label>
+        <select id="q-role">
+          <option value="">— Seleccioná tu rol —</option>
+          <option value="Arquitecto/a">Arquitecto/a</option>
+          <option value="Diseñador/a de Interiores">Diseñador/a de Interiores</option>
+          <option value="Contratista / Constructor">Contratista / Constructor</option>
+          <option value="Cliente Particular">Cliente Particular</option>
+        </select>
+      </div>
+    </div>
+    <div class="mfield">
+      <label>Uso del espacio *</label>
+      <select id="q-uso">
+        <option value="">— Seleccioná —</option>
+        <option>Living / Sala de estar</option>
+        <option>Cocina</option>
+        <option>Baño</option>
+        <option>Local comercial</option>
+        <option>Pasillo / Hall</option>
+        <option>Dormitorio</option>
+        <option>Exterior / Jardín</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="mfield">
+      <label>Superficie aproximada (m²) *</label>
+      <input type="number" id="q-m2" min="0.5" max="9999" step="0.5" placeholder="Ej: 25">
+    </div>
+    <div class="mfield">
+      <label>Notas adicionales</label>
+      <textarea id="q-notas" placeholder="Ej: piso existente, escalones, medidas exactas..."></textarea>
+    </div>
+    <div class="merr" id="quote-err"></div>
+    <button class="mbtn" id="quote-submit-btn" onclick="submitQuote()">Enviar solicitud</button>
+    <button class="mskip" onclick="closeModal('quote-modal')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Save Confirmation Modal -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal-box">
+    <div class="modal-title">Diseño guardado</div>
+    <div id="save-design-name" style="font-size:12px;background:#f5f2ee;padding:8px 12px;border-radius:6px;color:#666;margin-bottom:16px"></div>
+    <p style="font-size:13px;color:#666;margin-bottom:14px;line-height:1.6">
+      Una notificación fue enviada a nuestro equipo. Usá el link único para compartir o volver a tu diseño.
+    </p>
+    <div class="share-panel">
+      <p>Link único de tu diseño:</p>
+      <div class="share-row">
+        <input type="text" class="share-input" id="share-url" readonly>
+        <button class="copy-btn" id="copy-btn" onclick="copyShareUrl()">Copiar</button>
+      </div>
+    </div>
+    <button class="mbtn" style="margin-top:16px" onclick="closeModal('save-modal')">Cerrar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer style="margin-top:48px;padding:24px 20px;border-top:1px solid #e8e6e2;text-align:center">
+  <p style="font-size:12px;color:#aaa;letter-spacing:.04em;line-height:1.8">
+    © 2026 Instone · Una marca de Mil9 Estudio<br>
+    <span style="font-size:11px">Mildesing S.A.S. · Todos los derechos reservados</span>
+  </p>
+</footer>
+<script>
+const WA_NUMBER = '5493513578738';
+// IMPORTANT: Change FORMSUBMIT_EMAIL to your official sales inbox.
+// First submission triggers a one-time activation email from formsubmit.co.
+const FORMSUBMIT_EMAIL = 'info@instoned.com';
+
+const PRESETS = [
+  {code:"B1",  baseName:"Blanco puro",  baseHex:"#F0EDE6", stones:[{name:"Blanca",size:"1",pct:100}]},
+  {code:"B2",  baseName:"Blanco puro",  baseHex:"#F0EDE6", stones:[{name:"Blanca",size:"2",pct:100}]},
+  {code:"B3",  baseName:"Blanco puro",  baseHex:"#F0EDE6", stones:[{name:"Blanca",size:"5",pct:100}]},
+  {code:"B6",  baseName:"Blanco puro",  baseHex:"#F0EDE6", stones:[{name:"Blanca",size:"2",pct:40},{name:"Negra",size:"2",pct:15},{name:"Marrón clara",size:"2",pct:15},{name:"Rosa",size:"2",pct:30}]},
+  {code:"B7",  baseName:"Blanco puro",  baseHex:"#F0EDE6", stones:[{name:"Blanca",size:"2",pct:95},{name:"Negra",size:"2",pct:5}]},
+  {code:"B8",  baseName:"Blanco puro",  baseHex:"#F0EDE6", stones:[{name:"Blanca",size:"2",pct:40},{name:"Rosa",size:"2",pct:60}]},
+  {code:"N23", baseName:"Negro",        baseHex:"#1A1A18", stones:[{name:"Blanca",size:"5",pct:100}]},
+  {code:"N26", baseName:"Negro",        baseHex:"#1A1A18", stones:[{name:"Negra",size:"2",pct:80},{name:"Ocre/dorada",size:"2",pct:20}]},
+  {code:"G30", baseName:"Gris oscuro",  baseHex:"#545250", stones:[{name:"Negra",size:"1",pct:50},{name:"Gris oscura",size:"1",pct:30},{name:"Ocre/dorada",size:"1",pct:20}]},
+  {code:"G31", baseName:"Gris oscuro",  baseHex:"#545250", stones:[{name:"Negra",size:"2",pct:50},{name:"Gris oscura",size:"2",pct:30},{name:"Ocre/dorada",size:"2",pct:20}]},
+  {code:"G32", baseName:"Gris claro",   baseHex:"#C4C2BC", stones:[{name:"Negra",size:"1",pct:40},{name:"Gris perla",size:"2",pct:40},{name:"Ocre/dorada",size:"1",pct:20}]},
+  {code:"R40", baseName:"Terracota",    baseHex:"#B45C4C", stones:[{name:"Blanca",size:"2",pct:40},{name:"Rosa",size:"2",pct:60}]},
+  {code:"R41", baseName:"Rosa pálido",  baseHex:"#D0A49C", stones:[{name:"Blanca",size:"2",pct:10},{name:"Rosa oscura",size:"2",pct:90}]},
+  {code:"V50", baseName:"Verde salvia", baseHex:"#88A686", stones:[{name:"Blanca",size:"2",pct:50},{name:"Negra",size:"2",pct:50}]},
+  {code:"V51", baseName:"Verde salvia", baseHex:"#A8C4A6", stones:[{name:"Blanca",size:"2",pct:80},{name:"Negra",size:"2",pct:20}]},
+  {code:"P50", baseName:"Verde oscuro", baseHex:"#7A9E7A", stones:[]},
+];
+const BASES=[
+  {name:"Blanco puro",hex:"#F0EDE6"},{name:"Hueso",hex:"#E6DDD0"},
+  {name:"Arena",hex:"#D2C09C"},{name:"Gris claro",hex:"#C4C2BC"},
+  {name:"Gris medio",hex:"#989490"},{name:"Gris oscuro",hex:"#545250"},
+  {name:"Negro",hex:"#1A1A18"},{name:"Ocre",hex:"#C4A03C"},
+  {name:"Rosa pálido",hex:"#D0A49C"},{name:"Verde salvia",hex:"#88A686"},
+  {name:"Verde oscuro",hex:"#486A4C"},{name:"Terracota",hex:"#B45C4C"},
+];
+const STONES=[
+  {name:"Blanca",      h:"#EDEAE2",h2:"#D4D0C8",h3:"#C0BDB5"},
+  {name:"Negra",       h:"#242220",h2:"#1A1816",h3:"#0E0E0C"},
+  {name:"Gris perla",  h:"#A8A6A2",h2:"#909090",h3:"#787876"},
+  {name:"Gris oscura", h:"#646260",h2:"#504E4C",h3:"#3C3A38"},
+  {name:"Rosa",        h:"#D29E94",h2:"#BC8880",h3:"#A87068"},
+  {name:"Rosa oscura", h:"#AE6E6A",h2:"#985A56",h3:"#7E4442"},
+  {name:"Marrón clara",h:"#AE8860",h2:"#92704A",h3:"#785A38"},
+  {name:"Marrón oscura",h:"#764E3E",h2:"#5E3C2E",h3:"#4A2C20"},
+  {name:"Roja",        h:"#9E3826",h2:"#7E2A1A",h3:"#641E10"},
+  {name:"Verde jade",  h:"#588A5E",h2:"#406848",h3:"#2E5234"},
+  {name:"Verde oscura",h:"#385A3C",h2:"#264430",h3:"#1A3020"},
+  {name:"Ocre/dorada", h:"#D4820A",h2:"#B86A00",h3:"#8A4E00"},
+  {name:"Celeste",     h:"#78A8C0",h2:"#5A8AA2",h3:"#406E84"},
+  {name:"Beige mármol",h:"#CCBEA0",h2:"#B0A284",h3:"#96886A"},
+  {name:"Naranja",     h:"#C46A38",h2:"#A05228",h3:"#7E3C18"},
+];
+const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"5":{minR:30,maxR:56,label:"N°5"}};
+const RS=640;
+const TOTAL_COVERAGE=0.75;
+
+const FAPLAC=[
+  {slug:'blanco-polar',    name:'Blanco Polar',     bg:'#F2F0EC', grad:''},
+  {slug:'gaudi',           name:'Gaudí',            bg:'#C4B49A', grad:''},
+  {slug:'arena',           name:'Arena',            bg:'#CBBEA0', grad:''},
+  {slug:'tuareg',          name:'Tuareg',           bg:'#C9AE8C', grad:''},
+  {slug:'cemento',         name:'Cemento',          bg:'#B0AEA8', grad:''},
+  {slug:'gris-humo',       name:'Gris Humo',        bg:'#8A8E91', grad:''},
+  {slug:'humo',            name:'Humo',             bg:'#7A7E82', grad:''},
+  {slug:'roble-americano', name:'Roble Americano',  bg:'#8B6543',
+    grad:'linear-gradient(90deg,#9A7250 0%,#7A5535 12%,#9E7858 24%,#7A5535 36%,#9A7250 48%,#7E5838 60%,#9A7250 72%,#7A5535 84%,#9E7858 100%)'},
+  {slug:'roble-dallas',    name:'Roble Dallas',     bg:'#6B4A35',
+    grad:'linear-gradient(90deg,#7A5540 0%,#5E3F2C 12%,#7E5844 24%,#5E3F2C 36%,#7A5540 48%,#624235 60%,#7A5540 72%,#5E3F2C 84%,#7E5844 100%)'},
+  {slug:'caoba',           name:'Caoba',            bg:'#7A3C2A',
+    grad:'linear-gradient(90deg,#8A4C38 0%,#6A2E1E 12%,#8E5040 24%,#6A2E1E 36%,#8A4C38 48%,#6E3222 60%,#8A4C38 72%,#6A2E1E 84%,#8E5040 100%)'},
+  {slug:'wengue',          name:'Wengué',           bg:'#3A2820',
+    grad:'linear-gradient(90deg,#4A3428 0%,#2E1E16 12%,#4E382C 24%,#2E1E16 36%,#4A3428 48%,#32221A 60%,#4A3428 72%,#2E1E16 84%,#4E382C 100%)'},
+  {slug:'negro-profundo',  name:'Negro Profundo',   bg:'#2A2428', grad:''},
+];
+
+// ── Lead (B2B) ────────────────────────────────────────────────────
+let leadData=null;
+try{leadData=JSON.parse(localStorage.getItem('ins_lead')||'null');}catch(e){}
+let pendingLeadAction=null;
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function requireLead(action){
+  if(leadData){action();return;}
+  pendingLeadAction=action;
+  ['lead-name','lead-email','lead-company','lead-phone'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lead-role').value='';
+  document.getElementById('lead-err').style.display='none';
+  openModal('lead-modal');
+}
+function submitLead(){
+  const name=document.getElementById('lead-name').value.trim();
+  const email=document.getElementById('lead-email').value.trim();
+  const company=document.getElementById('lead-company').value.trim();
+  const phone=document.getElementById('lead-phone').value.trim();
+  const role=document.getElementById('lead-role').value;
+  const err=document.getElementById('lead-err');
+  if(!name||!email||!company||!role){err.textContent='Completá nombre, email, empresa y rol.';err.style.display='block';return;}
+  if(!email.includes('@')){err.textContent='Ingresá un email válido.';err.style.display='block';return;}
+  err.style.display='none';
+  leadData={name,email,company,phone,role};
+  try{localStorage.setItem('ins_lead',JSON.stringify(leadData));}catch(e){}
+  closeModal('lead-modal');
+  showToast('Bienvenido/a, '+name.split(' ')[0]+'.');
+  if(pendingLeadAction){pendingLeadAction();pendingLeadAction=null;}
+}
+
+// ── URL state serialization ───────────────────────────────────────
+function serializeState(source){
+  const base=window.location.href.split('?')[0];
+  const p=new URLSearchParams();
+  if(source==='preset'){
+    const code=document.getElementById('result-code').textContent;
+    if(code&&code!=='—'){p.set('v','p');p.set('code',code);}
+  }else{
+    if(selBase===null)return base;
+    p.set('v','c');p.set('base',String(selBase));
+    const active=customStones.filter(s=>s.pct>0);
+    if(active.length)p.set('s',active.map(s=>`${encodeURIComponent(s.name)}:${s.size}:${s.pct}`).join(','));
+  }
+  if(selFaplac)p.set('mb',selFaplac);
+  return base+'?'+p.toString();
+}
+function restoreFromUrl(){
+  const p=new URLSearchParams(window.location.search);
+  const v=p.get('v');
+  if(!v)return;
+  if(v==='p'){
+    const code=p.get('code');
+    const idx=PRESETS.findIndex(x=>x.code===code);
+    if(idx>=0){switchTab('presets',document.querySelectorAll('.tab')[0]);setTimeout(()=>selectPreset(idx),300);}
+  }else if(v==='c'){
+    const baseIdx=parseInt(p.get('base')??'-1');
+    const stonesStr=p.get('s')||'';
+    switchTab('custom',document.querySelectorAll('.tab')[1]);
+    setTimeout(()=>{
+      if(baseIdx>=0&&baseIdx<BASES.length){
+        selectBase(baseIdx);
+        if(stonesStr){
+          stonesStr.split(',').forEach(part=>{
+            const [rawName,size,pctStr]=part.split(':');
+            const name=decodeURIComponent(rawName);
+            const key=name+'_'+size;
+            const pct=parseInt(pctStr)||0;
+            if(!customStones.find(s=>s.key===key)&&customStones.length<7)
+              customStones.push({name,size,key,pct});
+          });
+          renderList();renderCustom();
+        }
+      }
+    },300);
+  }
+  const mb=p.get('mb');
+  if(mb&&FAPLAC.find(x=>x.slug===mb)){
+    setTimeout(()=>{
+      const body=document.getElementById('mb-body');const toggle=document.getElementById('mb-toggle');
+      body.classList.add('open');toggle.classList.add('open');
+      selectFaplac(mb);
+    },450);
+  }
+}
+
+// ── FormSubmit.co ─────────────────────────────────────────────────
+async function postToFormSubmit(payload){
+  const res=await fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_EMAIL}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  const data=await res.json();
+  if(!data.success)throw new Error('FormSubmit: '+JSON.stringify(data));
+  return data;
+}
+
+// ── Save design ───────────────────────────────────────────────────
+function saveDesign(source){
+  requireLead(()=>{
+    const url=serializeState(source);
+    try{history.replaceState(null,'',url);}catch(e){}
+    const code=source==='preset'?document.getElementById('result-code').textContent:'Mezcla personalizada';
+    const desc=source==='preset'?document.getElementById('result-desc').textContent:document.getElementById('custom-label').textContent;
+    postToFormSubmit({
+      _subject:`Diseño guardado: ${code} — ${leadData.name} (${leadData.company})`,
+      _template:'table',
+      Nombre:leadData.name,Email:leadData.email,Empresa:leadData.company,
+      Rol:leadData.role,Teléfono:leadData.phone||'—',
+      Diseño:`${code} · ${desc}`,'Link único':url,
+      'Combinación gabinetes':selFaplac?(FAPLAC.find(x=>x.slug===selFaplac)?.name||'—'):'—',
+    }).catch(()=>{});
+    document.getElementById('save-design-name').textContent=`${code} · ${desc}`;
+    document.getElementById('share-url').value=url;
+    const btn=document.getElementById('copy-btn');btn.textContent='Copiar';btn.classList.remove('copied');
+    openModal('save-modal');
+  });
+}
+function copyShareUrl(){
+  const input=document.getElementById('share-url');
+  navigator.clipboard?.writeText(input.value).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='¡Copiado!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2500);
+  }).catch(()=>{input.select();document.execCommand('copy');});
+}
+
+// ── Quote ─────────────────────────────────────────────────────────
+let quoteSource=null;
+function openQuote(source){
+  quoteSource=source;
+  const code=source==='preset'?document.getElementById('result-code').textContent:'Mezcla personalizada';
+  const desc=source==='preset'?document.getElementById('result-desc').textContent:document.getElementById('custom-label').textContent;
+  document.getElementById('quote-design-summary').textContent=`${code} · ${desc}`;
+  const hint=document.getElementById('quote-lead-hint');
+  const cf=document.getElementById('quote-contact-fields');
+  if(leadData){
+    hint.textContent=`${leadData.name} · ${leadData.company} · ${leadData.email}`;
+    hint.style.display='block';cf.style.display='none';
+  }else{
+    hint.style.display='none';cf.style.display='';
+    ['q-name','q-email','q-company','q-phone'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('q-role').value='';
+  }
+  document.getElementById('q-uso').value='';
+  document.getElementById('q-m2').value='';
+  document.getElementById('q-notas').value='';
+  document.getElementById('quote-err').style.display='none';
+  const btn=document.getElementById('quote-submit-btn');btn.disabled=false;btn.textContent='Enviar solicitud';
+  openModal('quote-modal');
+}
+async function submitQuote(){
+  const name=leadData?leadData.name:document.getElementById('q-name').value.trim();
+  const email=leadData?leadData.email:document.getElementById('q-email').value.trim();
+  const company=leadData?leadData.company:document.getElementById('q-company').value.trim();
+  const phone=leadData?(leadData.phone||''):document.getElementById('q-phone').value.trim();
+  const role=leadData?leadData.role:document.getElementById('q-role').value;
+  const uso=document.getElementById('q-uso').value;
+  const m2=document.getElementById('q-m2').value;
+  const notas=document.getElementById('q-notas').value.trim();
+  const err=document.getElementById('quote-err');
+  if(!name||!email||!company||!role){err.textContent='Completá todos los campos de contacto.';err.style.display='block';return;}
+  if(!uso){err.textContent='Seleccioná el uso del espacio.';err.style.display='block';return;}
+  if(!m2||parseFloat(m2)<=0){err.textContent='Ingresá la superficie en m².';err.style.display='block';return;}
+  err.style.display='none';
+  if(!leadData){leadData={name,email,company,phone,role};try{localStorage.setItem('ins_lead',JSON.stringify(leadData));}catch(e){}}
+  const source=quoteSource;
+  const code=source==='preset'?document.getElementById('result-code').textContent:'Mezcla personalizada';
+  const desc=source==='preset'?document.getElementById('result-desc').textContent:document.getElementById('custom-label').textContent;
+  const btn=document.getElementById('quote-submit-btn');btn.disabled=true;btn.textContent='Enviando…';
+  try{
+    await postToFormSubmit({
+      _subject:`Cotización: ${code} — ${name} (${company})`,
+      _template:'table',
+      Nombre:name,Empresa:company,Rol:role,Email:email,Teléfono:phone||'—',
+      Diseño:`${code} · ${desc}`,Uso:uso,Superficie:m2+' m²',Notas:notas||'—',
+      'Combinación gabinetes':selFaplac?(FAPLAC.find(x=>x.slug===selFaplac)?.name||'—'):'—',
+    });
+  }catch(e){console.warn('FormSubmit (non-fatal):',e);}
+  // WhatsApp redirect per spec (EN message)
+  const waMsg=`Hi InStone team, I just submitted a technical quote request from the web configurator under the name ${name} from ${company}.`;
+  closeModal('quote-modal');
+  showToast('Solicitud enviada — abriendo WhatsApp…');
+  setTimeout(()=>window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waMsg)}`,'_blank'),600);
+}
+
+// ── Moodboard ─────────────────────────────────────────────────────
+let selFaplac=null;
+function buildFaplac(){
+  const grid=document.getElementById('faplac-grid');
+  FAPLAC.forEach(f=>{
+    const card=document.createElement('div');card.className='faplac-swatch';card.id='fs_'+f.slug;
+    const colorDiv=document.createElement('div');colorDiv.className='faplac-color';
+    colorDiv.style.background=f.grad||f.bg;
+    const nameDiv=document.createElement('div');nameDiv.className='faplac-name';nameDiv.textContent=f.name;
+    card.appendChild(colorDiv);card.appendChild(nameDiv);
+    card.onclick=()=>selectFaplac(f.slug);
+    grid.appendChild(card);
+  });
+}
+function selectFaplac(slug){
+  if(selFaplac===slug){
+    selFaplac=null;
+    document.getElementById('fs_'+slug).classList.remove('selected');
+    updateMbPreview();return;
+  }
+  selFaplac=slug;
+  document.querySelectorAll('.faplac-swatch').forEach(s=>s.classList.remove('selected'));
+  document.getElementById('fs_'+slug).classList.add('selected');
+  updateMbPreview();
+}
+function updateMbPreview(){
+  const hint=document.getElementById('mb-hint');
+  const preview=document.getElementById('mb-preview');
+  if(!selFaplac){hint.style.display='';preview.style.display='none';return;}
+  const f=FAPLAC.find(x=>x.slug===selFaplac);
+  hint.style.display='none';preview.style.display='flex';
+  const cabinet=document.getElementById('mb-cabinet');
+  cabinet.style.background=f.grad||f.bg;
+  document.getElementById('mb-cabinet-label').textContent=f.name;
+  // Sync terrazzo thumbnail from whichever canvas is active
+  const isPresets=document.getElementById('tab-presets').style.display!=='none';
+  const activeCanvas=document.getElementById(isPresets?'result-canvas':'custom-canvas');
+  try{document.getElementById('mb-terrazzo-thumb').style.backgroundImage='url('+activeCanvas.toDataURL()+')';}catch(e){}
+}
+function toggleMoodboard(){
+  const body=document.getElementById('mb-body');
+  const toggle=document.getElementById('mb-toggle');
+  const open=body.classList.contains('open');
+  body.classList.toggle('open',!open);toggle.classList.toggle('open',!open);
+}
+
+// ── Toast ─────────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ── Rendering ─────────────────────────────────────────────────────
+function h2r(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function hash2(x,y){return Math.abs(Math.sin(x*127.1+y*311.7)*43758.5453)%1}
+function vnoise(x,y){
+  const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy;
+  const ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy);
+  const a=hash2(ix,iy),b=hash2(ix+1,iy),c=hash2(ix,iy+1),d=hash2(ix+1,iy+1);
+  return(a+(b-a)*ux)+(c-a+(a-b-c+d)*ux)*uy;
+}
+function fbm(x,y,o){let v=0,a=.5,f=1;for(let i=0;i<o;i++){v+=vnoise(x*f,y*f)*a;a*=.5;f*=2.1;}return v;}
+function angularPath(ctx,cx,cy,rx,ry,seed){
+  const sides=Math.floor(4+hash2(seed,seed*1.3)*4);
+  const ba=hash2(seed*2.1,seed*.7)*Math.PI*2;
+  const pts=[];
+  for(let i=0;i<sides;i++){
+    const t=i/sides;
+    const angle=ba+t*Math.PI*2+(hash2(seed+i*.37,seed*1.9+i)-.5)*(Math.PI*2/sides)*0.6;
+    const rf=0.55+Math.random()*0.45;
+    pts.push([cx+Math.cos(angle)*rx*rf,cy+Math.sin(angle)*ry*rf]);
+  }
+  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
+  ctx.closePath();
+}
+function makePlacer(){
+  const cell=20,gw=Math.ceil(RS/cell),gh=Math.ceil(RS/cell);
+  const grid=Array.from({length:gw*gh},()=>[]);
+  function gcells(x,y,r){
+    const x1=Math.max(0,Math.floor((x-r)/cell)),x2=Math.min(gw-1,Math.floor((x+r)/cell));
+    const y1=Math.max(0,Math.floor((y-r)/cell)),y2=Math.min(gh-1,Math.floor((y+r)/cell));
+    const out=[];for(let gx=x1;gx<=x2;gx++)for(let gy=y1;gy<=y2;gy++)out.push(gx+gy*gw);
+    return out;
+  }
+  return{
+    overlaps(x,y,r){for(const c of gcells(x,y,r))for(const p of grid[c]){const dx=p.x-x,dy=p.y-y,md=p.r+r+1;if(dx*dx+dy*dy<md*md)return true;}return false;},
+    add(x,y,r,d){const s={x,y,r,...d};for(const c of gcells(x,y,r))grid[c].push(s);}
+  };
+}
+function renderTerrazzo(canvas,baseHex,stonesArr){
+  const ctx=canvas.getContext('2d');canvas.width=RS;canvas.height=RS;
+  const [br,bg,bb]=h2r(baseHex);
+  const id=ctx.createImageData(RS,RS);const d=id.data;const sc=0.006;
+  for(let y=0;y<RS;y++)for(let x=0;x<RS;x++){
+    const n=fbm(x*sc,y*sc,5),n2=fbm(x*sc*4+30,y*sc*4+70,3);
+    const g=(n-.5)*26+(n2-.5)*11,i=(y*RS+x)*4;
+    d[i]=clamp(br+g,0,255);d[i+1]=clamp(bg+g,0,255);d[i+2]=clamp(bb+g,0,255);d[i+3]=255;
+  }
+  ctx.putImageData(id,0,0);
+  const active=stonesArr.filter(s=>s.pct>0);if(!active.length)return;
+  const totalPct=active.reduce((a,s)=>a+s.pct,0);const totalArea=RS*RS*TOTAL_COVERAGE;
+  const specs=active.map(s=>{
+    const sp=SZP[s.size];const avgR=(sp.minR+sp.maxR)/2;
+    const avgStoneArea=Math.PI*avgR*avgR*0.65;
+    const count=Math.max(1,Math.round(totalArea*(s.pct/totalPct)/avgStoneArea));
+    return{s,sp,count};
+  }).sort((a,b)=>b.sp.maxR-a.sp.maxR);
+  const placer=makePlacer();const all=[];
+  specs.forEach(({s,sp,count},si)=>{
+    let placed=0;const maxTries=count*20;
+    for(let i=0;i<maxTries&&placed<count;i++){
+      const rx=sp.minR+Math.random()*(sp.maxR-sp.minR);
+      const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
+      if(pad*2>=RS)continue;
+      const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
+      if(!placer.overlaps(x,y,md*0.82)){placer.add(x,y,md*0.82,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+    }
+  });
+  all.sort((a,b)=>b.r-a.r);
+  all.forEach(p=>{
+    const st=STONES.find(s=>s.name===p.st.name)||STONES[0];
+    const [r,g,b]=h2r(st.h),[r2,g2,b2]=h2r(st.h2),[r3,g3,b3]=h2r(st.h3);const seed=p.seed;
+    ctx.save();angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+    const an=hash2(seed*.3,seed*.7)*Math.PI*2,dx=Math.cos(an)*p.rx,dy=Math.sin(an)*p.ry;
+    const grd=ctx.createLinearGradient(p.x-dx*.55,p.y-dy*.55,p.x+dx*.55,p.y+dy*.55);
+    const cv=(hash2(seed*1.1,seed*.5)-.5)*20;
+    grd.addColorStop(0,`rgb(${clamp(r+cv+14,0,255)},${clamp(g+cv+14,0,255)},${clamp(b+cv+14,0,255)})`);
+    grd.addColorStop(.5,`rgb(${clamp(r+cv,0,255)},${clamp(g+cv,0,255)},${clamp(b+cv,0,255)})`);
+    grd.addColorStop(1,`rgb(${r2},${g2},${b2})`);
+    ctx.fillStyle=grd;ctx.fill();
+    ctx.save();angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.clip();
+    const nv=Math.floor(hash2(seed*.8,seed*1.2)*3)+1;
+    for(let v=0;v<nv;v++){
+      const va=hash2(seed+v*.41,seed*1.7+v)*Math.PI;
+      const vox=(hash2(seed+v,seed*.6+v)-.5)*p.rx*.7,voy=(hash2(seed*1.3+v,seed+v*.3)-.5)*p.ry*.7;
+      const vl=Math.max(p.rx,p.ry)*(.3+hash2(seed+v*.2,v)*.6);
+      const bright=hash2(seed+v*7.3,seed*.4+v)>.45;
+      ctx.beginPath();ctx.moveTo(p.x+vox-Math.cos(va)*vl,p.y+voy-Math.sin(va)*vl);ctx.lineTo(p.x+vox+Math.cos(va)*vl,p.y+voy+Math.sin(va)*vl);
+      ctx.strokeStyle=bright?`rgba(255,255,255,${.08+hash2(seed*2+v,v)*.14})`:`rgba(${r3},${g3},${b3},${.18+hash2(seed+v*3,v*.7)*.25})`;
+      ctx.lineWidth=.3+hash2(seed*3+v,seed+v*.8);ctx.stroke();
+    }
+    ctx.restore();
+    angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+    ctx.strokeStyle=`rgba(${clamp(r3-20,0,255)},${clamp(g3-20,0,255)},${clamp(b3-20,0,255)},0.65)`;
+    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.05,.5,1.6);ctx.stroke();
+    angularPath(ctx,p.x,p.y,p.rx*1.07,p.ry*1.07,seed);
+    ctx.strokeStyle=`rgba(${clamp(br-12,0,255)},${clamp(bg-12,0,255)},${clamp(bb-12,0,255)},0.38)`;
+    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.09,.8,2.2);ctx.stroke();
+    angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.save();ctx.clip();
+    const hg=ctx.createLinearGradient(p.x-p.rx*.5,p.y-p.ry*.5,p.x+p.rx*.3,p.y+p.ry*.3);
+    hg.addColorStop(0,'rgba(255,255,255,0.20)');hg.addColorStop(.35,'rgba(255,255,255,0.06)');hg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=hg;ctx.fillRect(p.x-p.rx-2,p.y-p.ry-2,p.rx*2+4,p.ry*2+4);ctx.restore();ctx.restore();
+  });
+  const sheen=ctx.createLinearGradient(0,0,RS*.45,RS*.45);
+  sheen.addColorStop(0,'rgba(255,255,255,0.055)');sheen.addColorStop(.4,'rgba(255,255,255,0.02)');sheen.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=sheen;ctx.fillRect(0,0,RS,RS);
+}
+
+function buildPresetGrid(){
+  const grid=document.getElementById('presets-grid');
+  PRESETS.forEach((p,i)=>{
+    const card=document.createElement('div');card.className='preset-card';
+    const cnv=document.createElement('canvas');cnv.className='preset-canvas';cnv.width=320;cnv.height=320;
+    const lbl=document.createElement('div');lbl.className='preset-label';lbl.textContent=p.code;
+    card.appendChild(cnv);card.appendChild(lbl);card.onclick=()=>selectPreset(i);
+    grid.appendChild(card);setTimeout(()=>renderTerrazzo(cnv,p.baseHex,p.stones),i*60);
+  });
+}
+function selectPreset(i){
+  document.querySelectorAll('.preset-card').forEach((c,j)=>c.classList.toggle('selected',j===i));
+  const p=PRESETS[i];const result=document.getElementById('preset-result');result.style.display='block';
+  document.getElementById('result-code').textContent=p.code;
+  const desc=p.stones.length?`Base ${p.baseName.toLowerCase()} · `+p.stones.map(s=>`${s.pct}% ${s.name.toLowerCase()} ${SZP[s.size].label}`).join(' · '):`Base ${p.baseName.toLowerCase()} · pasta pura`;
+  document.getElementById('result-desc').textContent=desc;
+  renderTerrazzo(document.getElementById('result-canvas'),p.baseHex,p.stones);
+  const msg=encodeURIComponent(`Hola! Me interesa el terrazzo *${p.code}* (${desc}). ¿Pueden darme más información?`);
+  document.getElementById('wa-link').href=`https://wa.me/${WA_NUMBER}?text=${msg}`;
+  result.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(selFaplac)updateMbPreview();
+}
+
+let selBase=null,customStones=[];
+function buildBaseGrid(){
+  const g=document.getElementById('base-grid');
+  BASES.forEach((b,i)=>{
+    const el=document.createElement('div');el.className='bsw';el.style.background=b.hex;el.title=b.name;
+    el.onclick=()=>selectBase(i);g.appendChild(el);
+  });
+}
+function selectBase(i){
+  selBase=i;document.querySelectorAll('.bsw').forEach((e,j)=>e.classList.toggle('on',j===i));
+  document.getElementById('bname').textContent=BASES[i].name;renderCustom();
+}
+function buildStonePicker(){
+  const s=document.getElementById('spick');
+  STONES.forEach(st=>{const o=document.createElement('option');o.value=st.name;o.textContent=st.name;s.appendChild(o);});
+}
+function addStone(){
+  const name=document.getElementById('spick').value,size=document.getElementById('szpick').value;
+  const key=name+'_'+size;
+  if(customStones.find(s=>s.key===key)||customStones.length>=7)return;
+  customStones.push({name,size,key,pct:0});renderList();renderCustom();
+}
+function removeStone(key){customStones=customStones.filter(s=>s.key!==key);renderList();renderCustom();}
+function renderList(){
+  const c=document.getElementById('slist');c.innerHTML='';
+  customStones.forEach(s=>{
+    const sk=s.key.replace(/[^a-zA-Z0-9]/g,'_');const sd=STONES.find(x=>x.name===s.name)||STONES[0];
+    const row=document.createElement('div');row.className='stone-row';
+    row.innerHTML=`<div class="sdot" style="background:${sd.h}"></div>
+    <div class="si"><span class="snl">${s.name}</span><span class="ssl">${SZP[s.size].label}</span></div>
+    <input type="range" min="0" max="100" step="1" value="${s.pct}" oninput="updatePct('${s.key}',this.value)">
+    <span class="spct" id="p_${sk}">${s.pct}%</span>
+    <button class="rbtn" onclick="removeStone('${s.key}')">✕</button>`;
+    c.appendChild(row);
+  });updateTot();
+}
+function updatePct(key,val){
+  const s=customStones.find(s=>s.key===key);if(!s)return;s.pct=parseInt(val);
+  const el=document.getElementById('p_'+key.replace(/[^a-zA-Z0-9]/g,'_'));
+  if(el)el.textContent=val+'%';updateTot();renderCustom();
+}
+function updateTot(){
+  const tot=customStones.reduce((a,s)=>a+s.pct,0);const el=document.getElementById('tot');
+  if(!customStones.length){el.textContent='';return;}
+  el.textContent=`Total piedras: ${tot}%`;el.className='totrow '+(tot===100?'tok':tot>100?'terr':'');
+}
+function renderCustom(){
+  const canvas=document.getElementById('custom-canvas');
+  if(selBase===null){
+    const ctx=canvas.getContext('2d');canvas.width=RS;canvas.height=RS;ctx.fillStyle='#E8E4DC';ctx.fillRect(0,0,RS,RS);return;
+  }
+  renderTerrazzo(canvas,BASES[selBase].hex,customStones);
+  const parts=customStones.filter(s=>s.pct>0).map(s=>`${s.pct}% ${s.name.toLowerCase()} ${SZP[s.size].label}`);
+  document.getElementById('custom-label').textContent=parts.length?`${BASES[selBase].name} · ${parts.join(' · ')}`:BASES[selBase].name;
+  const desc=parts.length?`Base ${BASES[selBase].name.toLowerCase()} · ${parts.join(' · ')}`:`Base ${BASES[selBase].name.toLowerCase()}`;
+  const msg=encodeURIComponent(`Hola! Me gustaría consultar por un terrazzo personalizado: ${desc}. ¿Es posible hacerlo?`);
+  document.getElementById('custom-wa').href=`https://wa.me/${WA_NUMBER}?text=${msg}`;
+  if(selFaplac)updateMbPreview();
+}
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('tab-presets').style.display=tab==='presets'?'block':'none';
+  document.getElementById('tab-custom').style.display=tab==='custom'?'block':'none';
+  if(selFaplac)setTimeout(updateMbPreview,50);
+}
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);});
+});
+
+buildPresetGrid();buildBaseGrid();buildStonePicker();buildFaplac();restoreFromUrl();
+</script>
+</body>
+</html>
