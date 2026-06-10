@@ -136,8 +136,8 @@ button.abtn:hover{background:#f5f5f5}
   <h1>Configurador de terrazzo</h1>
   <p class="subtitle">Elegí una mezcla existente o creá la tuya</p>
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('presets',this)">Muestras del catálogo</button>
-    <button class="tab" onclick="switchTab('custom',this)">Crear mezcla</button>
+    <button type="button" class="tab active" onclick="switchTab('presets',this)">Muestras del catálogo</button>
+    <button type="button" class="tab" onclick="switchTab('custom',this)">Crear mezcla</button>
   </div>
   <div id="tab-presets">
     <div class="presets-grid" id="presets-grid"></div>
@@ -153,12 +153,12 @@ button.abtn:hover{background:#f5f5f5}
             Consultar por WhatsApp
           </a>
           <div class="action-row">
-            <button class="act-btn" onclick="saveDesign('preset')">
+            <button type="button" class="act-btn" onclick="saveDesign('preset')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               Guardar diseño
             </button>
           </div>
-          <button class="quote-btn" onclick="openQuote('preset')">
+          <button type="button" class="quote-btn" onclick="openQuote('preset')">
             <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
             Solicitar cotización
           </button>
@@ -181,7 +181,7 @@ button.abtn:hover{background:#f5f5f5}
             <option value="2" selected>N°2/3 · 5-15mm</option>
             <option value="5">N°5 · ~30mm</option>
           </select>
-          <button class="abtn" onclick="addStone()">+ Agregar</button>
+          <button type="button" class="abtn" onclick="addStone()">+ Agregar</button>
         </div>
         <div class="totrow" id="tot"></div>
       </div>
@@ -194,12 +194,12 @@ button.abtn:hover{background:#f5f5f5}
             Consultar mezcla personalizada
           </a>
           <div class="action-row" style="justify-content:center">
-            <button class="act-btn" onclick="saveDesign('custom')">
+            <button type="button" class="act-btn" onclick="saveDesign('custom')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               Guardar diseño
             </button>
           </div>
-          <button class="quote-btn" onclick="openQuote('custom')">
+          <button type="button" class="quote-btn" onclick="openQuote('custom')">
             <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
             Solicitar cotización
           </button>
@@ -221,9 +221,9 @@ button.abtn:hover{background:#f5f5f5}
       <!-- Scene Viewer: Pre-rendered Fixed Scene with dynamic canvas zones -->
       <div class="scene-wrap" id="scene-wrap" style="display:none">
         <div class="scene-controls">
-          <button class="scene-tab scene-tab-active" onclick="switchScene('cocina',this)">Cocina</button>
-          <button class="scene-tab" onclick="switchScene('mesa',this)">Mesa redonda</button>
-          <button class="scene-tab" onclick="switchScene('diseno',this)">Mesa diseño</button>
+          <button type="button" class="scene-tab scene-tab-active" onclick="switchScene('cocina',this)">Cocina</button>
+          <button type="button" class="scene-tab" onclick="switchScene('mesa',this)">Mesa redonda</button>
+          <button type="button" class="scene-tab" onclick="switchScene('diseno',this)">Mesa diseño</button>
           <span class="scene-hint-txt" id="scene-hint-txt">Cocina · Mesada y revestimiento</span>
         </div>
         <div class="scene-viewport" id="scene-viewport">
@@ -283,8 +283,8 @@ button.abtn:hover{background:#f5f5f5}
       </select>
     </div>
     <div class="merr" id="lead-err"></div>
-    <button class="mbtn" onclick="submitLead()">Continuar</button>
-    <button class="mskip" onclick="closeModal('lead-modal')">Ahora no</button>
+    <button type="button" class="mbtn" onclick="submitLead()">Continuar</button>
+    <button type="button" class="mskip" onclick="closeModal('lead-modal')">Ahora no</button>
   </div>
 </div>
 
@@ -349,8 +349,8 @@ button.abtn:hover{background:#f5f5f5}
       <textarea id="q-notas" placeholder="Ej: piso existente, escalones, medidas exactas..."></textarea>
     </div>
     <div class="merr" id="quote-err"></div>
-    <button class="mbtn" id="quote-submit-btn" onclick="submitQuote()">Enviar solicitud</button>
-    <button class="mskip" onclick="closeModal('quote-modal')">Cancelar</button>
+    <button type="button" class="mbtn" id="quote-submit-btn" onclick="submitQuote()">Enviar solicitud</button>
+    <button type="button" class="mskip" onclick="closeModal('quote-modal')">Cancelar</button>
   </div>
 </div>
 
@@ -366,10 +366,10 @@ button.abtn:hover{background:#f5f5f5}
       <p>Link único de tu diseño:</p>
       <div class="share-row">
         <input type="text" class="share-input" id="share-url" readonly>
-        <button class="copy-btn" id="copy-btn" onclick="copyShareUrl()">Copiar</button>
+        <button type="button" class="copy-btn" id="copy-btn" onclick="copyShareUrl()">Copiar</button>
       </div>
     </div>
-    <button class="mbtn" style="margin-top:16px" onclick="closeModal('save-modal')">Cerrar</button>
+    <button type="button" class="mbtn" style="margin-top:16px" onclick="closeModal('save-modal')">Cerrar</button>
   </div>
 </div>
 
@@ -1043,7 +1043,7 @@ function renderList(){
     <div class="si"><span class="snl">${s.name}</span><span class="ssl">${SZP[s.size].label}</span></div>
     <input type="range" min="0" max="100" step="1" value="${s.pct}" oninput="updatePct('${s.key}',this.value)">
     <span class="spct" id="p_${sk}">${s.pct}%</span>
-    <button class="rbtn" onclick="removeStone('${s.key}')">✕</button>`;
+    <button type="button" class="rbtn" onclick="removeStone('${s.key}')">✕</button>`;
     c.appendChild(row);
   });updateTot();
 }
