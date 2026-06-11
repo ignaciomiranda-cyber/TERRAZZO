@@ -675,8 +675,8 @@ const PHOTO_SCENES={
     file:'18074416195165518452.jpg',imgW:820,imgH:1024,
     hint:'Ambiente · Vista general',hasFaplac:false,
     terrazzo:[
-      // ellipse mask — calibrated via calibrador-elipse tool
-      {kind:'ellipse',cx:.495,cy:.512,rx:.208,ry:.412,rotation:(4.5*Math.PI)/180,blend:.88,realWidthMm:800},
+      // ellipse mask — enlarged to cover full table surface
+      {kind:'ellipse',cx:.495,cy:.512,rx:.44,ry:.46,rotation:(4.5*Math.PI)/180,blend:.88,realWidthMm:800},
     ],
   },
 };
@@ -718,20 +718,10 @@ function applyPatternInQuad(ctx,src,corners,W,H,blend,realWidthMm){
 
 function applyPatternInEllipse(ctx,src,surf,W,H,blend,realWidthMm){
   const cx=surf.cx*W,cy=surf.cy*H,rx=surf.rx*W,ry=surf.ry*H;
-  const scale=Math.max(.001,(rx*2/realWidthMm)/(RS/500));
   ctx.save();
   ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
-  const pat=ctx.createPattern(src,'repeat');
-  if(pat&&typeof DOMMatrix!=='undefined'){
-    // Centre the repeat on the ellipse
-    const tileW=scale*RS;
-    const ox=cx-Math.round(cx/tileW)*tileW;
-    const oy=cy-Math.round(cy/tileW)*tileW;
-    try{pat.setTransform(new DOMMatrix([scale,0,0,scale,ox,oy]));}catch(e){}
-  }
-  ctx.fillStyle=pat||'#888';
-  ctx.fillRect(0,0,W,H);
+  ctx.drawImage(src,cx-rx,cy-ry,rx*2,ry*2);
   // edge shadow + sheen
   const ed=ctx.createRadialGradient(cx,cy,Math.min(rx,ry)*.7,cx,cy,Math.max(rx,ry)*1.05);
   ed.addColorStop(0,'rgba(255,255,255,.05)');ed.addColorStop(.7,'rgba(255,255,255,.01)');ed.addColorStop(1,'rgba(0,0,0,.14)');
