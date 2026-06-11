@@ -221,10 +221,8 @@ button.abtn:hover{background:#f5f5f5}
       <!-- Scene Viewer: Pre-rendered Fixed Scene with dynamic canvas zones -->
       <div class="scene-wrap" id="scene-wrap" style="display:none">
         <div class="scene-controls">
-          <button type="button" class="scene-tab scene-tab-active" onclick="switchScene('cocina',this)">Cocina</button>
-          <button type="button" class="scene-tab" onclick="switchScene('mesa',this)">Mesa redonda</button>
-          <button type="button" class="scene-tab" onclick="switchScene('diseno',this)">Mesa diseño</button>
-          <span class="scene-hint-txt" id="scene-hint-txt">Cocina · Mesada y revestimiento</span>
+          <button type="button" class="scene-tab scene-tab-active" onclick="switchScene('ambiente',this)">Ambiente</button>
+          <span class="scene-hint-txt" id="scene-hint-txt">Ambiente · Vista general</span>
         </div>
         <div class="scene-viewport" id="scene-viewport">
           <canvas id="scene-photo-canvas"></canvas>
@@ -668,41 +666,17 @@ function selectFaplac(slug){
   updateMbPreview();
 }
 // ── Photo Scene Viewer ────────────────────────────────────────────
-let selScene='cocina';
+let selScene='ambiente';
 // Surface coords are normalised 0..1 relative to (imgW, imgH).
 // Quad corners order: TL, TR, BR, BL.
 // realWidthMm = true width of the surface for tile-scale calculation.
 const PHOTO_SCENES={
-  cocina:{
-    file:'cocina-ambiente.jpg.webp?v=2',imgW:1024,imgH:1536,
-    hint:'Cocina · Mesada y revestimiento',hasFaplac:true,
+  ambiente:{
+    file:'18074416195165518452.jpg',imgW:820,imgH:1024,
+    hint:'Ambiente · Vista general',hasFaplac:false,
     terrazzo:[
-      // backsplash — near-frontal rectangle
-      {kind:'quad',corners:[[0,.28],[1,.28],[1,.87],[0,.87]],blend:.86,realWidthMm:2400},
-      // countertop thin strip, slight trapezoid (wider at front)
-      {kind:'quad',corners:[[-.02,.87],[1.02,.87],[1.05,.96],[-.05,.96]],blend:.91,realWidthMm:2400},
-    ],
-    faplac:[
-      // upper cabinets
-      {kind:'quad',corners:[[0,0],[1,0],[1,.27],[0,.27]]},
-    ],
-  },
-  mesa:{
-    file:'mesa-ambiente.jpg.jpg?v=2',imgW:736,imgH:1104,
-    hint:'Mesa redonda · Vista aérea',hasFaplac:false,
-    terrazzo:[
-      // round dining table top — ellipse, viewed from elevated angle
-      {kind:'ellipse',cx:.50,cy:.40,rx:.44,ry:.24,blend:.88,realWidthMm:1350},
-    ],
-  },
-  diseno:{
-    file:'mesa-ambienteop2.jpg.jpg?v=2',imgW:793,imgH:703,
-    hint:'Mesa lateral · Tapa y base',hasFaplac:false,
-    terrazzo:[
-      // table top — very flat ellipse (side view)
-      {kind:'ellipse',cx:.50,cy:.17,rx:.44,ry:.085,blend:.88,realWidthMm:700},
-      // cylindrical base — rectangular strip
-      {kind:'quad',corners:[[.38,.26],[.62,.26],[.62,.76],[.38,.76]],blend:.84,realWidthMm:220},
+      // ellipse mask — calibrated via calibrador-elipse tool
+      {kind:'ellipse',cx:.495,cy:.512,rx:.208,ry:.412,rotation:(4.5*Math.PI)/180,blend:.88,realWidthMm:800},
     ],
   },
 };
@@ -746,7 +720,7 @@ function applyPatternInEllipse(ctx,src,surf,W,H,blend,realWidthMm){
   const cx=surf.cx*W,cy=surf.cy*H,rx=surf.rx*W,ry=surf.ry*H;
   const scale=Math.max(.001,(rx*2/realWidthMm)/(RS/500));
   ctx.save();
-  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.clip();
+  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
   const pat=ctx.createPattern(src,'repeat');
   if(pat&&typeof DOMMatrix!=='undefined'){
