@@ -720,12 +720,13 @@ function applyPatternInEllipse(ctx,src,surf,W,H,blend){
   ctx.save();
   ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
-  const sw=src.width,sh=src.height;
+  const scale=0.5;
+  const sw=Math.round(src.width*scale),sh=Math.round(src.height*scale);
   const startX=Math.floor((cx-rx)/sw)*sw;
   const startY=Math.floor((cy-ry)/sh)*sh;
   for(let x=startX;x<cx+rx;x+=sw){
     for(let y=startY;y<cy+ry;y+=sh){
-      ctx.drawImage(src,x,y,sw,sh);
+      ctx.drawImage(src,0,0,src.width,src.height,x,y,sw,sh);
     }
   }
   ctx.globalAlpha=1;
