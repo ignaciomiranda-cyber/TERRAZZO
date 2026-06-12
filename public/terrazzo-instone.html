@@ -715,16 +715,20 @@ function applyPatternInQuad(ctx,src,corners,W,H,blend,realWidthMm){
   ctx.restore();
 }
 
-function applyPatternInEllipse(ctx,src,surf,W,H,blend,realWidthMm){
+function applyPatternInEllipse(ctx,src,surf,W,H,blend){
   const cx=surf.cx*W,cy=surf.cy*H,rx=surf.rx*W,ry=surf.ry*H;
   ctx.save();
   ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
-  ctx.drawImage(src,0,0,src.width,src.height,0,0,W,H);
-  // edge shadow + sheen
-  const ed=ctx.createRadialGradient(cx,cy,Math.min(rx,ry)*.7,cx,cy,Math.max(rx,ry)*1.05);
-  ed.addColorStop(0,'rgba(255,255,255,.05)');ed.addColorStop(.7,'rgba(255,255,255,.01)');ed.addColorStop(1,'rgba(0,0,0,.14)');
-  ctx.globalAlpha=1;ctx.fillStyle=ed;ctx.fillRect(0,0,W,H);
+  const sw=src.width,sh=src.height;
+  const startX=Math.floor((cx-rx)/sw)*sw;
+  const startY=Math.floor((cy-ry)/sh)*sh;
+  for(let x=startX;x<cx+rx;x+=sw){
+    for(let y=startY;y<cy+ry;y+=sh){
+      ctx.drawImage(src,x,y,sw,sh);
+    }
+  }
+  ctx.globalAlpha=1;
   ctx.restore();
 }
 
@@ -932,15 +936,15 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
       const bright=hash2(seed+v*7.3,seed*.4+v)>.45;
       ctx.beginPath();ctx.moveTo(p.x+vox-Math.cos(va)*vl,p.y+voy-Math.sin(va)*vl);ctx.lineTo(p.x+vox+Math.cos(va)*vl,p.y+voy+Math.sin(va)*vl);
       ctx.strokeStyle=bright?`rgba(255,255,255,${.08+hash2(seed*2+v,v)*.14})`:`rgba(${r3},${g3},${b3},${.18+hash2(seed+v*3,v*.7)*.25})`;
-      ctx.lineWidth=.3+hash2(seed*3+v,seed+v*.8);ctx.stroke();
+      ctx.lineWidth=.3+hash2(seed*3+v,seed+v*.8);
     }
     ctx.restore();
     angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);
     ctx.strokeStyle=`rgba(${clamp(r3-20,0,255)},${clamp(g3-20,0,255)},${clamp(b3-20,0,255)},0.65)`;
-    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.05,.5,1.6);ctx.stroke();
+    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.05,.5,1.6);
     angularPath(ctx,p.x,p.y,p.rx*1.07,p.ry*1.07,seed);
     ctx.strokeStyle=`rgba(${clamp(br-12,0,255)},${clamp(bg-12,0,255)},${clamp(bb-12,0,255)},0.38)`;
-    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.09,.8,2.2);ctx.stroke();
+    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.09,.8,2.2);
     angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.save();ctx.clip();
     const hg=ctx.createLinearGradient(p.x-p.rx*.5,p.y-p.ry*.5,p.x+p.rx*.3,p.y+p.ry*.3);
     hg.addColorStop(0,'rgba(255,255,255,0.20)');hg.addColorStop(.35,'rgba(255,255,255,0.06)');hg.addColorStop(1,'rgba(255,255,255,0)');
