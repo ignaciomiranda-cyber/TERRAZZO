@@ -720,7 +720,7 @@ function applyPatternInEllipse(ctx,src,surf,W,H,blend,realWidthMm){
   ctx.save();
   ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
-  ctx.drawImage(src,0,0,W,H);
+  ctx.drawImage(src,0,0,src.width,src.height,0,0,W,H);
   // edge shadow + sheen
   const ed=ctx.createRadialGradient(cx,cy,Math.min(rx,ry)*.7,cx,cy,Math.max(rx,ry)*1.05);
   ed.addColorStop(0,'rgba(255,255,255,.05)');ed.addColorStop(.7,'rgba(255,255,255,.01)');ed.addColorStop(1,'rgba(0,0,0,.14)');
