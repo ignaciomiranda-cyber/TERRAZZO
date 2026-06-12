@@ -428,9 +428,9 @@ const STONES=[
   {name:"Beige mármol",h:"#CCBEA0",h2:"#B0A284",h3:"#96886A"},
   {name:"Naranja",     h:"#C46A38",h2:"#A05228",h3:"#7E3C18"},
 ];
-const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"5":{minR:30,maxR:56,label:"N°5"}};
+const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"3":{minR:14,maxR:22,label:"N°3"},"5":{minR:30,maxR:56,label:"N°5"}};
 const RS=640;
-const TOTAL_COVERAGE=0.75;
+const TOTAL_COVERAGE=0.88;
 
 const FAPLAC=[
   {slug:'blanco-polar',    name:'Blanco Polar',     bg:'#F2F0EC', grad:''},
@@ -905,7 +905,7 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
       const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
       if(pad*2>=RS)continue;
       const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md*0.82)){placer.add(x,y,md*0.82,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+      if(!placer.overlaps(x,y,md*0.72)){placer.add(x,y,md*0.72,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
     }
   });
   all.sort((a,b)=>b.r-a.r);
