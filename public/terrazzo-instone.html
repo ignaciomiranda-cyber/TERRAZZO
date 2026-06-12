@@ -675,7 +675,7 @@ const PHOTO_SCENES={
     file:'5873311b-350c-4f74-9e54-e43ff8ee2d40.jpg',imgW:819,imgH:1024,
     hint:'Ambiente · Vista general',hasFaplac:false,
     terrazzo:[
-      {kind:'ellipse',cx:.503,cy:.515,rx:.415,ry:.333,rotation:0,blend:.88,realWidthMm:800},
+      {kind:'ellipse',cx:.503,cy:.515,rx:.415,ry:.340,rotation:0,blend:.88,realWidthMm:800},
     ],
   },
 };
@@ -720,7 +720,7 @@ function applyPatternInEllipse(ctx,src,surf,W,H,blend,realWidthMm){
   ctx.save();
   ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
-  ctx.drawImage(src,cx-rx,cy-ry,rx*2,ry*2);
+  ctx.drawImage(src,0,0,W,H);
   // edge shadow + sheen
   const ed=ctx.createRadialGradient(cx,cy,Math.min(rx,ry)*.7,cx,cy,Math.max(rx,ry)*1.05);
   ed.addColorStop(0,'rgba(255,255,255,.05)');ed.addColorStop(.7,'rgba(255,255,255,.01)');ed.addColorStop(1,'rgba(0,0,0,.14)');
