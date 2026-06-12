@@ -675,7 +675,7 @@ const PHOTO_SCENES={
     file:'5873311b-350c-4f74-9e54-e43ff8ee2d40.jpg',imgW:819,imgH:1024,
     hint:'Ambiente · Vista general',hasFaplac:false,
     terrazzo:[
-      {kind:'ellipse',cx:.503,cy:.515,rx:.402,ry:.322,rotation:0,blend:.88,realWidthMm:800},
+      {kind:'ellipse',cx:.503,cy:.515,rx:.415,ry:.333,rotation:0,blend:.88,realWidthMm:800},
     ],
   },
 };
@@ -737,11 +737,11 @@ function renderPhotoScene(){
   if(!img||!img.complete||!img.naturalWidth)return;
 
   const dpr=window.devicePixelRatio||1;
-  const dispW=Math.max(1,canvas.clientWidth||canvas.offsetWidth||600);
-  const dispH=Math.round(dispW*cfg.imgH/cfg.imgW);
+  const dispW=cfg.imgW;
+  const dispH=cfg.imgH;
   canvas.width=Math.round(dispW*dpr);
   canvas.height=Math.round(dispH*dpr);
-  // Maintain intrinsic size via CSS (canvas height auto is driven by the attribute)
+  canvas.style.width=dispW+'px';
   canvas.style.height=dispH+'px';
 
   const ctx=canvas.getContext('2d');
