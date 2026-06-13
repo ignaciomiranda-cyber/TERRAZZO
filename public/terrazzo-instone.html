@@ -221,8 +221,10 @@ button.abtn:hover{background:#f5f5f5}
       <!-- Scene Viewer: Pre-rendered Fixed Scene with dynamic canvas zones -->
       <div class="scene-wrap" id="scene-wrap" style="display:none">
         <div class="scene-controls">
-          <button type="button" class="scene-tab scene-tab-active" onclick="switchScene('ambiente',this)">Ambiente</button>
-          <span class="scene-hint-txt" id="scene-hint-txt">Ambiente · Vista general</span>
+          <button type="button" class="scene-tab scene-tab-active" onclick="switchScene('cocina',this)">Cocina</button>
+          <button type="button" class="scene-tab" onclick="switchScene('mesa',this)">Mesa redonda</button>
+          <button type="button" class="scene-tab" onclick="switchScene('diseno',this)">Mesa diseño</button>
+          <span class="scene-hint-txt" id="scene-hint-txt">Cocina · Mesada y revestimiento</span>
         </div>
         <div class="scene-viewport" id="scene-viewport">
           <canvas id="scene-photo-canvas"></canvas>
@@ -428,9 +430,9 @@ const STONES=[
   {name:"Beige mármol",h:"#CCBEA0",h2:"#B0A284",h3:"#96886A"},
   {name:"Naranja",     h:"#C46A38",h2:"#A05228",h3:"#7E3C18"},
 ];
-const SZP={"1":{minR:3,maxR:7,label:"N°1"},"2":{minR:7,maxR:14,label:"N°2"},"3":{minR:10,maxR:18,label:"N°3"},"5":{minR:18,maxR:32,label:"N°5"}};
+const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"5":{minR:30,maxR:56,label:"N°5"}};
 const RS=640;
-const TOTAL_COVERAGE=0.92;
+const TOTAL_COVERAGE=0.75;
 
 const FAPLAC=[
   {slug:'blanco-polar',    name:'Blanco Polar',     bg:'#F2F0EC', grad:''},
@@ -666,16 +668,41 @@ function selectFaplac(slug){
   updateMbPreview();
 }
 // ── Photo Scene Viewer ────────────────────────────────────────────
-let selScene='ambiente';
+let selScene='cocina';
 // Surface coords are normalised 0..1 relative to (imgW, imgH).
 // Quad corners order: TL, TR, BR, BL.
 // realWidthMm = true width of the surface for tile-scale calculation.
 const PHOTO_SCENES={
-  ambiente:{
-    file:'5873311b-350c-4f74-9e54-e43ff8ee2d40.jpg',imgW:819,imgH:1024,
-    hint:'Ambiente · Vista general',hasFaplac:false,
+  cocina:{
+    file:'cocina-ambiente.jpg.webp?v=2',imgW:1024,imgH:1536,
+    hint:'Cocina · Mesada y revestimiento',hasFaplac:true,
     terrazzo:[
-      {kind:'ellipse',cx:.503,cy:.515,rx:.415,ry:.340,rotation:0,blend:.88,realWidthMm:800},
+      // backsplash — near-frontal rectangle
+      {kind:'quad',corners:[[0,.28],[1,.28],[1,.87],[0,.87]],blend:.86,realWidthMm:2400},
+      // countertop thin strip, slight trapezoid (wider at front)
+      {kind:'quad',corners:[[-.02,.87],[1.02,.87],[1.05,.96],[-.05,.96]],blend:.91,realWidthMm:2400},
+    ],
+    faplac:[
+      // upper cabinets
+      {kind:'quad',corners:[[0,0],[1,0],[1,.27],[0,.27]]},
+    ],
+  },
+  mesa:{
+    file:'mesa-ambiente.jpg.jpg?v=2',imgW:736,imgH:1104,
+    hint:'Mesa redonda · Vista aérea',hasFaplac:false,
+    terrazzo:[
+      // round dining table top — ellipse, viewed from elevated angle
+      {kind:'ellipse',cx:.50,cy:.40,rx:.44,ry:.24,blend:.88,realWidthMm:1350},
+    ],
+  },
+  diseno:{
+    file:'mesa-ambienteop2.jpg.jpg?v=2',imgW:793,imgH:703,
+    hint:'Mesa lateral · Tapa y base',hasFaplac:false,
+    terrazzo:[
+      // table top — very flat ellipse (side view)
+      {kind:'ellipse',cx:.50,cy:.17,rx:.44,ry:.085,blend:.88,realWidthMm:700},
+      // cylindrical base — rectangular strip
+      {kind:'quad',corners:[[.38,.26],[.62,.26],[.62,.76],[.38,.76]],blend:.84,realWidthMm:220},
     ],
   },
 };
@@ -715,13 +742,26 @@ function applyPatternInQuad(ctx,src,corners,W,H,blend,realWidthMm){
   ctx.restore();
 }
 
-function applyPatternInEllipse(ctx,src,surf,W,H,blend){
+function applyPatternInEllipse(ctx,src,surf,W,H,blend,realWidthMm){
   const cx=surf.cx*W,cy=surf.cy*H,rx=surf.rx*W,ry=surf.ry*H;
+  const scale=Math.max(.001,(rx*2/realWidthMm)/(RS/500));
   ctx.save();
-  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,surf.rotation||0,0,Math.PI*2);ctx.clip();
+  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.clip();
   ctx.globalAlpha=blend||.88;
-  ctx.drawImage(src,0,0,src.width,src.height,cx-rx,cy-ry,rx*2,ry*2);
-  ctx.globalAlpha=1;
+  const pat=ctx.createPattern(src,'repeat');
+  if(pat&&typeof DOMMatrix!=='undefined'){
+    // Centre the repeat on the ellipse
+    const tileW=scale*RS;
+    const ox=cx-Math.round(cx/tileW)*tileW;
+    const oy=cy-Math.round(cy/tileW)*tileW;
+    try{pat.setTransform(new DOMMatrix([scale,0,0,scale,ox,oy]));}catch(e){}
+  }
+  ctx.fillStyle=pat||'#888';
+  ctx.fillRect(0,0,W,H);
+  // edge shadow + sheen
+  const ed=ctx.createRadialGradient(cx,cy,Math.min(rx,ry)*.7,cx,cy,Math.max(rx,ry)*1.05);
+  ed.addColorStop(0,'rgba(255,255,255,.05)');ed.addColorStop(.7,'rgba(255,255,255,.01)');ed.addColorStop(1,'rgba(0,0,0,.14)');
+  ctx.globalAlpha=1;ctx.fillStyle=ed;ctx.fillRect(0,0,W,H);
   ctx.restore();
 }
 
@@ -734,11 +774,11 @@ function renderPhotoScene(){
   if(!img||!img.complete||!img.naturalWidth)return;
 
   const dpr=window.devicePixelRatio||1;
-  const dispW=cfg.imgW;
-  const dispH=cfg.imgH;
+  const dispW=Math.max(1,canvas.clientWidth||canvas.offsetWidth||600);
+  const dispH=Math.round(dispW*cfg.imgH/cfg.imgW);
   canvas.width=Math.round(dispW*dpr);
   canvas.height=Math.round(dispH*dpr);
-  canvas.style.width=dispW+'px';
+  // Maintain intrinsic size via CSS (canvas height auto is driven by the attribute)
   canvas.style.height=dispH+'px';
 
   const ctx=canvas.getContext('2d');
@@ -905,7 +945,7 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
       const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
       if(pad*2>=RS)continue;
       const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md*0.72)){placer.add(x,y,md*0.72,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+      if(!placer.overlaps(x,y,md*0.82)){placer.add(x,y,md*0.82,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
     }
   });
   all.sort((a,b)=>b.r-a.r);
@@ -929,15 +969,15 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
       const bright=hash2(seed+v*7.3,seed*.4+v)>.45;
       ctx.beginPath();ctx.moveTo(p.x+vox-Math.cos(va)*vl,p.y+voy-Math.sin(va)*vl);ctx.lineTo(p.x+vox+Math.cos(va)*vl,p.y+voy+Math.sin(va)*vl);
       ctx.strokeStyle=bright?`rgba(255,255,255,${.08+hash2(seed*2+v,v)*.14})`:`rgba(${r3},${g3},${b3},${.18+hash2(seed+v*3,v*.7)*.25})`;
-      ctx.lineWidth=.3+hash2(seed*3+v,seed+v*.8);
+      ctx.lineWidth=.3+hash2(seed*3+v,seed+v*.8);ctx.stroke();
     }
     ctx.restore();
     angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);
     ctx.strokeStyle=`rgba(${clamp(r3-20,0,255)},${clamp(g3-20,0,255)},${clamp(b3-20,0,255)},0.65)`;
-    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.05,.5,1.6);
+    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.05,.5,1.6);ctx.stroke();
     angularPath(ctx,p.x,p.y,p.rx*1.07,p.ry*1.07,seed);
     ctx.strokeStyle=`rgba(${clamp(br-12,0,255)},${clamp(bg-12,0,255)},${clamp(bb-12,0,255)},0.38)`;
-    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.09,.8,2.2);
+    ctx.lineWidth=clamp(Math.max(p.rx,p.ry)*.09,.8,2.2);ctx.stroke();
     angularPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.save();ctx.clip();
     const hg=ctx.createLinearGradient(p.x-p.rx*.5,p.y-p.ry*.5,p.x+p.rx*.3,p.y+p.ry*.3);
     hg.addColorStop(0,'rgba(255,255,255,0.20)');hg.addColorStop(.35,'rgba(255,255,255,0.06)');hg.addColorStop(1,'rgba(255,255,255,0)');
