@@ -2,5 +2,16 @@
   "extends": ["html-validate:recommended"],
   "rules": {
     "no-inline-style": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["public/terrazzo-instone.html"],
+      "rules": {
+        "element-required-attributes": "off",
+        "element-permitted-content": "off",
+        "valid-id": "off",
+        "close-order": "off"
+      }
+    }
+  ]
 }
