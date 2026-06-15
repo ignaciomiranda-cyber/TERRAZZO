@@ -4,8 +4,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Configurador de Terrazzo — Instone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+</style>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F0EB;color:#3a3733;min-height:100vh}
@@ -160,6 +164,36 @@ button.abtn:hover{background:#EAE6DD}
 .mb-tilt-toggle input:checked~.mb-tilt-track{background:#1A1A18}
 .mb-tilt-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none}
 .mb-tilt-toggle input:checked~.mb-tilt-knob{transform:translateX(14px)}
+.mb-reset{font-size:11px;font-family:inherit;color:#6f6a60;background:transparent;border:1px solid #D0CBC2;border-radius:2px;padding:5px 12px;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.mb-reset:hover{border-color:#1A1A18;color:#1A1A18}
+.mb-stage{position:relative;width:100%;min-height:540px;border-radius:2px;border:1px solid #D8D3C9;overflow:hidden;padding:0;background:radial-gradient(130% 100% at 50% -10%,rgba(255,255,255,.5),rgba(255,255,255,0) 55%),repeating-linear-gradient(91deg,#E9E2D4 0px,#E9E2D4 3px,#E4DCCC 3px,#E4DCCC 6px),#E8E1D3;box-shadow:inset 0 0 90px rgba(120,95,60,.12);touch-action:none}
+.mb-backing{position:absolute;left:33.333%;top:50%;width:520px;max-width:58%;height:296px;background:#F1ECE2;transform:translate(-50%,-50%) rotate(-1.6deg);box-shadow:0 34px 64px -24px rgba(70,52,32,.30)}
+.mb-zone{position:absolute;top:0;bottom:0;pointer-events:none;z-index:0}
+.mb-zone-dep{right:0;width:33.333%;background:repeating-linear-gradient(91deg,rgba(120,95,60,.05) 0px,rgba(120,95,60,.05) 3px,rgba(120,95,60,.02) 3px,rgba(120,95,60,.02) 6px),rgba(120,95,60,.045);box-shadow:inset 1px 0 0 rgba(120,95,60,.18)}
+.mb-zone-div{position:absolute;top:0;bottom:0;left:66.666%;width:0;border-left:1px dashed rgba(120,95,60,.32);pointer-events:none;z-index:1}
+.mb-zone-label{position:absolute;top:11px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#A99F8B;pointer-events:none;z-index:1}
+.mb-zone-label.l{left:15px}
+.mb-zone-label.r{right:15px;text-align:right}
+.mb-zone-label small{display:block;font-size:8px;font-weight:600;letter-spacing:.08em;color:#BEB6A6;margin-top:2px;text-transform:none}
+.mb-sample{position:absolute;left:0;top:0;overflow:hidden;border-radius:2px;box-shadow:0 22px 42px -14px rgba(60,44,28,.40),0 6px 14px -7px rgba(60,44,28,.28);transition:box-shadow .3s,opacity .25s;display:flex;align-items:center;justify-content:center;flex:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.mb-sample-terr{width:224px;height:224px}
+.mb-mel{width:116px;height:246px}
+.mb-sample canvas,.mb-mel-fill{display:block;width:100%;height:100%;pointer-events:none}
+.mb-sample:not(.is-empty):hover{box-shadow:0 32px 64px -16px rgba(60,44,28,.50),0 10px 22px -8px rgba(60,44,28,.32)}
+.mb-sample.dragging{cursor:grabbing;box-shadow:0 42px 74px -16px rgba(60,44,28,.56),0 14px 28px -8px rgba(60,44,28,.40);transition:none}
+.mb-sample.is-empty{cursor:default}
+.mb-cap{position:absolute;left:7px;right:7px;bottom:7px;display:flex;flex-direction:column;gap:1px;color:#1A1A18;background:rgba(242,240,235,.86);padding:4px 8px;border-radius:2px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);line-height:1.2}
+.mb-cap-t{font-size:10px;font-weight:700;letter-spacing:.02em;text-wrap:pretty}
+.mb-cap-p{font-size:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6f6a60;text-wrap:pretty}
+.mb-mel .mb-cap,.mb-cort .mb-cap,.mb-tela .mb-cap,.mb-piso .mb-cap{opacity:0;transition:opacity .2s}
+.mb-mel:hover .mb-cap,.mb-cort:hover .mb-cap,.mb-tela:hover .mb-cap,.mb-piso:hover .mb-cap{opacity:1}
+.mb-ghost-label{display:none;font-size:11px;font-weight:600;letter-spacing:.04em;color:#A99F8B;width:100%;height:100%;align-items:center;justify-content:center;text-align:center}
+.mb-sample.is-empty{display:none}
+.mb-sample.is-empty canvas,.mb-sample.is-empty .mb-mel-fill,.mb-sample.is-empty .mb-cort-fill,.mb-sample.is-empty .mb-tela-fill,.mb-sample.is-empty .mb-piso-fill,.mb-sample.is-empty .pan-chip,.mb-sample.is-empty .mb-cap{opacity:0;visibility:hidden}
+.mb-sample.is-empty .mb-ghost-label{display:flex}
+.mb-legend{margin-top:14px;font-size:12px;color:#6f6a60;letter-spacing:.01em;text-align:center;min-height:16px}
+.mb-controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:12px}
+.mb-drag-hint{font-size:11px;color:#b3ad9f;letter-spacing:.01em}
 .mb-reset{font-size:11px;font-family:inherit;color:#6f6a60;background:transparent;border:1px solid #D0CBC2;border-radius:2px;padding:5px 12px;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .mb-reset:hover{border-color:#1A1A18;color:#1A1A18}
 .mb-stage{position:relative;width:100%;min-height:540px;border-radius:2px;border:1px solid #D8D3C9;overflow:hidden;padding:0;background:radial-gradient(130% 100% at 50% -10%,rgba(255,255,255,.5),rgba(255,255,255,0) 55%),repeating-linear-gradient(91deg,#E9E2D4 0px,#E9E2D4 3px,#E4DCCC 3px,#E4DCCC 6px),#E8E1D3;box-shadow:inset 0 0 90px rgba(120,95,60,.12);touch-action:none}
