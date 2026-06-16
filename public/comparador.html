@@ -413,22 +413,63 @@ function renderError(html) {
 }
 
 // ── REAL MOOD PANEL ────────────────────────────────────────────────────────
+let savedProjects = [];
+try { savedProjects = JSON.parse(localStorage.getItem('ins_projects') || '[]'); } catch(e) {}
+
 function renderMoodPanel() {
   const body = document.getElementById('mood-body');
-  const hasMb = !!localStorage.getItem('ins_mb_pos');
-  if (hasMb) {
-    body.innerHTML = '<iframe class="mood-frame" src="terrazzo-instone.html?compare=1" title="Real Mood"></iframe>';
-    body.style.display = 'flex';
-    body.style.flexDirection = 'column';
-  } else {
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+
+  const hasCurrent = !!localStorage.getItem('ins_mb_pos');
+  const hasProjects = savedProjects.length > 0;
+
+  if (!hasCurrent && !hasProjects) {
     body.innerHTML = '<div class="mood-empty">'
       + '<div class="mood-empty-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>'
-      + '<p>No hay un Real Mood guardado todavía. Componé tu moodboard en el configurador y volvé acá para compararlo.</p>'
+      + '<p>No hay un Real Mood guardado todavía. Componé y guardá tu moodboard en el configurador y volvé acá para compararlo.</p>'
       + '<a href="terrazzo-instone.html" class="pbtn pbtn-ink" style="text-decoration:none">'
       + '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-1.41 1.41L16.17 9H4v2h12.17l-5.58 5.59L12 18l8-8z"/></svg>'
       + 'Ir al configurador</a>'
       + '</div>';
+    return;
   }
+
+  // Build selector if there are saved projects
+  let selectorHtml = '';
+  if (hasProjects) {
+    const opts = savedProjects.map((p, i) =>
+      '<option value="' + i + '">' + esc(p.name || ('Proyecto ' + (i+1))) + '</option>'
+    ).join('');
+    selectorHtml = '<div class="board-wrap" style="border-top:none">'
+      + '<div class="board-label">Elegí un proyecto guardado</div>'
+      + '<div class="board-row">'
+      + '<select class="board-sel" id="mood-proj-sel" onchange="loadMoodProject(this.value)">'
+      + (hasCurrent ? '<option value="">— Moodboard actual —</option>' : '')
+      + opts + '</select>'
+      + '</div></div>';
+  }
+
+  body.innerHTML = selectorHtml
+    + '<iframe class="mood-frame" id="mood-iframe" src="terrazzo-instone.html?compare=1" title="Real Mood"></iframe>';
+
+  // Pre-select first project if no current unsaved state
+  if (!hasCurrent && hasProjects) {
+    loadMoodProject(0);
+  }
+}
+
+function loadMoodProject(idx) {
+  if (idx === '' || idx === null || idx === undefined) return;
+  const proj = savedProjects[parseInt(idx)];
+  if (!proj || !proj.state) return;
+  // Inject project's mbPos into localStorage so the iframe picks it up on load
+  try {
+    if (proj.state.mbPos) localStorage.setItem('ins_mb_pos', JSON.stringify(proj.state.mbPos));
+  } catch(e) {}
+  // Reload the iframe
+  const fr = document.getElementById('mood-iframe');
+  if (fr) { fr.src = fr.src; }
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────────
