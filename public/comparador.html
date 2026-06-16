@@ -137,6 +137,62 @@ body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-
 .wa-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:2px;font-size:11px;font-weight:700;font-family:inherit;background:#25D366;color:#fff;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s;letter-spacing:.02em}
 .wa-btn:hover{opacity:.86}
 .suppliers-empty{padding:30px 20px;text-align:center;font-size:12px;color:var(--sub);line-height:1.7}
+
+/* ── COTIZACIÓN WIZARD ── */
+.wizard-overlay{position:fixed;inset:0;background:var(--warm);z-index:100;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .2s}
+.wizard-overlay.open{opacity:1;pointer-events:all}
+.wizard-header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;border-bottom:1px solid var(--line);background:#fff;flex-shrink:0}
+.wizard-brand{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.02em}
+.wizard-steps{display:flex;align-items:center;gap:5px}
+.wstep{width:22px;height:3px;border-radius:2px;background:var(--line);transition:background .2s}
+.wstep.active{background:var(--ink)}
+.wstep.done{background:var(--mid)}
+.wizard-close{width:28px;height:28px;border-radius:50%;border:none;background:#EDEAE2;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;color:var(--mid);transition:background .15s;font-family:inherit;flex-shrink:0}
+.wizard-close:hover{background:var(--line);color:var(--ink)}
+.wizard-body{flex:1;overflow-y:auto;padding:36px 24px;max-width:540px;width:100%;margin:0 auto}
+.wizard-step-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+.wizard-title{font-size:24px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:8px;letter-spacing:-.02em}
+.wizard-subtitle{font-size:13px;color:var(--mid);line-height:1.65;margin-bottom:28px}
+.mat-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.mat-chip{display:inline-flex;align-items:center;padding:8px 14px;border-radius:2px;font-size:12px;font-weight:600;font-family:inherit;border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink);transition:all .12s;user-select:none;letter-spacing:.01em}
+.mat-chip.selected{border-color:var(--ink);background:var(--ink);color:#fff}
+.mat-chip:hover:not(.selected){border-color:var(--mid)}
+.space-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+@media(max-width:480px){.space-grid{grid-template-columns:repeat(2,1fr)}}
+.space-card{padding:16px 12px;border:1.5px solid var(--line);border-radius:2px;cursor:pointer;transition:all .12s;background:#fff;text-align:center}
+.space-card:hover:not(.selected){border-color:var(--mid)}
+.space-card.selected{border-color:var(--ink);background:var(--ink)}
+.space-card-icon{font-size:20px;margin-bottom:6px;line-height:1}
+.space-card-label{font-size:12px;font-weight:700;color:var(--ink)}
+.space-card.selected .space-card-label{color:#fff}
+.sqm-wrap{display:flex;align-items:center;gap:10px;margin-top:4px}
+.wizard-input{padding:11px 14px;border:1.5px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .15s;width:110px}
+.wizard-input:focus{border-color:var(--ink)}
+.sqm-unit{font-size:13px;color:var(--mid)}
+.budget-list{display:flex;flex-direction:column;gap:7px;margin-bottom:28px}
+.budget-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1.5px solid var(--line);border-radius:2px;cursor:pointer;background:#fff;transition:all .12s}
+.budget-item:hover:not(.selected){border-color:var(--mid)}
+.budget-item.selected{border-color:var(--ink);background:#fafaf8}
+.budget-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.budget-item.selected .budget-radio{border-color:var(--ink);background:var(--ink)}
+.budget-radio-dot{width:5px;height:5px;border-radius:50%;background:#fff;display:none}
+.budget-item.selected .budget-radio-dot{display:block}
+.budget-label{font-size:13px;font-weight:600;color:var(--ink)}
+.summary-box{background:#fff;border:1px solid var(--line);border-radius:2px;padding:20px;margin-bottom:20px}
+.summary-row{display:flex;gap:12px;margin-bottom:13px;font-size:12px;line-height:1.5}
+.summary-row:last-child{margin-bottom:0}
+.summary-key{color:var(--sub);font-weight:700;width:88px;flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding-top:1px}
+.summary-val{color:var(--ink)}
+.wizard-wa-btn{display:flex;align-items:center;justify-content:center;gap:9px;padding:15px;border-radius:2px;font-size:14px;font-weight:700;font-family:inherit;background:#25D366;color:#fff;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s;width:100%;letter-spacing:.02em}
+.wizard-wa-btn:hover{opacity:.88}
+.wizard-footer{border-top:1px solid var(--line);background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.wizard-btn-back{background:none;border:none;font-size:13px;color:var(--sub);cursor:pointer;font-family:inherit;font-weight:600;padding:6px 0;transition:color .15s}
+.wizard-btn-back:hover{color:var(--ink)}
+.wizard-btn-next{padding:11px 28px;border-radius:2px;font-size:13px;font-weight:700;font-family:inherit;background:var(--ink);color:#fff;border:none;cursor:pointer;letter-spacing:.02em;transition:opacity .15s}
+.wizard-btn-next:disabled{opacity:.35;cursor:not-allowed}
+.wizard-btn-next:not(:disabled):hover{opacity:.82}
+.quote-cta{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;width:100%;border-radius:2px;font-size:12px;font-weight:700;font-family:inherit;background:var(--ink);color:#fff;border:none;cursor:pointer;letter-spacing:.02em;transition:opacity .15s;margin-top:12px}
+.quote-cta:hover{opacity:.82}
 </style>
 </head>
 <body>
@@ -183,6 +239,8 @@ body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-
   </div>
 
 </div>
+
+<div id="wizard-overlay" class="wizard-overlay"></div>
 
 <script>
 // ── CONFIGURATION ──────────────────────────────────────────────────────────
@@ -507,7 +565,8 @@ function loadMoodProject(idx) {
 
 // ── ANÁLISIS DE TABLERO ─────────────────────────────────────────────────────
 
-// Córdoba pilot supplier database — update whatsapp numbers before launch
+// Scalable supplier registry — add entries here as new partners join
+// Update whatsapp number with real number before launch
 const SUPPLIERS = [
   {
     id:'instone', name:'Instone',
@@ -516,22 +575,6 @@ const SUPPLIERS = [
     whatsapp:'5493516881234',
     materiales:['piedra','terrazzo','mármol','granito','concreto','hormigón','travertino','cuarcita','microcemento'],
     colores:['gris','blanco','beige','negro','crema','topo','arena']
-  },
-  {
-    id:'blangino', name:'Blangino',
-    desc:'Muebles y terminaciones de madera para interiores contemporáneos',
-    address:'Av. Colón 2800, Córdoba', lat:-31.4100, lng:-64.1800,
-    whatsapp:'5493514445678',
-    materiales:['madera','roble','nogal','melamina','mdf','lacado','parquet','deck','pino'],
-    colores:['madera','natural','blanco','negro','topo','caramelo','cedro','arena']
-  },
-  {
-    id:'milnuevestudio', name:'Milnuevestudio',
-    desc:'Studio de diseño y mobiliario de autor con materiales industriales',
-    address:'Arturo M. Bas 140, Córdoba', lat:-31.4300, lng:-64.1900,
-    whatsapp:'5493513789012',
-    materiales:['metal','acero','vidrio','cemento','hormigón','cuero','hierro','corten','ladrillo'],
-    colores:['negro','blanco','plateado','gris','industrial','oxidado','mate','antracita']
   }
 ];
 
@@ -687,7 +730,11 @@ async function startAnalysis() {
   renderAnalysisResults(keywords, palette, suppliers, geoStatus);
 }
 
+let lastAnalysis = { keywords:[], palette:[], suppliers:[] };
+
 function renderAnalysisResults(keywords, palette, suppliers, geoStatus) {
+  lastAnalysis = { keywords, palette, suppliers };
+
   const paletteHtml = palette.length
     ? palette.map(([name, {hex}]) =>
         '<span class="palette-dot" style="background:' + esc(hex) + '" title="' + esc(name) + '"></span>'
@@ -700,26 +747,23 @@ function renderAnalysisResults(keywords, palette, suppliers, geoStatus) {
 
   const geoBannerHtml = geoStatus === 'ok'
     ? '<div class="geo-banner"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación detectada — distancias calculadas desde tu posición</div>'
-    : '<div class="geo-banner" style="background:#fff8f0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pale)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación no disponible — ordenado por relevancia de materiales</div>';
+    : '<div class="geo-banner" style="background:#fff8f0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pale)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación no disponible — ordenado por relevancia</div>';
 
-  const waIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>';
-
-  const suppliersHtml = suppliers.map(s => {
+  const suppliersHtml = suppliers.map((s, si) => {
     const distHtml = s.dist != null ? '<span class="dist-badge">📍 ' + s.dist.toFixed(1) + ' km</span>' : '';
     const matchHtml = s.score > 0 ? '<span class="match-badge">✓ ' + (s.matMatches.length + s.colMatches.length) + ' coincidencias</span>' : '';
     const matchDetail = s.matMatches.length
       ? '<div class="supplier-matches">Materiales en común: <strong>' + s.matMatches.join(', ') + '</strong></div>'
       : (s.colMatches.length ? '<div class="supplier-matches">Paleta compatible: <strong>' + s.colMatches.join(', ') + '</strong></div>' : '');
-    const waMsg = encodeURIComponent('Hola! Vi materiales de mi tablero de Pinterest que me interesan. ¿Pueden asesorarme?');
     return '<div class="supplier-card">'
       + '<div class="supplier-name">' + esc(s.name) + '</div>'
       + '<div class="supplier-desc">' + esc(s.desc) + '</div>'
       + '<div class="supplier-meta">' + distHtml + matchHtml + '<span class="supplier-addr">' + esc(s.address) + '</span></div>'
       + matchDetail
-      + '<div class="supplier-actions">'
-      + '<a class="wa-btn" href="https://wa.me/' + esc(s.whatsapp) + '?text=' + waMsg + '" target="_blank" rel="noopener">'
-      + waIcon + 'Consultar por WhatsApp</a>'
-      + '</div></div>';
+      + '<button class="quote-cta" onclick="openWizard(' + si + ')">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+      + 'Solicitar cotización</button>'
+      + '</div>';
   }).join('');
 
   pb().innerHTML = userBar()
@@ -735,7 +779,7 @@ function renderAnalysisResults(keywords, palette, suppliers, geoStatus) {
     + '</div>'
     + geoBannerHtml
     + '<div class="suppliers-list">'
-    + '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);padding:2px 0 8px">Proveedores en Córdoba</div>'
+    + '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);padding:2px 0 8px">Proveedor disponible en Córdoba</div>'
     + suppliersHtml
     + '</div></div>';
 }
@@ -743,6 +787,168 @@ function renderAnalysisResults(keywords, palette, suppliers, geoStatus) {
 function backFromAnalysis() {
   if (analyzedPins.length) renderPins(analyzedPins, currentBoardId);
   else backToBoards();
+}
+
+// ── COTIZACIÓN WIZARD ────────────────────────────────────────────────────────
+
+const SPACES = [
+  { id:'cocina',      label:'Cocina',      icon:'🍳' },
+  { id:'bano',        label:'Baño',        icon:'🚿' },
+  { id:'living',      label:'Living',      icon:'🛋️' },
+  { id:'dormitorio',  label:'Dormitorio',  icon:'🛏️' },
+  { id:'exterior',    label:'Exterior',    icon:'🌿' },
+  { id:'otro',        label:'Otro',        icon:'✦'  },
+];
+
+const BUDGETS = [
+  'Menos de $500.000',
+  '$500.000 – $1.000.000',
+  '$1.000.000 – $2.000.000',
+  'Más de $2.000.000',
+  'Prefiero no decirlo',
+];
+
+const ALL_MATERIALS = [
+  'terrazzo','mármol','granito','travertino','piedra','concreto',
+  'microcemento','madera','roble','parquet','acero','vidrio',
+  'cuero','cerámica','ladrillo','corten'
+];
+
+let wz = { step:1, materials:[], space:null, sqm:'', budget:null, supplierIdx:0 };
+
+function openWizard(supplierIdx) {
+  const s = lastAnalysis.suppliers[supplierIdx];
+  const preselected = [...new Set([...lastAnalysis.keywords, ...s.matMatches])].slice(0, 6);
+  wz = {
+    step: 1,
+    materials: preselected.length ? preselected : s.materiales.slice(0, 4),
+    space: null, sqm: '', budget: null,
+    supplierIdx,
+  };
+  document.getElementById('wizard-overlay').classList.add('open');
+  renderWizardStep();
+}
+
+function closeWizard() {
+  document.getElementById('wizard-overlay').classList.remove('open');
+}
+
+function wizardNext() {
+  if (wz.step < 4) { wz.step++; renderWizardStep(); }
+}
+
+function wizardBack() {
+  if (wz.step > 1) { wz.step--; renderWizardStep(); }
+  else closeWizard();
+}
+
+function wizardToggleMat(mat) {
+  const i = wz.materials.indexOf(mat);
+  if (i >= 0) wz.materials.splice(i, 1); else wz.materials.push(mat);
+  renderWizardStep();
+}
+
+function wizardSetSpace(id) { wz.space = id; renderWizardStep(); }
+function wizardSetBudget(b) { wz.budget = b; renderWizardStep(); }
+function wizardSqmChange(v) { wz.sqm = v; }
+
+const WA_ICON_LG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>';
+
+function renderWizardStep() {
+  const s = lastAnalysis.suppliers[wz.supplierIdx];
+  const stepDots = [1,2,3,4].map(i =>
+    '<div class="wstep' + (i === wz.step ? ' active' : i < wz.step ? ' done' : '') + '"></div>'
+  ).join('');
+
+  let bodyHtml = '';
+  let canContinue = true;
+
+  if (wz.step === 1) {
+    canContinue = wz.materials.length > 0;
+    const chips = ALL_MATERIALS.map(m =>
+      '<button class="mat-chip' + (wz.materials.includes(m) ? ' selected' : '') + '" onclick="wizardToggleMat(\'' + m + '\')">' + esc(m) + '</button>'
+    ).join('');
+    const palHtml = lastAnalysis.palette.length
+      ? '<div class="palette-row" style="margin-bottom:20px">'
+        + lastAnalysis.palette.slice(0,5).map(([n,{hex}]) => '<span class="palette-dot" style="background:' + esc(hex) + '" title="' + esc(n) + '"></span>').join('')
+        + '<span class="palette-label">' + lastAnalysis.palette.slice(0,5).map(([n])=>esc(n)).join(', ') + '</span>'
+        + '</div>'
+      : '';
+    bodyHtml = '<div class="wizard-step-label">Paso 1 de 4 — Tu estilo</div>'
+      + '<div class="wizard-title">¿Con qué materiales soñás?</div>'
+      + '<div class="wizard-subtitle">Detectamos estos materiales en tu tablero. Ajustá la selección a tu gusto.</div>'
+      + palHtml
+      + '<div class="mat-grid">' + chips + '</div>'
+      + '<div style="font-size:11px;color:var(--sub);margin-top:6px">' + wz.materials.length + ' seleccionado' + (wz.materials.length !== 1 ? 's' : '') + '</div>';
+  }
+
+  if (wz.step === 2) {
+    canContinue = !!wz.space;
+    const cards = SPACES.map(sp =>
+      '<div class="space-card' + (wz.space === sp.id ? ' selected' : '') + '" onclick="wizardSetSpace(\'' + sp.id + '\')">'
+      + '<div class="space-card-icon">' + sp.icon + '</div>'
+      + '<div class="space-card-label">' + esc(sp.label) + '</div>'
+      + '</div>'
+    ).join('');
+    bodyHtml = '<div class="wizard-step-label">Paso 2 de 4 — Tu espacio</div>'
+      + '<div class="wizard-title">¿Qué espacio querés revestir?</div>'
+      + '<div class="wizard-subtitle">Elegí el ambiente principal de tu proyecto.</div>'
+      + '<div class="space-grid">' + cards + '</div>'
+      + '<div class="sqm-wrap">'
+      + '<input class="wizard-input" type="number" min="1" max="9999" placeholder="m²" value="' + esc(wz.sqm) + '" oninput="wizardSqmChange(this.value)">'
+      + '<span class="sqm-unit">superficie aproximada (opcional)</span>'
+      + '</div>';
+  }
+
+  if (wz.step === 3) {
+    canContinue = !!wz.budget;
+    const items = BUDGETS.map(b =>
+      '<div class="budget-item' + (wz.budget === b ? ' selected' : '') + '" onclick="wizardSetBudget(\'' + b.replace(/'/g, "\\'") + '\')">'
+      + '<div class="budget-radio"><div class="budget-radio-dot"></div></div>'
+      + '<div class="budget-label">' + esc(b) + '</div>'
+      + '</div>'
+    ).join('');
+    bodyHtml = '<div class="wizard-step-label">Paso 3 de 4 — Presupuesto</div>'
+      + '<div class="wizard-title">¿Con qué rango de inversión contás?</div>'
+      + '<div class="wizard-subtitle">Esta información ayuda al proveedor a preparar la mejor propuesta para tu proyecto.</div>'
+      + '<div class="budget-list">' + items + '</div>';
+  }
+
+  if (wz.step === 4) {
+    const spaceLabel = SPACES.find(x => x.id === wz.space)?.label || wz.space;
+    const matList = wz.materials.join(', ') || 'Sin especificar';
+    const sqmLine = wz.sqm ? wz.sqm + ' m²' : null;
+    const waMsg = 'Hola ' + s.name + '! Me gustaría cotizar materiales para mi proyecto.\n\n'
+      + '• Ambiente: ' + spaceLabel + (sqmLine ? ' (' + sqmLine + ')' : '') + '\n'
+      + '• Materiales de interés: ' + matList + '\n'
+      + '• Presupuesto aproximado: ' + (wz.budget || 'No especificado') + '\n\n'
+      + 'Los materiales los tomé de mi tablero de Pinterest. ¿Pueden asesorarme?';
+    bodyHtml = '<div class="wizard-step-label">Paso 4 de 4 — Conectar</div>'
+      + '<div class="wizard-title">Todo listo para conectarte</div>'
+      + '<div class="wizard-subtitle">Tu consulta va a incluir este resumen para que ' + esc(s.name) + ' pueda preparar la mejor propuesta.</div>'
+      + '<div class="summary-box">'
+      + '<div class="summary-row"><span class="summary-key">Proveedor</span><span class="summary-val"><strong>' + esc(s.name) + '</strong><br>' + esc(s.address) + '</span></div>'
+      + '<div class="summary-row"><span class="summary-key">Ambiente</span><span class="summary-val">' + esc(spaceLabel) + (sqmLine ? ' · ' + esc(sqmLine) : '') + '</span></div>'
+      + '<div class="summary-row"><span class="summary-key">Materiales</span><span class="summary-val">' + esc(matList) + '</span></div>'
+      + '<div class="summary-row"><span class="summary-key">Presupuesto</span><span class="summary-val">' + esc(wz.budget || '—') + '</span></div>'
+      + '</div>'
+      + '<a class="wizard-wa-btn" href="https://wa.me/' + esc(s.whatsapp) + '?text=' + encodeURIComponent(waMsg) + '" target="_blank" rel="noopener">'
+      + WA_ICON_LG + 'Enviar consulta por WhatsApp</a>';
+  }
+
+  const footerBack = '<button class="wizard-btn-back" onclick="wizardBack()">' + (wz.step === 1 ? '✕ Cancelar' : '← Atrás') + '</button>';
+  const footerNext = wz.step < 4
+    ? '<button class="wizard-btn-next"' + (canContinue ? '' : ' disabled') + ' onclick="wizardNext()">Continuar →</button>'
+    : '<span></span>';
+
+  document.getElementById('wizard-overlay').innerHTML =
+    '<div class="wizard-header">'
+    + '<span class="wizard-brand">Instone · Cotización</span>'
+    + '<div class="wizard-steps">' + stepDots + '</div>'
+    + '<button class="wizard-close" onclick="closeWizard()" aria-label="Cerrar">×</button>'
+    + '</div>'
+    + '<div class="wizard-body">' + bodyHtml + '</div>'
+    + '<div class="wizard-footer">' + footerBack + footerNext + '</div>';
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────────
