@@ -110,6 +110,33 @@ body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-
 .mood-empty-icon{width:48px;height:48px;border-radius:50%;background:#F1ECE2;display:flex;align-items:center;justify-content:center}
 .mood-empty-icon svg{width:22px;height:22px;fill:var(--sub)}
 .mood-empty p{font-size:12px;color:var(--mid);line-height:1.65;max-width:240px}
+
+/* ── ANÁLISIS DE TABLERO ── */
+.analyze-view{display:flex;flex-direction:column}
+.analyze-header{padding:12px 14px 10px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:1}
+.analyze-title{font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.analyze-subtitle{font-size:11px;color:var(--sub);margin-top:3px}
+.palette-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.palette-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.6);box-shadow:0 0 0 1px var(--line);flex-shrink:0;display:inline-block}
+.palette-label{font-size:10px;color:var(--sub);margin-left:2px}
+.kw-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.kw-tag{font-size:10px;font-weight:600;letter-spacing:.03em;padding:3px 9px;background:#EDE9E0;color:var(--ink);border-radius:20px}
+.geo-banner{padding:9px 14px;font-size:11px;color:var(--mid);display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line);background:#fdfcf8;flex-shrink:0}
+.geo-banner svg{flex-shrink:0}
+.suppliers-list{padding:10px;display:flex;flex-direction:column;gap:8px}
+.supplier-card{background:#fff;border:1px solid var(--line);border-radius:2px;padding:12px 14px}
+.supplier-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.supplier-desc{font-size:11px;color:var(--mid);margin-bottom:8px;line-height:1.5}
+.supplier-meta{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap}
+.dist-badge{font-size:10px;font-weight:600;background:#F1ECE2;color:var(--mid);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.match-badge{font-size:10px;font-weight:600;background:#EAF5EC;color:#3a7a48;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.supplier-addr{font-size:10px;color:var(--sub)}
+.supplier-matches{font-size:11px;color:var(--sub);margin-bottom:10px;line-height:1.5}
+.supplier-matches strong{color:var(--ink)}
+.supplier-actions{display:flex;gap:7px;flex-wrap:wrap}
+.wa-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:2px;font-size:11px;font-weight:700;font-family:inherit;background:#25D366;color:#fff;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s;letter-spacing:.02em}
+.wa-btn:hover{opacity:.86}
+.suppliers-empty{padding:30px 20px;text-align:center;font-size:12px;color:var(--sub);line-height:1.7}
 </style>
 </head>
 <body>
@@ -171,6 +198,7 @@ let token = null;
 let pUser = null;
 let currentBoardId = null;
 let bookmark = null;
+let analyzedPins = [];
 
 // ── PKCE CRYPTO ────────────────────────────────────────────────────────────
 function rndB64url(n) {
@@ -357,6 +385,7 @@ function pickBoard() {
 }
 
 function renderPins(pins, boardId) {
+  analyzedPins = [...pins];
   if (!pins.length) {
     pb().innerHTML = userBar()
       + '<div class="pin-empty">Este tablero no tiene pines todavía.</div>'
@@ -364,14 +393,18 @@ function renderPins(pins, boardId) {
     return;
   }
   pb().innerHTML = userBar()
-    + '<div style="padding:8px 10px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+    + '<div style="padding:8px 10px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:6px">'
     + '<button class="pbtn pbtn-outline" style="padding:5px 10px;font-size:11px" onclick="backToBoards()">← Tableros</button>'
+    + '<button class="pbtn pbtn-ink" style="padding:5px 12px;font-size:11px;display:flex;align-items:center;gap:5px" onclick="startAnalysis()">'
+    + '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+    + 'Analizar tablero</button>'
     + '</div>'
     + '<div class="pins-wrap" id="pins-wrap">' + pins.map(pinCard).join('') + '</div>'
     + (bookmark ? '<button class="load-more" onclick="loadMore()">Cargar más pines</button>' : '');
 }
 
 function appendPins(pins) {
+  analyzedPins = [...analyzedPins, ...pins];
   const w = document.getElementById('pins-wrap');
   if (w) w.insertAdjacentHTML('beforeend', pins.map(pinCard).join(''));
   const btn = document.querySelector('.load-more');
@@ -470,6 +503,246 @@ function loadMoodProject(idx) {
   // Reload the iframe
   const fr = document.getElementById('mood-iframe');
   if (fr) { fr.src = fr.src; }
+}
+
+// ── ANÁLISIS DE TABLERO ─────────────────────────────────────────────────────
+
+// Córdoba pilot supplier database — update whatsapp numbers before launch
+const SUPPLIERS = [
+  {
+    id:'instone', name:'Instone',
+    desc:'Revestimientos de piedra natural, terrazzo y superficies de diseño',
+    address:'Cañada 154, Córdoba', lat:-31.4201, lng:-64.1888,
+    whatsapp:'5493516881234',
+    materiales:['piedra','terrazzo','mármol','granito','concreto','hormigón','travertino','cuarcita','microcemento'],
+    colores:['gris','blanco','beige','negro','crema','topo','arena']
+  },
+  {
+    id:'blangino', name:'Blangino',
+    desc:'Muebles y terminaciones de madera para interiores contemporáneos',
+    address:'Av. Colón 2800, Córdoba', lat:-31.4100, lng:-64.1800,
+    whatsapp:'5493514445678',
+    materiales:['madera','roble','nogal','melamina','mdf','lacado','parquet','deck','pino'],
+    colores:['madera','natural','blanco','negro','topo','caramelo','cedro','arena']
+  },
+  {
+    id:'milnuevestudio', name:'Milnuevestudio',
+    desc:'Studio de diseño y mobiliario de autor con materiales industriales',
+    address:'Arturo M. Bas 140, Córdoba', lat:-31.4300, lng:-64.1900,
+    whatsapp:'5493513789012',
+    materiales:['metal','acero','vidrio','cemento','hormigón','cuero','hierro','corten','ladrillo'],
+    colores:['negro','blanco','plateado','gris','industrial','oxidado','mate','antracita']
+  }
+];
+
+// Maps keywords found in pin text to material categories
+const MATERIAL_KW = {
+  terrazzo:'terrazzo', terazzo:'terrazzo',
+  marble:'mármol', mármol:'mármol', marmo:'mármol',
+  granito:'granito', granite:'granito',
+  travertine:'travertino', travertino:'travertino',
+  piedra:'piedra', stone:'piedra', rock:'piedra',
+  concrete:'concreto', concreto:'concreto',
+  hormigon:'hormigón', hormigón:'hormigón',
+  cemento:'cemento', cement:'cemento', microcemento:'microcemento',
+  madera:'madera', wood:'madera', timber:'madera',
+  oak:'roble', roble:'roble', nogal:'nogal', walnut:'nogal',
+  parquet:'parquet', deck:'deck',
+  acero:'acero', steel:'acero', metal:'metal',
+  iron:'hierro', hierro:'hierro',
+  vidrio:'vidrio', glass:'vidrio',
+  cuero:'cuero', leather:'cuero',
+  ladrillo:'ladrillo', brick:'ladrillo',
+  corten:'corten', copper:'cobre', cobre:'cobre',
+  bronce:'bronce', bronze:'bronce',
+  lino:'lino', linen:'lino',
+  ceramica:'cerámica', ceramic:'cerámica', tile:'cerámica'
+};
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h = 0, s = 0, l = (max+min)/2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > .5 ? d/(2-max-min) : d/(max+min);
+    switch(max) {
+      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+      case g: h = ((b-r)/d + 2)/6; break;
+      case b: h = ((r-g)/d + 4)/6; break;
+    }
+  }
+  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+}
+
+function hslToColorName(h, s, l) {
+  if (l > 82) return 'blanco';
+  if (l < 14) return 'negro';
+  if (s < 10) { return l > 55 ? 'blanco' : l < 30 ? 'negro' : 'gris'; }
+  if (h < 20 || h >= 340) return l > 55 ? 'rosa' : 'rojo';
+  if (h < 40) return l > 55 ? 'arena' : 'madera';
+  if (h < 70) return l > 55 ? 'amarillo' : 'ocre';
+  if (h < 155) return 'verde';
+  if (h < 195) return 'turquesa';
+  if (h < 260) return 'azul';
+  if (h < 290) return 'violeta';
+  return 'rosa';
+}
+
+async function extractColorsFromImage(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const timeout = setTimeout(() => resolve([]), 4000);
+    img.onload = () => {
+      clearTimeout(timeout);
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 60; canvas.height = 60;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 60, 60);
+        const data = ctx.getImageData(0, 0, 60, 60).data;
+        const buckets = {};
+        for (let i = 0; i < data.length; i += 16) {
+          if (data[i+3] < 128) continue;
+          const [h,s,l] = rgbToHsl(data[i], data[i+1], data[i+2]);
+          const name = hslToColorName(h,s,l);
+          const hex = '#' + [data[i],data[i+1],data[i+2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+          if (!buckets[name]) buckets[name] = { count:0, hex };
+          buckets[name].count++;
+        }
+        const sorted = Object.entries(buckets).sort((a,b)=>b[1].count-a[1].count);
+        resolve(sorted.slice(0,3).map(([name,{hex}])=>({name,hex})));
+      } catch { resolve([]); }
+    };
+    img.onerror = () => { clearTimeout(timeout); resolve([]); };
+    img.src = url;
+  });
+}
+
+function extractKeywordsFromPins(pins) {
+  const text = pins.map(p => ((p.title||'') + ' ' + (p.description||'')).toLowerCase()).join(' ');
+  const found = {};
+  for (const [kw, cat] of Object.entries(MATERIAL_KW)) {
+    if (text.includes(kw)) found[cat] = true;
+  }
+  return Object.keys(found).slice(0, 8);
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, toR = Math.PI/180;
+  const dLat = (lat2-lat1)*toR, dLng = (lng2-lng1)*toR;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*toR)*Math.cos(lat2*toR)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function matchSuppliers(keywords, colorNames, userLat, userLng) {
+  return SUPPLIERS.map(s => {
+    const matMatches = keywords.filter(k => s.materiales.some(m => m.includes(k) || k.includes(m)));
+    const colMatches = colorNames.filter(c => s.colores.includes(c));
+    const score = matMatches.length * 2 + colMatches.length;
+    const dist = userLat != null ? haversineKm(userLat, userLng, s.lat, s.lng) : null;
+    return { ...s, matMatches, colMatches, score, dist };
+  }).sort((a,b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    if (a.dist != null && b.dist != null) return a.dist - b.dist;
+    return 0;
+  });
+}
+
+async function startAnalysis() {
+  if (!analyzedPins.length) return;
+  pb().innerHTML = userBar()
+    + '<div class="analyze-view"><div class="analyze-header">'
+    + '<div class="analyze-title"><div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0"></div>Analizando tablero...</div>'
+    + '<div class="analyze-subtitle">Extrayendo colores y materiales de los pines</div>'
+    + '</div>'
+    + '<div class="loading" style="flex:1"><div class="spinner"></div><span>Procesando imágenes y detectando materiales...</span></div>'
+    + '</div>';
+
+  const keywords = extractKeywordsFromPins(analyzedPins);
+  const imgUrls = analyzedPins.slice(0, 8).map(p => bestImg(p)).filter(Boolean);
+  const colorBatches = await Promise.all(imgUrls.map(url => extractColorsFromImage(url)));
+
+  const freq = {};
+  colorBatches.flat().forEach(c => {
+    if (!freq[c.name]) freq[c.name] = { count:0, hex:c.hex };
+    freq[c.name].count++;
+  });
+  const palette = Object.entries(freq).sort((a,b)=>b[1].count-a[1].count).slice(0,6);
+
+  let userLat = null, userLng = null, geoStatus = 'unavailable';
+  if (navigator.geolocation) {
+    await new Promise(resolve => {
+      navigator.geolocation.getCurrentPosition(
+        pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; geoStatus = 'ok'; resolve(); },
+        () => { geoStatus = 'denied'; resolve(); },
+        { timeout: 8000 }
+      );
+    });
+  }
+
+  const colorNames = palette.map(([name]) => name);
+  const suppliers = matchSuppliers(keywords, colorNames, userLat, userLng);
+  renderAnalysisResults(keywords, palette, suppliers, geoStatus);
+}
+
+function renderAnalysisResults(keywords, palette, suppliers, geoStatus) {
+  const paletteHtml = palette.length
+    ? palette.map(([name, {hex}]) =>
+        '<span class="palette-dot" style="background:' + esc(hex) + '" title="' + esc(name) + '"></span>'
+      ).join('') + '<span class="palette-label">' + palette.map(([n])=>esc(n)).join(', ') + '</span>'
+    : '<span class="palette-label" style="color:var(--sub)">No se pudieron extraer colores (CORS)</span>';
+
+  const kwHtml = keywords.length
+    ? keywords.map(k => '<span class="kw-tag">' + esc(k) + '</span>').join('')
+    : '<span style="font-size:11px;color:var(--sub)">No se detectaron materiales en los títulos de los pines</span>';
+
+  const geoBannerHtml = geoStatus === 'ok'
+    ? '<div class="geo-banner"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación detectada — distancias calculadas desde tu posición</div>'
+    : '<div class="geo-banner" style="background:#fff8f0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pale)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación no disponible — ordenado por relevancia de materiales</div>';
+
+  const waIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>';
+
+  const suppliersHtml = suppliers.map(s => {
+    const distHtml = s.dist != null ? '<span class="dist-badge">📍 ' + s.dist.toFixed(1) + ' km</span>' : '';
+    const matchHtml = s.score > 0 ? '<span class="match-badge">✓ ' + (s.matMatches.length + s.colMatches.length) + ' coincidencias</span>' : '';
+    const matchDetail = s.matMatches.length
+      ? '<div class="supplier-matches">Materiales en común: <strong>' + s.matMatches.join(', ') + '</strong></div>'
+      : (s.colMatches.length ? '<div class="supplier-matches">Paleta compatible: <strong>' + s.colMatches.join(', ') + '</strong></div>' : '');
+    const waMsg = encodeURIComponent('Hola! Vi materiales de mi tablero de Pinterest que me interesan. ¿Pueden asesorarme?');
+    return '<div class="supplier-card">'
+      + '<div class="supplier-name">' + esc(s.name) + '</div>'
+      + '<div class="supplier-desc">' + esc(s.desc) + '</div>'
+      + '<div class="supplier-meta">' + distHtml + matchHtml + '<span class="supplier-addr">' + esc(s.address) + '</span></div>'
+      + matchDetail
+      + '<div class="supplier-actions">'
+      + '<a class="wa-btn" href="https://wa.me/' + esc(s.whatsapp) + '?text=' + waMsg + '" target="_blank" rel="noopener">'
+      + waIcon + 'Consultar por WhatsApp</a>'
+      + '</div></div>';
+  }).join('');
+
+  pb().innerHTML = userBar()
+    + '<div class="analyze-view">'
+    + '<div class="analyze-header">'
+    + '<div class="analyze-title">'
+    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>'
+    + 'Análisis del tablero'
+    + '<button class="pbtn pbtn-outline" style="padding:3px 10px;font-size:10px;margin-left:auto" onclick="backFromAnalysis()">← Volver a pines</button>'
+    + '</div>'
+    + '<div class="palette-row">' + paletteHtml + '</div>'
+    + '<div class="kw-row">' + kwHtml + '</div>'
+    + '</div>'
+    + geoBannerHtml
+    + '<div class="suppliers-list">'
+    + '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);padding:2px 0 8px">Proveedores en Córdoba</div>'
+    + suppliersHtml
+    + '</div></div>';
+}
+
+function backFromAnalysis() {
+  if (analyzedPins.length) renderPins(analyzedPins, currentBoardId);
+  else backToBoards();
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────────
