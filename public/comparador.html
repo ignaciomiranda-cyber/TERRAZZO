@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Comparador de Tableros — Terrazzo Instone</title>
+<title>Comparador de Inspiración — Instone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,360 +16,449 @@
   --mid:#6f6a60;
   --sub:#9b958a;
   --pale:#c4beb2;
-  --accent:#E0491A;
+  --green:#4a8a5a;
+  --red:#c04040;
   --pinterest:#E60023;
-  --chat-bg:#F5F2ED;
 }
-body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--warm);color:var(--ink);min-height:100vh;font-size:14px}
+body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--warm);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:14px}
+@media(max-width:760px){body{height:auto;overflow:auto}}
 
-/* ── NAV ──────────────────────────────────────── */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:50}
-.nav-left{display:flex;align-items:center;gap:6px}
+/* ── NAV ── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:#fff;height:52px;flex-shrink:0}
+.nav-left{display:flex;align-items:center;gap:8px}
 .nav-brand{font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
-.nav-badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);background:#EDEAE2;padding:3px 9px;border-radius:2px;margin-left:10px}
-.nav-back{font-size:12px;color:var(--sub);text-decoration:none;display:flex;align-items:center;gap:5px}
+.nav-badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);background:#EDEAE2;padding:3px 9px;border-radius:2px}
+.nav-back{font-size:12px;color:var(--sub);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s}
 .nav-back:hover{color:var(--ink)}
 
-/* ── HERO ─────────────────────────────────────── */
-.hero{padding:48px 32px 32px;max-width:1120px;margin:0 auto}
-.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.hero-eyebrow::before{content:"";display:inline-block;width:20px;height:1px;background:var(--sub)}
-.hero h1{font-size:clamp(24px,3.5vw,38px);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:12px}
-.hero-sub{font-size:14px;color:var(--mid);line-height:1.65;max-width:600px;margin-bottom:28px}
+/* ── LAYOUT ── */
+.compare-wrap{display:flex;flex:1;min-height:0}
+@media(max-width:760px){.compare-wrap{flex-direction:column;flex:none}}
 
-/* ── CONNECT BAR ──────────────────────────────── */
-.connect-bar{background:#fff;border:1px solid var(--line);border-radius:4px;padding:18px 24px;max-width:1120px;margin:0 auto 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.connect-bar p{flex:1;font-size:13px;color:var(--mid);min-width:200px}
-.btn-pinterest{display:inline-flex;align-items:center;gap:8px;background:var(--pinterest);color:#fff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:3px;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s}
-.btn-pinterest:hover{opacity:.88}
-.btn-pinterest svg{width:16px;height:16px;fill:#fff;flex-shrink:0}
-.btn-outline{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--ink);font-size:13px;font-weight:600;padding:10px 20px;border-radius:3px;border:1.5px solid var(--line);cursor:pointer;transition:border-color .15s}
-.btn-outline:hover{border-color:var(--ink)}
-.connected-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#16803c;background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 14px;border-radius:3px}
-.connected-badge::before{content:"";width:7px;height:7px;background:#16803c;border-radius:50%}
+/* ── PANEL ── */
+.panel{flex:1;display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--line)}
+.panel:last-child{border-right:none}
+.panel-head{padding:12px 18px;border-bottom:1px solid var(--line);background:#fff;flex-shrink:0;display:flex;align-items:center;gap:10px}
+.panel-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-p{background:var(--pinterest)}
+.icon-m{background:var(--ink)}
+.panel-icon svg{width:14px;height:14px;fill:#fff}
+.panel-meta{flex:1;min-width:0}
+.panel-title{font-size:12px;font-weight:700;color:var(--ink)}
+.panel-sub{font-size:10px;color:var(--sub);margin-top:1px}
+.panel-body{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
+@media(max-width:760px){.panel{min-height:420px;border-right:none;border-bottom:1px solid var(--line)}}
 
-/* ── SPLIT VIEW ───────────────────────────────── */
-.split{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1120px;margin:0 auto;padding:0 32px 48px}
-@media(max-width:720px){.split{grid-template-columns:1fr;padding:0 16px 32px}}
-.panel{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden}
-.panel-header{padding:16px 20px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.panel-title{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700}
-.panel-icon-pinterest{width:20px;height:20px;background:var(--pinterest);border-radius:3px;display:flex;align-items:center;justify-content:center}
-.panel-icon-pinterest svg{width:12px;height:12px;fill:#fff}
-.panel-icon-real{width:20px;height:20px;background:var(--ink);border-radius:3px;display:flex;align-items:center;justify-content:center}
-.panel-icon-real svg{width:12px;height:12px;fill:#fff}
-.panel-actions{display:flex;gap:8px;align-items:center}
-.select-board{font-size:11px;color:var(--mid);background:var(--warm);border:1px solid var(--line);border-radius:2px;padding:4px 8px;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239b958a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+/* ── PINTEREST STATES ── */
+.pstate{padding:36px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+.pstate-icon{width:52px;height:52px;border-radius:50%;background:#FFF0F0;display:flex;align-items:center;justify-content:center}
+.pstate-icon svg{width:26px;height:26px;fill:var(--pinterest)}
+.pstate h3{font-size:14px;font-weight:700}
+.pstate p{font-size:12px;color:var(--mid);line-height:1.65;max-width:260px}
 
-/* ── MASONRY GRID ─────────────────────────────── */
-.pin-grid{padding:16px;columns:2;gap:10px}
-.pin-grid.cols3{columns:3}
-.pin-item{break-inside:avoid;margin-bottom:10px;border-radius:3px;overflow:hidden;cursor:pointer;position:relative}
-.pin-item img{width:100%;display:block;border-radius:3px;transition:opacity .2s}
-.pin-item:hover img{opacity:.88}
-.pin-label{position:absolute;bottom:0;left:0;right:0;padding:8px 10px 9px;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);color:#fff;font-size:10px;font-weight:500;opacity:0;transition:opacity .2s;border-radius:0 0 3px 3px}
-.pin-item:hover .pin-label{opacity:1}
-.pin-placeholder{aspect-ratio:3/4;background:var(--chat-bg);border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--pale)}
-.pin-placeholder svg{width:24px;height:24px;stroke:currentColor;fill:none}
-.pin-placeholder span{font-size:11px}
+/* buttons */
+.pbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:2px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.02em;border:none;transition:opacity .15s}
+.pbtn-red{background:var(--pinterest);color:#fff}
+.pbtn-red:hover{opacity:.86}
+.pbtn-outline{background:transparent;border:1px solid var(--line);color:var(--mid)}
+.pbtn-outline:hover{border-color:var(--ink);color:var(--ink)}
+.pbtn-ink{background:var(--ink);color:#fff}
+.pbtn-ink:hover{opacity:.82}
+.pbtn svg{flex-shrink:0}
 
-/* ── EMPTY STATE ──────────────────────────────── */
-.empty-state{padding:48px 20px;text-align:center;color:var(--sub)}
-.empty-state svg{width:40px;height:40px;stroke:var(--pale);fill:none;margin-bottom:14px}
-.empty-state h3{font-size:14px;font-weight:600;color:var(--mid);margin-bottom:6px}
-.empty-state p{font-size:12px;line-height:1.6;max-width:240px;margin:0 auto 18px}
+/* setup notice */
+.setup-notice{margin:16px;padding:14px 16px;background:#fffbf0;border:1px solid #f0dca0;border-radius:2px}
+.setup-notice-t{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a6200;margin-bottom:6px}
+.setup-notice p{font-size:12px;color:#6a4a00;line-height:1.7}
+.setup-notice code{font-family:monospace;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:2px;font-size:11px}
 
-/* ── REAL MOOD SELECTOR ───────────────────────── */
-.mood-selector{padding:16px;border-bottom:1px solid var(--line)}
-.mood-selector label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:10px}
-.mood-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mood-opt{aspect-ratio:1;background:var(--chat-bg);border-radius:3px;border:2px solid transparent;cursor:pointer;overflow:hidden;position:relative;transition:border-color .15s}
-.mood-opt.selected{border-color:var(--ink)}
-.mood-opt canvas{width:100%;height:100%;display:block}
-.mood-opt-new{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;font-size:11px;color:var(--sub);text-decoration:none}
-.mood-opt-new svg{width:22px;height:22px;stroke:currentColor;fill:none}
-.mood-opt-new:hover{color:var(--ink)}
+/* user bar */
+.user-bar{padding:8px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:#fff;font-size:12px;flex-shrink:0}
+.user-avatar{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--line)}
+.user-name{font-weight:600;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.disc-btn{font-size:11px;background:none;border:none;color:var(--pale);cursor:pointer;font-family:inherit;transition:color .15s;flex-shrink:0}
+.disc-btn:hover{color:var(--red)}
 
-/* ── COMPARISON OVERLAY ───────────────────────── */
-.compare-toggle{padding:14px 32px;max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px;border-top:1px solid var(--line)}
-.compare-toggle label{font-size:12px;font-weight:600;color:var(--mid);display:flex;align-items:center;gap:8px;cursor:pointer}
-.toggle-sw{width:36px;height:20px;background:var(--line);border-radius:10px;position:relative;transition:background .2s;flex-shrink:0}
-.toggle-sw::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s}
-.toggle-sw.on{background:var(--ink)}
-.toggle-sw.on::after{transform:translateX(16px)}
-.color-match-info{font-size:11px;color:var(--sub);margin-left:auto}
+/* board selector */
+.board-wrap{padding:16px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;border-bottom:1px solid var(--line)}
+.board-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.board-row{display:flex;gap:8px;align-items:center}
+.board-sel{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:2px;font-size:12px;font-family:inherit;color:var(--ink);background:#fff;cursor:pointer;outline:none;transition:border-color .15s}
+.board-sel:focus{border-color:var(--ink)}
 
-/* ── FOOTER NOTE ──────────────────────────────── */
-.footer-note{max-width:1120px;margin:0 auto;padding:0 32px 40px;font-size:11px;color:var(--pale);line-height:1.6}
+/* pins */
+.pins-wrap{padding:10px;columns:2;column-gap:8px}
+.pin-card{break-inside:avoid;margin-bottom:8px;background:#fff;border-radius:2px;overflow:hidden;border:1px solid var(--line)}
+.pin-img{width:100%;display:block}
+.pin-title{padding:5px 7px 7px;font-size:10px;font-weight:600;color:var(--ink);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pin-empty{padding:40px 20px;text-align:center;color:var(--sub);font-size:12px}
+.load-more{display:block;width:calc(100% - 20px);margin:0 10px 12px;padding:8px;font-size:11px;font-weight:600;font-family:inherit;text-align:center;background:transparent;border:1px solid var(--line);border-radius:2px;cursor:pointer;color:var(--mid);transition:all .15s}
+.load-more:hover{border-color:var(--ink);color:var(--ink)}
+
+/* error */
+.perror{margin:14px;padding:13px 14px;background:#fff5f5;border:1px solid #f0c0c0;border-radius:2px;font-size:12px;color:#8a1a1a;line-height:1.65}
+.perror strong{display:block;margin-bottom:4px}
+
+/* spinner */
+.spinner{width:24px;height:24px;border:2px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--sub);font-size:12px}
+
+/* ── REAL MOOD PANEL ── */
+.mood-frame{width:100%;height:100%;border:none;display:block;flex:1}
+.mood-empty{padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.mood-empty-icon{width:48px;height:48px;border-radius:50%;background:#F1ECE2;display:flex;align-items:center;justify-content:center}
+.mood-empty-icon svg{width:22px;height:22px;fill:var(--sub)}
+.mood-empty p{font-size:12px;color:var(--mid);line-height:1.65;max-width:240px}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
   <div class="nav-left">
-    <a class="nav-brand" href="terrazzo-instone.html">TERRAZZO INSTONE</a>
-    <span class="nav-badge">Comparador</span>
+    <a href="terrazzo-instone.html" class="nav-brand">Instone</a>
+    <span class="nav-badge">COMPARADOR</span>
   </div>
-  <a class="nav-back" href="terrazzo-instone.html">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Volver al configurador
+  <a href="terrazzo-instone.html" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 3L5 8l5 5"/></svg>
+    Volver
   </a>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-eyebrow">Inspiración vs. Realidad</div>
-  <h1>Compará tu tablero de Pinterest<br>con tu Real Mood</h1>
-  <p class="hero-sub">Conectá tu cuenta de Pinterest para traer cualquier tablero y compararlo lado a lado con el moodboard que creaste en nuestro configurador.</p>
-</div>
+<div class="compare-wrap">
 
-<!-- CONNECT BAR -->
-<div class="connect-bar" id="connect-bar">
-  <p id="connect-msg">Para traer tus tableros de Pinterest, conectá tu cuenta primero.</p>
-  <div id="connect-actions">
-    <button class="btn-pinterest" id="btn-connect-pinterest" onclick="startPinterestAuth()">
-      <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-      Conectar Pinterest
-    </button>
-  </div>
-</div>
-
-<!-- SPLIT VIEW -->
-<div class="split" id="split-view">
-
-  <!-- PANEL IZQUIERDO: PINTEREST -->
+  <!-- ── PINTEREST ── -->
   <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">
-        <div class="panel-icon-pinterest">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-        </div>
-        Tablero de Pinterest
+    <div class="panel-head">
+      <div class="panel-icon icon-p">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
       </div>
-      <div class="panel-actions">
-        <select class="select-board" id="board-select" onchange="loadBoard(this.value)">
-          <option value="">Elegir tablero…</option>
-        </select>
+      <div class="panel-meta">
+        <div class="panel-title">Pinterest</div>
+        <div class="panel-sub" id="p-sub">Tu tablero de inspiración</div>
       </div>
     </div>
-    <div id="pinterest-content">
-      <div class="empty-state">
-        <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        <h3>Conectá tu Pinterest</h3>
-        <p>Tus tableros aparecerán aquí para elegir cuál comparar.</p>
-        <button class="btn-pinterest" onclick="startPinterestAuth()">
-          <svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" fill="#fff"/></svg>
-          Conectar ahora
-        </button>
-      </div>
-    </div>
+    <div class="panel-body" id="p-body"><!-- injected by JS --></div>
   </div>
 
-  <!-- PANEL DERECHO: REAL MOOD -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">
-        <div class="panel-icon-real">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#fff" opacity=".9"/><path d="M8 12l3 3 5-5" stroke="#1A1A18" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-        </div>
-        Tu Real Mood
+  <!-- ── REAL MOOD ── -->
+  <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel-head">
+      <div class="panel-icon icon-m">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       </div>
-      <div class="panel-actions">
-        <a href="terrazzo-instone.html" class="btn-outline" style="font-size:11px;padding:5px 12px;">
-          + Crear nuevo
-        </a>
+      <div class="panel-meta">
+        <div class="panel-title">Real Mood</div>
+        <div class="panel-sub">Tu moodboard guardado</div>
       </div>
     </div>
-    <div class="mood-selector">
-      <label>Moodboards guardados</label>
-      <div class="mood-options" id="mood-options">
-        <!-- populated by JS -->
-      </div>
-    </div>
-    <div id="real-mood-content">
-      <div class="empty-state" style="padding:32px 20px">
-        <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        <h3>Sin moodboards guardados</h3>
-        <p>Creá tu primer moodboard en el configurador y aparecerá aquí.</p>
-        <a href="terrazzo-instone.html" class="btn-outline">Ir al configurador</a>
-      </div>
-    </div>
+    <div class="panel-body" id="mood-body" style="display:flex;flex-direction:column"><!-- injected by JS --></div>
   </div>
 
-</div>
-
-<!-- DEMO MOCKUP (shown when Pinterest connected) hidden initially -->
-<div id="demo-section" style="display:none;max-width:1120px;margin:0 auto;padding:0 32px 48px">
-  <div style="background:#fff;border:1px solid var(--line);border-radius:4px;padding:24px;text-align:center;color:var(--sub)">
-    <p style="font-size:13px;margin-bottom:8px;font-weight:600;color:var(--mid)">Vista de comparación lado a lado</p>
-    <p style="font-size:12px;line-height:1.6">Cuando conectes Pinterest y elijas un tablero, las imágenes aparecerán aquí<br>junto a tu Real Mood para comparar paleta, texturas y estilo.</p>
-  </div>
-</div>
-
-<div class="footer-note" id="footer-note">
-  * La integración con Pinterest requiere autorización OAuth. Tus datos no se almacenan en nuestros servidores — el acceso es de solo lectura sobre tus tableros públicos y privados.
 </div>
 
 <script>
-// ── Pinterest OAuth (PKCE) ─────────────────────────────────────────────────
+// ── CONFIGURATION ──────────────────────────────────────────────────────────
+// Register your app at https://developers.pinterest.com
+// and set this constant. Redirect URI to add in your app settings:
+//   <your-site-origin>/comparador.html
+const PINTEREST_CLIENT_ID = '';
+const REDIRECT_URI = location.origin + location.pathname.replace(/\/+$/, '');
+const PINTEREST_SCOPE = 'boards:read,pins:read,user_accounts:read';
 
-const PINTEREST_APP_ID = ''; // TODO: reemplazar con el App ID de Pinterest cuando esté disponible
-const REDIRECT_URI = window.location.origin + window.location.pathname;
+// ── STATE ──────────────────────────────────────────────────────────────────
+let token = null;
+let pUser = null;
+let currentBoardId = null;
+let bookmark = null;
 
-function generateCodeVerifier(){
-  const arr = new Uint8Array(32);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+// ── PKCE CRYPTO ────────────────────────────────────────────────────────────
+function rndB64url(n) {
+  const a = new Uint8Array(n);
+  crypto.getRandomValues(a);
+  return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+async function sha256b64url(s) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
 }
 
-async function generateCodeChallenge(verifier){
-  const enc = new TextEncoder().encode(verifier);
-  const hash = await crypto.subtle.digest('SHA-256', enc);
-  return btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+// ── AUTH ───────────────────────────────────────────────────────────────────
+async function connectPinterest() {
+  if (!PINTEREST_CLIENT_ID) { renderSetupNotice(); return; }
+  const verifier = rndB64url(48);
+  const challenge = await sha256b64url(verifier);
+  const state = rndB64url(16);
+  sessionStorage.setItem('_pv', verifier);
+  sessionStorage.setItem('_ps', state);
+  location.href = 'https://www.pinterest.com/oauth/'
+    + '?client_id=' + encodeURIComponent(PINTEREST_CLIENT_ID)
+    + '&redirect_uri=' + encodeURIComponent(REDIRECT_URI)
+    + '&response_type=code'
+    + '&scope=' + encodeURIComponent(PINTEREST_SCOPE)
+    + '&code_challenge=' + encodeURIComponent(challenge)
+    + '&code_challenge_method=S256'
+    + '&state=' + encodeURIComponent(state);
 }
 
-async function startPinterestAuth(){
-  if(!PINTEREST_APP_ID){
-    showAppIdNeeded();
+async function exchangeCode(code) {
+  const verifier = sessionStorage.getItem('_pv');
+  if (!verifier) { renderError('Sesión expirada. Intentá conectar de nuevo.'); return; }
+  showLoading('Conectando con Pinterest...');
+  try {
+    const resp = await fetch('https://api.pinterest.com/v5/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: REDIRECT_URI,
+        client_id: PINTEREST_CLIENT_ID,
+        code_verifier: verifier
+      }).toString()
+    });
+    sessionStorage.removeItem('_pv');
+    sessionStorage.removeItem('_ps');
+    history.replaceState({}, '', location.pathname);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      if (resp.status === 401 || resp.status === 400) {
+        renderError(
+          '<strong>Intercambio de token fallido (HTTP ' + resp.status + ')</strong>'
+          + 'Pinterest puede requerir <code>client_secret</code> en el token endpoint incluso con PKCE. '
+          + 'En ese caso se necesita una función serverless (Vercel/Netlify/Cloudflare Workers) '
+          + 'para hacer el intercambio de forma segura — sin exponer la credencial en el browser. '
+          + 'Consultá al equipo técnico.<br><br>'
+          + '<small style="color:var(--sub)">' + JSON.stringify(err).slice(0, 220) + '</small>'
+        );
+      } else {
+        renderError('<strong>Error de Pinterest (HTTP ' + resp.status + ')</strong>' + JSON.stringify(err).slice(0, 300));
+      }
+      return;
+    }
+    const data = await resp.json();
+    token = data.access_token;
+    sessionStorage.setItem('_pt', token);
+    await loadUserAndBoards();
+  } catch (e) {
+    sessionStorage.removeItem('_pv');
+    sessionStorage.removeItem('_ps');
+    history.replaceState({}, '', location.pathname);
+    renderError(
+      '<strong>No se pudo conectar (CORS / red)</strong>'
+      + 'La API de Pinterest bloquea solicitudes de intercambio de token desde el browser. '
+      + 'Se necesita una función serverless (Vercel/Netlify/Cloudflare Workers) que actúe como proxy '
+      + 'para completar el flujo OAuth con el <code>client_secret</code> de forma segura. '
+      + 'El CEO fue notificado de esta decisión técnica pendiente.<br><br>'
+      + '<small style="color:var(--sub)">' + e.message + '</small>'
+    );
+  }
+}
+
+function disconnect() {
+  token = null; pUser = null; currentBoardId = null; bookmark = null;
+  sessionStorage.removeItem('_pt');
+  renderConnect();
+}
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function api(path) {
+  const r = await fetch('https://api.pinterest.com/v5' + path, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error('Pinterest API ' + r.status + ': ' + JSON.stringify(e).slice(0, 180)); }
+  return r.json();
+}
+
+async function loadUserAndBoards() {
+  showLoading('Cargando tableros...');
+  try {
+    const [user, boards] = await Promise.all([
+      api('/user_account'),
+      api('/boards?page_size=50')
+    ]);
+    pUser = user;
+    renderBoards(boards.items || []);
+  } catch (e) { renderError('<strong>Error al cargar tableros</strong>' + e.message); }
+}
+
+async function loadPins(boardId, bm) {
+  if (!bm) showLoading('Cargando pines...');
+  try {
+    const d = await api('/boards/' + boardId + '/pins?page_size=50' + (bm ? '&bookmark=' + encodeURIComponent(bm) : ''));
+    bookmark = d.bookmark || null;
+    bm ? appendPins(d.items || []) : renderPins(d.items || [], boardId);
+  } catch (e) { renderError('<strong>Error al cargar pines</strong>' + e.message); }
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+const pb = () => document.getElementById('p-body');
+const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function showLoading(msg) {
+  pb().innerHTML = '<div class="loading"><div class="spinner"></div><span>' + esc(msg) + '</span></div>';
+}
+
+function renderConnect() {
+  pb().innerHTML = '<div class="pstate">'
+    + '<div class="pstate-icon"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" fill="#E60023"/></svg></div>'
+    + '<h3>Conectá tu Pinterest</h3>'
+    + '<p>Conectá tu cuenta para importar un tablero y compararlo con tu Real Mood.</p>'
+    + '<button class="pbtn pbtn-red" onclick="connectPinterest()">'
+    + '<svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>'
+    + 'Conectar Pinterest</button>'
+    + '</div>';
+}
+
+function renderSetupNotice() {
+  pb().innerHTML = '<div class="setup-notice">'
+    + '<div class="setup-notice-t">App no configurada</div>'
+    + '<p>Para usar la integración de Pinterest es necesario:<br><br>'
+    + '1. Registrar una app en <strong>developers.pinterest.com</strong><br>'
+    + '2. Agregar la URI de redirección: <code>' + esc(REDIRECT_URI) + '</code><br>'
+    + '3. Establecer la constante <code>PINTEREST_CLIENT_ID</code> en <code>comparador.html</code><br><br>'
+    + 'Una vez configurado, el botón de conexión quedará activo automáticamente.</p>'
+    + '</div>';
+}
+
+function userBar() {
+  if (!pUser) return '';
+  const av = pUser.profile_image || '';
+  return '<div class="user-bar">'
+    + (av ? '<img class="user-avatar" src="' + esc(av) + '" alt="">' : '<div class="user-avatar"></div>')
+    + '<span class="user-name">' + esc(pUser.username || pUser.first_name || 'Usuario') + '</span>'
+    + '<button class="disc-btn" onclick="disconnect()">Desconectar</button>'
+    + '</div>';
+}
+
+function renderBoards(boards) {
+  if (!boards.length) {
+    pb().innerHTML = userBar() + '<div class="pstate"><p>No se encontraron tableros en tu cuenta.</p>'
+      + '<button class="pbtn pbtn-outline" onclick="disconnect()">Desconectar</button></div>';
     return;
   }
-  const verifier = generateCodeVerifier();
-  const challenge = await generateCodeChallenge(verifier);
-  sessionStorage.setItem('pkce_verifier', verifier);
-
-  const params = new URLSearchParams({
-    client_id: PINTEREST_APP_ID,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'code',
-    scope: 'boards:read,pins:read',
-    code_challenge: challenge,
-    code_challenge_method: 'S256',
-    state: crypto.randomUUID()
-  });
-  window.location.href = 'https://www.pinterest.com/oauth/?' + params;
+  const opts = boards.map(b =>
+    '<option value="' + esc(b.id) + '">' + esc(b.name) + (b.pin_count ? ' (' + b.pin_count + ')' : '') + '</option>'
+  ).join('');
+  pb().innerHTML = userBar()
+    + '<div class="board-wrap"><div class="board-label">Elegí un tablero</div>'
+    + '<div class="board-row">'
+    + '<select class="board-sel" id="board-sel"><option value="">Seleccionar...</option>' + opts + '</select>'
+    + '<button class="pbtn pbtn-red" style="padding:8px 14px" onclick="pickBoard()">Ver</button>'
+    + '</div></div>';
 }
 
-function showAppIdNeeded(){
-  const bar = document.getElementById('connect-bar');
-  bar.innerHTML = `
-    <div style="width:100%">
-      <p style="font-size:13px;color:var(--mid);margin-bottom:8px;font-weight:600">⚠️ Configuración pendiente</p>
-      <p style="font-size:12px;color:var(--sub);line-height:1.6">Para activar la conexión con Pinterest necesitamos registrar una app en <strong>developers.pinterest.com</strong> y obtener un App ID. Consultá a tu equipo técnico para completar la integración.</p>
-    </div>`;
+function pickBoard() {
+  const sel = document.getElementById('board-sel');
+  if (!sel || !sel.value) return;
+  currentBoardId = sel.value;
+  bookmark = null;
+  loadPins(currentBoardId, null);
 }
 
-// ── Handle OAuth callback ──────────────────────────────────────────────────
-async function handleOAuthCallback(){
-  const params = new URLSearchParams(window.location.search);
+function renderPins(pins, boardId) {
+  if (!pins.length) {
+    pb().innerHTML = userBar()
+      + '<div class="pin-empty">Este tablero no tiene pines todavía.</div>'
+      + '<div style="padding:10px 16px"><button class="pbtn pbtn-outline" onclick="backToBoards()">← Tableros</button></div>';
+    return;
+  }
+  pb().innerHTML = userBar()
+    + '<div style="padding:8px 10px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+    + '<button class="pbtn pbtn-outline" style="padding:5px 10px;font-size:11px" onclick="backToBoards()">← Tableros</button>'
+    + '</div>'
+    + '<div class="pins-wrap" id="pins-wrap">' + pins.map(pinCard).join('') + '</div>'
+    + (bookmark ? '<button class="load-more" onclick="loadMore()">Cargar más pines</button>' : '');
+}
+
+function appendPins(pins) {
+  const w = document.getElementById('pins-wrap');
+  if (w) w.insertAdjacentHTML('beforeend', pins.map(pinCard).join(''));
+  const btn = document.querySelector('.load-more');
+  if (btn) { if (bookmark) { btn.textContent = 'Cargar más pines'; btn.disabled = false; } else btn.remove(); }
+}
+
+function pinCard(p) {
+  const img = bestImg(p);
+  const t = p.title || p.description || '';
+  return '<div class="pin-card">'
+    + (img ? '<img class="pin-img" src="' + esc(img) + '" alt="" loading="lazy">' : '')
+    + (t ? '<div class="pin-title">' + esc(t) + '</div>' : '')
+    + '</div>';
+}
+
+function bestImg(p) {
+  try {
+    const m = p.media && p.media.images;
+    if (!m) return null;
+    return (m['400x300'] || m['600x'] || m['originals'] || m['150x150'] || {}).url || null;
+  } catch { return null; }
+}
+
+function backToBoards() {
+  currentBoardId = null; bookmark = null;
+  loadUserAndBoards();
+}
+
+function loadMore() {
+  if (!currentBoardId || !bookmark) return;
+  const btn = document.querySelector('.load-more');
+  if (btn) { btn.textContent = 'Cargando...'; btn.disabled = true; }
+  loadPins(currentBoardId, bookmark);
+}
+
+function renderError(html) {
+  pb().innerHTML = '<div class="perror">' + html + '</div>'
+    + '<div style="padding:10px 14px"><button class="pbtn pbtn-outline" onclick="renderConnect()">Volver</button></div>';
+}
+
+// ── REAL MOOD PANEL ────────────────────────────────────────────────────────
+function renderMoodPanel() {
+  const body = document.getElementById('mood-body');
+  const hasMb = !!localStorage.getItem('ins_mb_pos');
+  if (hasMb) {
+    body.innerHTML = '<iframe class="mood-frame" src="terrazzo-instone.html?compare=1" title="Real Mood"></iframe>';
+    body.style.display = 'flex';
+    body.style.flexDirection = 'column';
+  } else {
+    body.innerHTML = '<div class="mood-empty">'
+      + '<div class="mood-empty-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>'
+      + '<p>No hay un Real Mood guardado todavía. Componé tu moodboard en el configurador y volvé acá para compararlo.</p>'
+      + '<a href="terrazzo-instone.html" class="pbtn pbtn-ink" style="text-decoration:none">'
+      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-1.41 1.41L16.17 9H4v2h12.17l-5.58 5.59L12 18l8-8z"/></svg>'
+      + 'Ir al configurador</a>'
+      + '</div>';
+  }
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+(function init() {
+  renderMoodPanel();
+
+  const params = new URLSearchParams(location.search);
   const code = params.get('code');
-  if(!code) return;
+  const error = params.get('error');
 
-  // Clean URL
-  history.replaceState({}, '', window.location.pathname);
-
-  const verifier = sessionStorage.getItem('pkce_verifier');
-  if(!verifier){ showError('Sesión expirada. Intentá de nuevo.'); return; }
-
-  // Note: token exchange requires a backend or Netlify/Vercel function
-  // because Pinterest doesn't support CORS on the token endpoint.
-  // For now, store the code and show a message.
-  showConnectedPlaceholder();
-}
-
-function showConnectedPlaceholder(){
-  const bar = document.getElementById('connect-bar');
-  bar.innerHTML = `
-    <span class="connected-badge">Pinterest conectado</span>
-    <p style="font-size:12px;color:var(--sub);flex:1">Tu cuenta está vinculada. Elegí un tablero en el panel izquierdo.</p>
-    <button class="btn-outline" onclick="disconnectPinterest()" style="font-size:11px;padding:5px 12px">Desconectar</button>`;
-
-  // Show demo boards in select
-  const sel = document.getElementById('board-select');
-  const boards = JSON.parse(localStorage.getItem('pinterest_boards') || '[]');
-  boards.forEach(b=>{
-    const o = document.createElement('option');
-    o.value = b.id; o.textContent = b.name;
-    sel.appendChild(o);
-  });
-
-  // Replace empty state with grid placeholder
-  document.getElementById('pinterest-content').innerHTML = `
-    <div class="pin-grid" id="pin-grid">
-      ${[1,2,3,4,5,6].map(i=>`
-        <div class="pin-item">
-          <div class="pin-placeholder">
-            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Pin ${i}</span>
-          </div>
-        </div>`).join('')}
-    </div>`;
-}
-
-function disconnectPinterest(){
-  localStorage.removeItem('pinterest_token');
-  localStorage.removeItem('pinterest_boards');
-  window.location.reload();
-}
-
-function loadBoard(boardId){
-  if(!boardId) return;
-  // With a real token, call: GET https://api.pinterest.com/v5/boards/{boardId}/pins
-  console.log('Load board', boardId);
-}
-
-function showError(msg){
-  document.getElementById('connect-bar').innerHTML = `<p style="font-size:13px;color:#c0392b">${msg}</p>`;
-}
-
-// ── Real Mood (from localStorage) ─────────────────────────────────────────
-function loadSavedMoods(){
-  const moods = JSON.parse(localStorage.getItem('instone_moods') || '[]');
-  const container = document.getElementById('mood-options');
-  if(!moods.length){
-    container.closest('.mood-selector').style.display = 'none';
+  if (error) {
+    history.replaceState({}, '', location.pathname);
+    renderConnect();
     return;
   }
 
-  container.innerHTML = moods.slice(0,3).map((m,i)=>`
-    <div class="mood-opt ${i===0?'selected':''}" onclick="selectMood(${i})" data-idx="${i}">
-      <img src="${m.thumbnail}" alt="Mood ${i+1}" style="width:100%;height:100%;object-fit:cover;display:block">
-    </div>`).join('')
-    + `<a href="terrazzo-instone.html" class="mood-opt mood-opt-new">
-        <svg viewBox="0 0 24 24" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuevo
-      </a>`;
-
-  // Show first mood
-  if(moods[0]?.thumbnail){
-    document.getElementById('real-mood-content').innerHTML = `
-      <div style="padding:16px">
-        <img src="${moods[0].thumbnail}" style="width:100%;border-radius:3px;display:block">
-      </div>`;
+  if (code) {
+    exchangeCode(code);
+    return;
   }
-}
 
-function selectMood(idx){
-  document.querySelectorAll('.mood-opt').forEach(el=>el.classList.remove('selected'));
-  document.querySelector(`.mood-opt[data-idx="${idx}"]`)?.classList.add('selected');
-  const moods = JSON.parse(localStorage.getItem('instone_moods') || '[]');
-  const m = moods[idx];
-  if(m?.thumbnail){
-    document.getElementById('real-mood-content').innerHTML = `
-      <div style="padding:16px">
-        <img src="${m.thumbnail}" style="width:100%;border-radius:3px;display:block">
-      </div>`;
+  const saved = sessionStorage.getItem('_pt');
+  if (saved) {
+    token = saved;
+    loadUserAndBoards();
+    return;
   }
-}
 
-// ── Init ───────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadSavedMoods();
-  // Check if returning from Pinterest OAuth
-  if(window.location.search.includes('code=')){
-    handleOAuthCallback();
-  }
-});
+  renderConnect();
+})();
 </script>
 </body>
 </html>

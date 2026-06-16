@@ -290,6 +290,18 @@ button.abtn:hover{background:#EAE6DD}
   .slab-row{grid-template-columns:repeat(auto-fill,minmax(82px,1fr))}
   .tex-row{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
 }
+/* ── compare-mode: solo muestra el mb-stage (usado via ?compare=1) ── */
+body.compare-mode{overflow:hidden}
+body.compare-mode .app{padding:0;margin:0;max-width:none}
+body.compare-mode h1,body.compare-mode .subtitle,
+body.compare-mode .mb-section-title,body.compare-mode .mb-section-sub,
+body.compare-mode .mb-viewtoggle,body.compare-mode .kscene,
+body.compare-mode .mb-controls,body.compare-mode .mb-legend,
+body.compare-mode .mb-providers,body.compare-mode .modal-overlay,
+body.compare-mode .toast{display:none!important}
+body.compare-mode .moodboard-section{margin:0}
+body.compare-mode .mb-body{margin:0}
+body.compare-mode .mb-stage{min-height:100vh;border:none;border-radius:0}
 </style>
 </head>
 <body>
@@ -1833,6 +1845,7 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
 buildPresetGrid();buildBaseGrid();buildStonePicker();buildFaplac();buildSlabs();buildCortinas();buildTusor();buildPisos();buildPantone();buildKitchen();restoreFromUrl();
 updateMbPreview();
 mbInitDnD();
+(function(){if(new URLSearchParams(location.search).get('compare')==='1')document.body.classList.add('compare-mode');})();
 </script>
 
 
