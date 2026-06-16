@@ -123,7 +123,7 @@ button.abtn:hover{background:#EAE6DD}
 .ks-tab+.ks-tab{border-left:1px solid #E4DFD5}
 .ks-tab.active{background:#1A1A18;color:#fff}
 .kscene{display:none}
-.ks-frame{position:relative;width:100%;max-width:760px;margin:0 auto;aspect-ratio:3/2;overflow:hidden;border:1px solid #D8D3C9;border-radius:2px;background:#ECE7DD;box-shadow:0 30px 60px -30px rgba(60,44,28,.4)}
+.ks-frame{position:relative;width:100%;max-width:960px;margin:0 auto;aspect-ratio:3/2;overflow:hidden;border:1px solid #D8D3C9;border-radius:2px;background:#ECE7DD;box-shadow:0 30px 60px -30px rgba(60,44,28,.4)}
 .ks-wall{position:absolute;top:0;left:0;width:100%;height:82%;display:block;z-index:0}
 .ks-backsplash{position:absolute;top:39.6%;left:21%;right:1%;height:9.4%;z-index:1;overflow:hidden;box-shadow:inset 0 3px 7px rgba(20,14,6,.20),inset 0 -2px 4px rgba(20,14,6,.12)}
 .ks-backsplash canvas{display:block;width:100%;height:100%}
@@ -1668,10 +1668,10 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
     let placed=0;const maxTries=count*20;
     for(let i=0;i<maxTries&&placed<count;i++){
       const rx=sp.minR+Math.random()*(sp.maxR-sp.minR);
-      const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
+      const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+1;
       if(pad*2>=RS)continue;
       const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md*0.72)){placer.add(x,y,md*0.72,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+      if(!placer.overlaps(x,y,md*0.28)){placer.add(x,y,md*0.28,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
     }
   });
   all.sort((a,b)=>b.r-a.r);
