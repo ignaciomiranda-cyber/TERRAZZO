@@ -545,8 +545,9 @@ function renderMoodPanel() {
   body.innerHTML = selectorHtml
     + '<iframe class="mood-frame" id="mood-iframe" src="terrazzo-instone.html?compare=1" title="Real Mood"></iframe>';
 
-  // Pre-select first project if no current unsaved state
-  if (!hasCurrent && hasProjects) {
+  // If there's an autosave, the iframe restores it automatically — skip force-loading project 0
+  const hasAutosave = !!localStorage.getItem('ins_mb_autosave');
+  if (!hasCurrent && !hasAutosave && hasProjects) {
     loadMoodProject(0);
   }
 }
