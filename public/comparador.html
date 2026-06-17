@@ -49,6 +49,15 @@ body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-
 .panel-body{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
 @media(max-width:760px){.panel{min-height:420px;border-right:none;border-bottom:1px solid var(--line)}}
 
+/* ── TABS ── */
+.panel-tabs{display:flex;border-bottom:1px solid var(--line);background:#fff;flex-shrink:0}
+.panel-tab{padding:11px 18px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;color:var(--sub);transition:color .15s,border-color .15s;white-space:nowrap;user-select:none;display:flex;align-items:center;gap:6px}
+.panel-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.panel-tab:hover:not(.active){color:var(--ink)}
+.tab-pane{flex:1;min-height:0;display:none;flex-direction:column}
+.tab-pane.active{display:flex}
+.espec-frame{width:100%;flex:1;border:none;min-height:0}
+
 /* ── PINTEREST STATES ── */
 .pstate{padding:36px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
 .pstate-icon{width:52px;height:52px;border-radius:50%;background:#FFF0F0;display:flex;align-items:center;justify-content:center}
@@ -210,18 +219,35 @@ body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-
 
 <div class="compare-wrap">
 
-  <!-- ── PINTEREST ── -->
+  <!-- ── PINTEREST / ASESOR ── -->
   <div class="panel">
-    <div class="panel-head">
-      <div class="panel-icon icon-p">
-        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-pinterest" onclick="switchTab('pinterest')">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        Comparar Pinterest
       </div>
-      <div class="panel-meta">
-        <div class="panel-title">Pinterest</div>
-        <div class="panel-sub" id="p-sub">Tu tablero de inspiración</div>
+      <div class="panel-tab" id="tab-espec" onclick="switchTab('espec')">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        Asesor Técnico
       </div>
     </div>
-    <div class="panel-body" id="p-body"><!-- injected by JS --></div>
+
+    <div class="tab-pane active" id="pane-pinterest">
+      <div class="panel-head">
+        <div class="panel-icon icon-p">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        </div>
+        <div class="panel-meta">
+          <div class="panel-title">Pinterest</div>
+          <div class="panel-sub" id="p-sub">Tu tablero de inspiración</div>
+        </div>
+      </div>
+      <div class="panel-body" id="p-body"><!-- injected by JS --></div>
+    </div>
+
+    <div class="tab-pane" id="pane-espec">
+      <iframe class="espec-frame" id="espec-frame" src="" title="Asesor Técnico"></iframe>
+    </div>
   </div>
 
   <!-- ── REAL MOOD ── -->
@@ -477,6 +503,17 @@ function pinCard(p) {
     + (img ? '<img class="pin-img" src="' + esc(img) + '" alt="" loading="lazy">' : '')
     + (t ? '<div class="pin-title">' + esc(t) + '</div>' : '')
     + '</div>';
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('pane-' + tab).classList.add('active');
+  if (tab === 'espec') {
+    const fr = document.getElementById('espec-frame');
+    if (fr && !fr.src) fr.src = 'especificador.html';
+  }
 }
 
 function bestImg(p) {
