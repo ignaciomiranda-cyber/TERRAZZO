@@ -302,11 +302,105 @@ body.compare-mode .toast{display:none!important}
 body.compare-mode .moodboard-section{margin:0}
 body.compare-mode .mb-body{margin:0}
 body.compare-mode .mb-stage{min-height:100vh;border:none;border-radius:0}
+/* ── City selector ────────────────────────────────── */
+.city-overlay{position:fixed;inset:0;background:#fff;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;transition:opacity .35s,transform .35s}
+.city-overlay.hidden{opacity:0;pointer-events:none;transform:translateY(-8px)}
+.city-brand-top{font-size:11px;font-weight:700;letter-spacing:.16em;color:#1A1A18;margin-bottom:60px}
+.city-q{font-size:clamp(28px,6vw,52px);font-weight:700;letter-spacing:-.02em;color:#1A1A18;text-align:center;margin-bottom:10px}
+.city-sub{font-size:13px;color:#9b958a;text-align:center;margin-bottom:52px;letter-spacing:.01em;max-width:360px;line-height:1.6}
+.city-options{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.city-btn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:24px 36px;border:1.5px solid #E4DFD5;border-radius:16px;background:#fff;cursor:pointer;font-family:inherit;transition:border-color .2s,box-shadow .2s,transform .15s;text-align:left;min-width:180px}
+.city-btn:hover{border-color:#1A1A18;box-shadow:0 8px 32px rgba(0,0,0,.1);transform:translateY(-2px)}
+.city-btn-name{font-size:20px;font-weight:700;color:#1A1A18;letter-spacing:-.01em}
+.city-btn-prov{font-size:11px;color:#b3ad9f;font-weight:500;letter-spacing:.01em;margin-top:2px}
+.city-btn-tag{margin-top:14px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;background:#F1ECE2;padding:4px 10px;border-radius:100px;align-self:flex-start}
+body.compare-mode .city-overlay{display:none!important}
+body.compare-mode .projects-panel{display:none!important}
+/* ── Projects panel (Pinterest style) ─────────────── */
+.projects-panel{display:none;padding-bottom:40px;border-bottom:1px solid #E4DFD5;margin-bottom:40px}
+.projects-panel.visible{display:block;animation:projFadeIn .45s ease both}
+@keyframes projFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.proj-header{margin-bottom:24px}
+.proj-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:8px}
+.proj-title{font-size:22px;font-weight:700;letter-spacing:-.01em;color:#1A1A18;margin-bottom:4px}
+.proj-subtitle{font-size:12px;color:#9b958a}
+.proj-search-wrap{position:relative;margin-bottom:16px}
+.proj-search{width:100%;padding:13px 18px 13px 48px;border:1.5px solid #D8D3C9;border-radius:100px;font-size:14px;font-family:inherit;background:#fff;color:#1A1A18;outline:none;transition:border-color .15s,box-shadow .15s}
+.proj-search:focus{border-color:#1A1A18;box-shadow:0 0 0 3px rgba(26,26,24,.07)}
+.proj-search-ico{position:absolute;left:17px;top:50%;transform:translateY(-50%);pointer-events:none;color:#9b958a}
+.proj-search-ico svg{display:block;width:18px;height:18px}
+.proj-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.proj-filter{font-size:11px;padding:7px 16px;border:1px solid #D0CBC2;border-radius:100px;background:transparent;color:#6f6a60;cursor:pointer;font-family:inherit;font-weight:500;transition:background .15s,border-color .15s,color .15s;white-space:nowrap}
+.proj-filter:hover{border-color:#1A1A18;color:#1A1A18}
+.proj-filter.active{background:#1A1A18;color:#fff;border-color:#1A1A18}
+.proj-masonry{columns:3 180px;column-gap:14px}
+.proj-card{break-inside:avoid;margin-bottom:14px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);position:relative;transition:box-shadow .25s,transform .2s}
+.proj-card:hover{box-shadow:0 12px 36px rgba(0,0,0,.13),0 4px 10px rgba(0,0,0,.07);transform:translateY(-3px)}
+.proj-card-img{display:block;width:100%;object-fit:cover}
+.proj-card-bg{display:block;width:100%}
+.proj-card-body{padding:12px 14px 14px}
+.proj-card-tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:4px}
+.proj-card-name{font-size:13px;font-weight:700;color:#1A1A18;line-height:1.3;margin-bottom:3px}
+.proj-card-loc{font-size:11px;color:#b3ad9f;display:flex;align-items:center;gap:3px}
+.proj-card-loc svg{width:10px;height:10px;flex-shrink:0}
+.proj-card-overlay{position:absolute;inset:0;background:linear-gradient(175deg,rgba(26,26,24,0) 35%,rgba(26,26,24,.75));opacity:0;transition:opacity .2s;display:flex;align-items:flex-end;padding:18px;gap:8px;flex-wrap:wrap}
+.proj-card:hover .proj-card-overlay{opacity:1}
+.proj-ov-btn{font-size:11px;font-weight:700;letter-spacing:.02em;padding:9px 15px;border-radius:100px;cursor:pointer;border:none;font-family:inherit;white-space:nowrap;transition:opacity .15s}
+.proj-ov-btn.primary{background:#fff;color:#1A1A18}
+.proj-ov-btn.secondary{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.45)}
+.proj-ov-btn:hover{opacity:.85}
+.proj-empty{text-align:center;padding:40px 20px;color:#9b958a;font-size:13px;display:none}
+@media(max-width:600px){
+  .proj-masonry{columns:2 130px;column-gap:10px}
+  .proj-card{margin-bottom:10px;border-radius:12px}
+  .city-btn{min-width:140px;padding:18px 24px}
+}
+@media(max-width:380px){.proj-masonry{columns:1}}
 </style>
 </head>
 <body>
 
+<!-- City selector overlay -->
+<div class="city-overlay" id="city-overlay">
+  <div class="city-brand-top">INSTONE</div>
+  <div class="city-q">¿De dónde sos?</div>
+  <div class="city-sub">Te mostramos proyectos realizados y materiales disponibles en tu ciudad</div>
+  <div class="city-options">
+    <button type="button" class="city-btn" onclick="selectCity('cordoba')">
+      <span class="city-btn-name">Córdoba</span>
+      <span class="city-btn-prov">Provincia de Córdoba</span>
+      <span class="city-btn-tag">12 proyectos</span>
+    </button>
+  </div>
+</div>
+
 <div class="app">
+  <!-- Projects panel (shown after city selection) -->
+  <div class="projects-panel" id="projects-panel">
+    <div class="proj-header">
+      <div class="proj-eyebrow">Córdoba · Capital</div>
+      <div class="proj-title">Proyectos realizados</div>
+      <div class="proj-subtitle">Obras con terrazzo Instone en Córdoba</div>
+    </div>
+    <div class="proj-search-wrap">
+      <span class="proj-search-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="search" class="proj-search" id="proj-search-input" placeholder="Buscar por espacio, barrio o estilo…" oninput="filterProjects()">
+    </div>
+    <div class="proj-filters" id="proj-filters">
+      <button type="button" class="proj-filter active" onclick="setProjFilter(this,'all')">Todos</button>
+      <button type="button" class="proj-filter" onclick="setProjFilter(this,'Cocina')">Cocina</button>
+      <button type="button" class="proj-filter" onclick="setProjFilter(this,'Baño')">Baño</button>
+      <button type="button" class="proj-filter" onclick="setProjFilter(this,'Exterior')">Exterior</button>
+      <button type="button" class="proj-filter" onclick="setProjFilter(this,'Local')">Local</button>
+      <button type="button" class="proj-filter" onclick="setProjFilter(this,'Comedor')">Comedor</button>
+      <button type="button" class="proj-filter" onclick="setProjFilter(this,'Piso')">Piso</button>
+    </div>
+    <div class="proj-masonry" id="proj-grid"></div>
+    <div class="proj-empty" id="proj-empty">No hay proyectos que coincidan con tu búsqueda.</div>
+  </div>
+
   <h1>Configurador de terrazzo</h1>
   <p class="subtitle">Combiná materiales y elegí tu terrazzo</p>
   <!-- Moodboard / Cabinet Pairing -->
@@ -1846,6 +1940,77 @@ buildPresetGrid();buildBaseGrid();buildStonePicker();buildFaplac();buildSlabs();
 updateMbPreview();
 mbInitDnD();
 (function(){if(new URLSearchParams(location.search).get('compare')==='1')document.body.classList.add('compare-mode');})();
+
+// ── City selector + Projects panel ──────────────────────────────
+const PROJECTS=[
+  {id:1,title:'Cocina abierta',loc:'Nueva Córdoba',tipo:'Cocina',terrazzo:'B7',img:'cocina-ambiente.jpg.webp',imgH:220},
+  {id:2,title:'Mesa de jardín',loc:'Cerro de las Rosas',tipo:'Exterior',terrazzo:'G30',img:'mesa-ambiente.jpg.jpg',imgH:190},
+  {id:3,title:'Mesa comedor',loc:'Güemes',tipo:'Comedor',terrazzo:'B6',img:'mesa-ambienteop2.jpg.jpg',imgH:205},
+  {id:4,title:'Baño spa',loc:'Villa Belgrano',tipo:'Baño',terrazzo:'B1',grad:'linear-gradient(135deg,#F0EDE6,#E0D5C8)',imgH:245},
+  {id:5,title:'Mostrador cafetería',loc:'Centro',tipo:'Local',terrazzo:'N26',grad:'linear-gradient(135deg,#2A2620,#3C3428)',imgH:165},
+  {id:6,title:'Piso living',loc:'Alto Verde',tipo:'Piso',terrazzo:'G32',grad:'linear-gradient(135deg,#C4C2BC,#A8A6A0)',imgH:190},
+  {id:7,title:'Barra de cocina',loc:'Palermo Chico',tipo:'Cocina',terrazzo:'V51',grad:'linear-gradient(135deg,#A8C4A6,#88A686)',imgH:170},
+  {id:8,title:'Recepción hotel',loc:'Nueva Córdoba',tipo:'Local',terrazzo:'R40',grad:'linear-gradient(135deg,#D0A49C,#B45C4C)',imgH:210},
+  {id:9,title:'Escalera principal',loc:'Jardín Espinosa',tipo:'Escalera',terrazzo:'B3',grad:'linear-gradient(135deg,#F4F2EC,#E6E2DA)',imgH:255},
+  {id:10,title:'Baño minimalista',loc:'Arguello',tipo:'Baño',terrazzo:'N23',grad:'linear-gradient(135deg,#2A2A28,#181818)',imgH:175},
+  {id:11,title:'Borde de piscina',loc:'Mendiolaza',tipo:'Exterior',terrazzo:'B8',grad:'linear-gradient(135deg,#E8C4BC,#D0A49C)',imgH:155},
+  {id:12,title:'Showroom de diseño',loc:'Alberdi',tipo:'Local',terrazzo:'G31',grad:'linear-gradient(135deg,#545250,#3C3A38)',imgH:195},
+];
+let _projFilter='all';
+
+function selectCity(city){
+  if(new URLSearchParams(location.search).get('compare')==='1')return;
+  const ov=document.getElementById('city-overlay');
+  if(!ov)return;
+  ov.classList.add('hidden');
+  setTimeout(()=>{
+    ov.style.display='none';
+    const panel=document.getElementById('projects-panel');
+    if(panel){panel.classList.add('visible');renderProjects();}
+  },360);
+}
+function renderProjects(){
+  const query=(document.getElementById('proj-search-input')||{}).value||'';
+  const grid=document.getElementById('proj-grid');
+  const empty=document.getElementById('proj-empty');
+  if(!grid)return;
+  let items=PROJECTS;
+  if(_projFilter&&_projFilter!=='all')items=items.filter(p=>p.tipo===_projFilter);
+  if(query){const q=query.toLowerCase();items=items.filter(p=>p.title.toLowerCase().includes(q)||p.loc.toLowerCase().includes(q)||p.tipo.toLowerCase().includes(q));}
+  if(!items.length){grid.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  const locSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+  grid.innerHTML=items.map(p=>{
+    const media=p.img
+      ?`<img class="proj-card-img" src="${p.img}" alt="${p.title}" style="height:${p.imgH}px">`
+      :`<div class="proj-card-bg" style="height:${p.imgH}px;background:${p.grad}"></div>`;
+    return `<div class="proj-card" data-tipo="${p.tipo}">
+      ${media}
+      <div class="proj-card-overlay">
+        <button type="button" class="proj-ov-btn primary" onclick="event.stopPropagation();scrollToConfig()">Configurar terrazzo</button>
+        <button type="button" class="proj-ov-btn secondary" onclick="event.stopPropagation()">Ver más</button>
+      </div>
+      <div class="proj-card-body">
+        <div class="proj-card-tag">${p.tipo} · ${p.terrazzo}</div>
+        <div class="proj-card-name">${p.title}</div>
+        <div class="proj-card-loc">${locSvg}${p.loc}, Córdoba</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setProjFilter(btn,tipo){
+  _projFilter=tipo;
+  document.querySelectorAll('.proj-filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProjects();
+}
+function filterProjects(){renderProjects();}
+function scrollToConfig(){
+  const el=document.querySelector('.app>h1');
+  if(el){const top=el.getBoundingClientRect().top+window.scrollY-20;window.scrollTo({top,behavior:'smooth'});}
+}
+// Hide overlay in compare mode
+(function(){if(new URLSearchParams(location.search).get('compare')==='1'){const co=document.getElementById('city-overlay');if(co)co.style.display='none';}})();
 </script>
 
 
