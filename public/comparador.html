@@ -554,13 +554,27 @@ function loadMoodProject(idx) {
   if (idx === '' || idx === null || idx === undefined) return;
   const proj = savedProjects[parseInt(idx)];
   if (!proj || !proj.state) return;
-  // Inject project's mbPos into localStorage so the iframe picks it up on load
   try {
     if (proj.state.mbPos) localStorage.setItem('ins_mb_pos', JSON.stringify(proj.state.mbPos));
   } catch(e) {}
-  // Reload the iframe
   const fr = document.getElementById('mood-iframe');
-  if (fr) { fr.src = fr.src; }
+  if (!fr) return;
+  const pid = proj.id;
+  // Cache-buster forces a genuine reload (fr.src = fr.src is a no-op in modern browsers)
+  fr.src = 'terrazzo-instone.html?compare=1&_=' + Date.now();
+  // Poll until the bundle's loadProject function is available (async unpack)
+  let tries = 0;
+  const timer = setInterval(() => {
+    tries++;
+    try {
+      const win = fr.contentWindow;
+      if (win && typeof win.loadProject === 'function') {
+        clearInterval(timer);
+        win.loadProject(pid);
+      }
+    } catch(e) {}
+    if (tries > 50) clearInterval(timer); // 10s timeout
+  }, 200);
 }
 
 // ── ANÁLISIS DE TABLERO ─────────────────────────────────────────────────────
