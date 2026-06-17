@@ -248,6 +248,7 @@ body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-
 // and set this constant. Redirect URI to add in your app settings:
 //   <your-site-origin>/comparador.html
 const PINTEREST_CLIENT_ID = '1581664';
+const PINTEREST_ACCESS_TOKEN = 'pina_AMAWAIQYABKS4BAAGAAOUD343M65HHQBQBIQCQSWTIHYHVCEICNSJHU5IIMULEXXFIBE2M33AI33FV55VYJMYHNY43HXZYQA';
 const REDIRECT_URI = location.origin + location.pathname.replace(/\/+$/, '');
 const PINTEREST_SCOPE = 'boards:read,pins:read,user_accounts:read';
 
@@ -580,13 +581,12 @@ function loadMoodProject(idx) {
 // ── ANÁLISIS DE TABLERO ─────────────────────────────────────────────────────
 
 // Scalable supplier registry — add entries here as new partners join
-// Update whatsapp number with real number before launch
 const SUPPLIERS = [
   {
     id:'instone', name:'Instone',
     desc:'Revestimientos de piedra natural, terrazzo y superficies de diseño',
     address:'Cañada 154, Córdoba', lat:-31.4201, lng:-64.1888,
-    whatsapp:'5493516881234',
+    whatsapp:'5493513578738',
     materiales:['piedra','terrazzo','mármol','granito','concreto','hormigón','travertino','cuarcita','microcemento'],
     colores:['gris','blanco','beige','negro','crema','topo','arena']
   }
@@ -984,9 +984,10 @@ function renderWizardStep() {
     return;
   }
 
-  const saved = sessionStorage.getItem('_pt');
+  const saved = sessionStorage.getItem('_pt') || PINTEREST_ACCESS_TOKEN;
   if (saved) {
     token = saved;
+    sessionStorage.setItem('_pt', token);
     loadUserAndBoards();
     return;
   }
