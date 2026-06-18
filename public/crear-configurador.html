@@ -186,8 +186,7 @@ button.abtn:hover{background:#EFEBE3}
 .mb-tilt-toggle input:checked~.mb-tilt-track{background:#1A1A18}
 .mb-tilt-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none}
 .mb-tilt-toggle input:checked~.mb-tilt-knob{transform:translateX(14px)}
-#mb-stage.show-names .mb-cap{opacity:1!important;visibility:visible!important}
-#mb-stage:not(.show-names) .mb-cap{opacity:0!important;visibility:hidden!important}
+#mb-stage.show-names .mb-sample:not(.is-empty) .mb-cap{opacity:1!important;visibility:visible!important}
 .faplac-swatch{position:relative}
 .faplac-badge{position:absolute;top:5px;right:5px;width:17px;height:17px;border-radius:50%;background:#1A1A18;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:1;z-index:2}
 .faplac-swatch.selected .faplac-badge{display:flex}
@@ -1395,10 +1394,11 @@ function mbSetNames(v){mbNames=v;const st=document.getElementById('mb-stage');if
 function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
 function mbEnableDrag(el){
   const key=mbKey(el); if(!key)return;
-  let stageRect,sx,sy,ol,ot,W,H,dragging=false;
+  let stageRect,sx,sy,ol,ot,W,H,activeId=null;
   el.addEventListener('pointerdown',e=>{
     if(el.classList.contains('is-empty'))return;
-    dragging=true;
+    if(activeId!==null)return;
+    activeId=e.pointerId;
     const stage=document.getElementById('mb-stage');
     stageRect=stage.getBoundingClientRect();
     W=stageRect.width;H=stageRect.height;
@@ -1410,21 +1410,25 @@ function mbEnableDrag(el){
     e.preventDefault();
   });
   el.addEventListener('pointermove',e=>{
-    if(!dragging)return;
+    if(e.pointerId!==activeId)return;
     const cx=e.clientX-stageRect.left;
     const cy=e.clientY-stageRect.top;
     el.style.left=(ol+(cx-sx))+'px';
     el.style.top=(ot+(cy-sy))+'px';
   });
-  function end(){
-    if(!dragging)return; dragging=false; el.classList.remove('dragging');
+  function end(e){
+    if(e.pointerId!==activeId)return;
+    activeId=null;
+    el.classList.remove('dragging');
     const w=el.offsetWidth,h=el.offsetHeight;
+    const l=parseFloat(el.style.left)||0, t=parseFloat(el.style.top)||0;
     const cur=mbPos[key]||MB_DEFAULTS[key]||{rot:0};
-    mbPos[key]={fx:((parseFloat(el.style.left)||0)+w/2)/W, fy:((parseFloat(el.style.top)||0)+h/2)/H, rot:cur.rot||0};
+    mbPos[key]={fx:(l+w/2)/W, fy:(t+h/2)/H, rot:cur.rot||0};
     saveMbPos();
   }
   el.addEventListener('pointerup',end);
   el.addEventListener('pointercancel',end);
+  el.addEventListener('lostpointercapture',end);
 }
 function mbResetLayout(){ mbPos={}; saveMbPos(); mbApplyAll(); }
 function mbInitDnD(){
