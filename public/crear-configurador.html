@@ -186,7 +186,8 @@ button.abtn:hover{background:#EFEBE3}
 .mb-tilt-toggle input:checked~.mb-tilt-track{background:#1A1A18}
 .mb-tilt-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none}
 .mb-tilt-toggle input:checked~.mb-tilt-knob{transform:translateX(14px)}
-.mb-stage.hide-names .mb-cap{opacity:0!important;visibility:hidden!important}
+#mb-stage.show-names .mb-cap{opacity:1!important;visibility:visible!important}
+#mb-stage:not(.show-names) .mb-cap{opacity:0!important;visibility:hidden!important}
 .faplac-swatch{position:relative}
 .faplac-badge{position:absolute;top:5px;right:5px;width:17px;height:17px;border-radius:50%;background:#1A1A18;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:1;z-index:2}
 .faplac-swatch.selected .faplac-badge{display:flex}
@@ -1384,12 +1385,13 @@ function mbApply(el){
   const key=mbKey(el); if(!key)return;
   const p=mbPos[key]||MB_DEFAULTS[key]; if(!p)return;
   const {W,H}=mbStageSize(); const w=el.offsetWidth,h=el.offsetHeight;
-  el.style.left=(p.fx*W - w/2)+'px';
-  el.style.top=(p.fy*H - h/2)+'px';
+  const rawL=p.fx*W - w/2, rawT=p.fy*H - h/2;
+  el.style.left=Math.max(0,Math.min(W-w,rawL))+'px';
+  el.style.top=Math.max(0,Math.min(H-h,rawT))+'px';
   el.style.transform='rotate('+(mbTilt?(p.rot||0):0)+'deg)';
 }
 function mbSetTilt(v){mbTilt=v;mbApplyAll();}
-function mbSetNames(v){mbNames=v;const st=document.getElementById('mb-stage');if(st)st.classList.toggle('hide-names',!v);}
+function mbSetNames(v){mbNames=v;const st=document.getElementById('mb-stage');if(st)st.classList.toggle('show-names',v);}
 function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
 function mbEnableDrag(el){
   const key=mbKey(el); if(!key)return;
@@ -1658,6 +1660,7 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
 buildPresetGrid();buildBaseGrid();buildStonePicker();buildFaplac();buildSlabs();buildCortinas();buildTusor();buildPisos();buildPantone();buildKitchen();restoreFromUrl();
 updateMbPreview();
 mbInitDnD();
+mbSetNames(true);
 // ── Altura sin costuras hacia el shell Pinterest (postMessage) ──
 (function(){
   function postH(){var h=document.documentElement.scrollHeight;if(h<200)return;try{parent.postMessage({crearHeight:h+16},'*');}catch(e){}}
