@@ -174,10 +174,19 @@ button.abtn:hover{background:#EFEBE3}
 .mb-sample.is-empty canvas,.mb-sample.is-empty .mb-mel-fill,.mb-sample.is-empty .mb-cort-fill,.mb-sample.is-empty .mb-tela-fill,.mb-sample.is-empty .mb-piso-fill,.mb-sample.is-empty .pan-chip,.mb-sample.is-empty .mb-cap{opacity:0;visibility:hidden}
 .mb-sample.is-empty .mb-ghost-label{display:flex}
 .mb-legend{margin-top:14px;font-size:12px;color:#6f6a60;letter-spacing:.01em;text-align:center;min-height:16px}
-.mb-controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:12px}
+.mb-controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:12px;flex-wrap:wrap}
 .mb-drag-hint{font-size:11px;color:#b3ad9f;letter-spacing:.01em}
 .mb-reset{font-size:11px;font-family:inherit;color:#6f6a60;background:transparent;border:1px solid #D7D1C6;border-radius:100px;padding:6px 14px;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .mb-reset:hover{border-color:#1A1A18;color:#1A1A18}
+.mb-toggles{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.mb-tilt-wrap{display:flex;align-items:center;gap:6px;font-size:11px;color:#6f6a60;user-select:none;cursor:pointer}
+.mb-tilt-toggle{position:relative;display:inline-block;width:30px;height:16px;flex-shrink:0}
+.mb-tilt-toggle input{opacity:0;width:0;height:0;position:absolute}
+.mb-tilt-track{position:absolute;inset:0;background:#D0CBC2;border-radius:8px;transition:background .2s;cursor:pointer}
+.mb-tilt-toggle input:checked~.mb-tilt-track{background:#1A1A18}
+.mb-tilt-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none}
+.mb-tilt-toggle input:checked~.mb-tilt-knob{transform:translateX(14px)}
+.mb-stage.hide-names .mb-cap{opacity:0!important;visibility:hidden!important}
 .faplac-swatch{position:relative}
 .faplac-badge{position:absolute;top:5px;right:5px;width:17px;height:17px;border-radius:50%;background:#1A1A18;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:1;z-index:2}
 .faplac-swatch.selected .faplac-badge{display:flex}
@@ -298,8 +307,12 @@ button.abtn:hover{background:#EFEBE3}
           </div>
       </div>
       <div class="mb-controls">
-        <span class="mb-drag-hint">Arrastrá las muestras para acomodarlas como quieras</span>
-        <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
+        <span class="mb-drag-hint">Arrastrá las muestras para acomodarlas</span>
+        <div class="mb-toggles">
+          <label class="mb-tilt-wrap"><span>Inclinar</span><span class="mb-tilt-toggle"><input type="checkbox" id="mb-tilt-cb" checked onchange="mbSetTilt(this.checked)"><span class="mb-tilt-track"></span><span class="mb-tilt-knob"></span></span></label>
+          <label class="mb-tilt-wrap"><span>Nombres</span><span class="mb-tilt-toggle"><input type="checkbox" id="mb-names-cb" checked onchange="mbSetNames(this.checked)"><span class="mb-tilt-track"></span><span class="mb-tilt-knob"></span></span></label>
+          <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
+        </div>
       </div>
       <div class="kscene" id="kscene">
         <div class="ks-frame">
@@ -1362,7 +1375,7 @@ function ksView(v){
 
 function mbKey(el){ if(el.id==='mb-sample-terr')return 'terr'; const s=el.getAttribute('data-slot'); if(s!=null)return 'm'+s; const t=el.getAttribute('data-stone'); if(t!=null)return 's'+t; const c=el.getAttribute('data-cort'); if(c!=null)return 'c'+c; const w=el.getAttribute('data-tela'); if(w!=null)return 'w'+w; const f=el.getAttribute('data-piso'); if(f!=null)return 'f'+f; const pn=el.getAttribute('data-pan'); if(pn!=null)return 'p'+pn; return null; }
 const MB_DEFAULTS={terr:{fx:.82,fy:.30,rot:-2},m0:{fx:.79,fy:.34,rot:2},m1:{fx:.88,fy:.33,rot:-2},m2:{fx:.82,fy:.42,rot:3},c0:{fx:.84,fy:.41,rot:-2},s0:{fx:.79,fy:.55,rot:-3},s1:{fx:.88,fy:.56,rot:2},w0:{fx:.80,fy:.63,rot:3},f0:{fx:.88,fy:.59,rot:-2},p0:{fx:.78,fy:.73,rot:2},p1:{fx:.84,fy:.74,rot:-2},p2:{fx:.90,fy:.72,rot:3}};
-let mbPos={}, mbZ=20, mbReady=false;
+let mbPos={}, mbZ=20, mbReady=false, mbTilt=true, mbNames=true;
 function mbDeposit(el){ if(!mbReady)return; const k=mbKey(el); if(!k)return; delete mbPos[k]; saveMbPos(); mbApply(el); }
 function loadMbPos(){ try{mbPos=JSON.parse(localStorage.getItem('ins_mb_pos')||'null')||{};}catch(e){mbPos={};} }
 function saveMbPos(){ try{localStorage.setItem('ins_mb_pos',JSON.stringify(mbPos));}catch(e){} }
@@ -1373,17 +1386,21 @@ function mbApply(el){
   const {W,H}=mbStageSize(); const w=el.offsetWidth,h=el.offsetHeight;
   el.style.left=(p.fx*W - w/2)+'px';
   el.style.top=(p.fy*H - h/2)+'px';
-  el.style.transform='rotate('+(p.rot||0)+'deg)';
+  el.style.transform='rotate('+(mbTilt?(p.rot||0):0)+'deg)';
 }
+function mbSetTilt(v){mbTilt=v;mbApplyAll();}
+function mbSetNames(v){mbNames=v;const st=document.getElementById('mb-stage');if(st)st.classList.toggle('hide-names',!v);}
 function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
 function mbEnableDrag(el){
   const key=mbKey(el); if(!key)return;
-  let sx,sy,ol,ot,W,H,dragging=false;
+  let stageRect,sx,sy,ol,ot,W,H,dragging=false;
   el.addEventListener('pointerdown',e=>{
     if(el.classList.contains('is-empty'))return;
     dragging=true;
-    const s=mbStageSize();W=s.W;H=s.H;
-    sx=e.clientX;sy=e.clientY;
+    const stage=document.getElementById('mb-stage');
+    stageRect=stage.getBoundingClientRect();
+    W=stageRect.width;H=stageRect.height;
+    sx=e.clientX-stageRect.left;sy=e.clientY-stageRect.top;
     ol=parseFloat(el.style.left)||0; ot=parseFloat(el.style.top)||0;
     el.style.zIndex=(++mbZ);
     el.classList.add('dragging');
@@ -1392,8 +1409,10 @@ function mbEnableDrag(el){
   });
   el.addEventListener('pointermove',e=>{
     if(!dragging)return;
-    el.style.left=(ol+(e.clientX-sx))+'px';
-    el.style.top=(ot+(e.clientY-sy))+'px';
+    const cx=e.clientX-stageRect.left;
+    const cy=e.clientY-stageRect.top;
+    el.style.left=(ol+(cx-sx))+'px';
+    el.style.top=(ot+(cy-sy))+'px';
   });
   function end(){
     if(!dragging)return; dragging=false; el.classList.remove('dragging');
