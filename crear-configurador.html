@@ -219,6 +219,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
       "color_hex":            "#C0D8C0",
       "color_rgb":            [192, 216, 192],
       "descripcion_visual":   "Translúcido, efecto luz con retroiluminación, bordes redondeados por reciclado"
+    },
+    "blanca_rodada": {
+      "nombre":               "Piedra blanca rodada",
+      "tipo":                 "canto rodado",
+      "variedad_argentina":   "Río Mendoza · Río Neuquén · ríos patagónicos",
+      "variedad_mundial":     "Canto rodado calcáreo / cuarcítico",
+      "mohs":                 6.5,
+      "translucido":          false,
+      "color_hex":            "#ECEBE4",
+      "color_rgb":            [236, 235, 228],
+      "descripcion_visual":   "Blanco suave con bordes muy redondeados y suaves (aspecto canto rodado de río), superficie uniforme y lisa",
+      "rodada":               true
     }
   },
 
@@ -1955,6 +1967,46 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
         "contraste":             "bajo",
         "look_ntma":             "Standard fine"
       }
+    },
+
+    {
+      "id": "B_Rodada5",
+      "codigo": "Blanca Rodada N°5",
+      "serie": "B",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "blanco",
+        "marmolina": false,
+        "pigmento_id": null,
+        "pigmento_pct": 0,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Sin marmolina fina — piedra rodada de gran formato como único agregado"
+      },
+      "chips": [
+        {
+          "piedra_id":         "blanca_rodada",
+          "nombre_piedra":     "Piedra blanca rodada",
+          "variedad":          "Canto rodado / Ríos mendocinos-patagónicos",
+          "proporcion":        1.0,
+          "pct_en_agregado":   100,
+          "granulometria_key": "5",
+          "granulometria_mm":  "20–30",
+          "granulometria_desc":"muy grande · N°5 · 30mm",
+          "color_hex":         "#ECEBE4",
+          "rodada":            true
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#E8E4DC",
+        "paleta_hex":            ["#ECEBE4", "#E8E4DC"],
+        "color_predominante_hex":"#ECEAE3",
+        "descripcion":           "Piedra blanca rodada N°5 – 30mm. Canto rodado de río con bordes muy suaves. Agregado único de gran formato sobre base cemento blanco. Look orgánico natural.",
+        "tono":                  "blanco rodado natural",
+        "contraste":             "ninguno",
+        "look_ntma":             "Venetian XL"
+      }
     }
 
   ]
@@ -1991,6 +2043,13 @@ const angularPath = (ctx,cx,cy,rx,ry,seed) => {
   ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
   for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
   ctx.closePath();
+};
+const roundedPath = (ctx,cx,cy,rx,ry,seed) => {
+  const angle = hash2(seed*1.31,seed*0.73)*Math.PI;
+  const scx = 0.82+hash2(seed*2.1,seed*0.41)*0.18;
+  const scy = 0.72+hash2(seed*0.9,seed*1.83)*0.18;
+  ctx.beginPath();
+  ctx.ellipse(cx,cy,rx*scx,ry*scy,angle,0,Math.PI*2);
 };
 
 // Granulometría → radio en píxeles en canvas
@@ -2082,9 +2141,11 @@ function renderMezcla(canvas, mezcla, W, H) {
   all.forEach(p=>{
     const [r,g,b2]=h2r(p.chip.color_hex||'#ccc');
     const isGlass=p.chip.translucido||p.chip.piedra_id==='vidrio';
+    const isRodada=p.chip.rodada||p.chip.piedra_id==='blanca_rodada';
+    const chipPath=(cx,cy,rx,ry,seed)=>isRodada?roundedPath(ctx,cx,cy,rx,ry,seed):angularPath(ctx,cx,cy,rx,ry,seed);
 
     // Fill
-    angularPath(ctx,p.x,p.y,p.rx,p.ry,p.seed);
+    chipPath(p.x,p.y,p.rx,p.ry,p.seed);
     ctx.fillStyle=isGlass?`rgba(${r},${g},${b2},0.52)`:`rgb(${r},${g},${b2})`;
     ctx.fill();
 
@@ -2096,7 +2157,7 @@ function renderMezcla(canvas, mezcla, W, H) {
     hl.addColorStop(0,'rgba(255,255,255,.30)');
     hl.addColorStop(.42,'rgba(255,255,255,0)');
     hl.addColorStop(1,'rgba(0,0,0,.07)');
-    angularPath(ctx,p.x,p.y,p.rx,p.ry,p.seed);
+    chipPath(p.x,p.y,p.rx,p.ry,p.seed);
     ctx.fillStyle=hl; ctx.fill();
 
     // Destellos extra en vidrio
@@ -2233,8 +2294,9 @@ function buildDetail(m){
       const pctStr=c.pct_en_agregado!=null?c.pct_en_agregado+'%':'~';
       const varStr=c.variedad||'';
       const isGlass=c.piedra_id==='vidrio';
+      const isRodadaChip=c.rodada||c.piedra_id==='blanca_rodada';
       row.innerHTML=`
-        <div class="chip-swatch" style="background:${c.color_hex||'#ccc'};${isGlass?'opacity:.65;border:2px dashed rgba(0,0,0,.15)':''}"></div>
+        <div class="chip-swatch" style="background:${c.color_hex||'#ccc'};${isGlass?'opacity:.65;border:2px dashed rgba(0,0,0,.15)':''}${isRodadaChip?'box-shadow:inset 0 1px 4px rgba(255,255,255,.5),0 1px 3px rgba(0,0,0,.12);':''}"></div>
         <div class="chip-main">
           <div class="chip-name">${c.nombre_piedra||c.piedra_id}</div>
           <div class="chip-var">${varStr}</div>
