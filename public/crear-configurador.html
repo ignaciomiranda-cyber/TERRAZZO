@@ -304,7 +304,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
     "verde_plastico":    { "nombre_comercial": "Verde plástico",       "color_hex": "#43A047", "efecto": "verde sintético, saturación alta" },
     "amarillo":          { "color_hex": "#F9A825", "efecto": "tonos dorado-miel a concentración baja" },
     "naranja":           { "color_hex": "#E65100", "efecto": "tonos terracota-naranja" },
-    "marron":            { "color_hex": "#5D4037", "efecto": "tonos tierra, sepia" }
+    "marron":            { "color_hex": "#5D4037", "efecto": "tonos tierra, sepia" },
+    "azul_oscuro":       { "nombre_comercial": "Azul ultramar oscuro", "color_hex": "#1A2B6E", "efecto": "base azul marino profundo en cemento blanco; a mayor concentración más saturado" }
   },
 
   "mezclas": [
@@ -2050,6 +2051,95 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
         "tono":                  "blanco rodado natural",
         "contraste":             "ninguno",
         "look_ntma":             "Venetian XL"
+      }
+    },
+
+    {
+      "id": "A_AzulNoche",
+      "codigo": "A · Azul Noche",
+      "serie": "A",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "blanco",
+        "marmolina": false,
+        "pigmento_id": "azul_oscuro",
+        "pigmento_pct": 4,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Cemento blanco teñido con azul ultramar oscuro al 4% — base azul marino profundo"
+      },
+      "chips": [
+        {
+          "piedra_id":         "blanca",
+          "nombre_piedra":     "Mármol blanco",
+          "variedad":          "Los Gigantes / La Toma / Dumesnil",
+          "proporcion":        0.70,
+          "pct_en_agregado":   70,
+          "granulometria_key": "2",
+          "granulometria_mm":  "6–10",
+          "granulometria_desc":"mediano",
+          "color_hex":         "#F0EDE6"
+        },
+        {
+          "piedra_id":         "negra",
+          "nombre_piedra":     "Mármol negro",
+          "variedad":          "Nero Marquina / local",
+          "proporcion":        0.30,
+          "pct_en_agregado":   30,
+          "granulometria_key": "1",
+          "granulometria_mm":  "3–6",
+          "granulometria_desc":"pequeño / fino",
+          "color_hex":         "#1E1E1E"
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#2E4278",
+        "paleta_hex":            ["#F0EDE6", "#1E1E1E", "#2E4278"],
+        "color_predominante_hex":"#3A5090",
+        "descripcion":           "Base azul marino oscuro (cemento blanco + azul ultramar 4%) con chips de mármol blanco (70%) y negro fino (30%). Contraste máximo sobre fondo azul profundo. Look nocturno sofisticado.",
+        "tono":                  "azul marino profundo",
+        "contraste":             "muy alto (blanco y negro sobre azul)",
+        "look_ntma":             "Venetian — colour field"
+      }
+    },
+
+    {
+      "id": "A_AzulMadrugada",
+      "codigo": "A · Azul Madrugada",
+      "serie": "A",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "blanco",
+        "marmolina": true,
+        "pigmento_id": "azul_oscuro",
+        "pigmento_pct": 2.5,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Azul ultramar oscuro al 2.5% sobre cemento blanco — tono azul más suave tipo madrugada, con marmolina fina para textura"
+      },
+      "chips": [
+        {
+          "piedra_id":         "blanca",
+          "nombre_piedra":     "Mármol blanco",
+          "variedad":          "Los Gigantes / La Toma",
+          "proporcion":        1.0,
+          "pct_en_agregado":   100,
+          "granulometria_key": "1",
+          "granulometria_mm":  "3–6",
+          "granulometria_desc":"pequeño / fino",
+          "color_hex":         "#F0EDE6"
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#4A6898",
+        "paleta_hex":            ["#F0EDE6", "#4A6898"],
+        "color_predominante_hex":"#5278A8",
+        "descripcion":           "Base azul madrugada mediano (azul oscuro 2.5%) con mármol blanco fino como único chip. Look suave y luminoso, evoca el cielo antes del amanecer. Ideal interiores modernos.",
+        "tono":                  "azul pizarra suave",
+        "contraste":             "moderado (blanco sobre azul medio)",
+        "look_ntma":             "Standard — colour field"
       }
     },
 
