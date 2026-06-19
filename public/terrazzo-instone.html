@@ -123,10 +123,11 @@ document.addEventListener('DOMContentLoaded', function() {
       'Blanca':'#EDEAE2','Negra':'#242220','Gris perla':'#A8A6A2','Gris oscura':'#646260',
       'Rosa':'#D29E94','Rosa oscura':'#AE6E6A','Marrón clara':'#AE8860','Ocre/dorada':'#D4820A',
       'Verde jade':'#588A5E','Celeste':'#78A8C0','Beige mármol':'#CCBEA0','Naranja':'#C46A38','Roja':'#9E3826',
-      'Blanca rodada':'#ECEBE4'
+      'Blanca rodada':'#ECEBE4',
+      'Travertino':'#CEC0A0','Rodocrosita':'#D4607E','Conchilla':'#E8D8C4','Latón':'#C8A460'
     };
     const ROUNDED_STONES=new Set(['Blanca rodada']);
-    const SZP={'1':{min:5,max:11},'2':{min:11,max:26},'5':{min:28,max:52}};
+    const SZP={'1':{min:5,max:11},'2':{min:11,max:26},'3':{min:18,max:36},'5':{min:28,max:52}};
 
     function makePlacer(W,H){
       const cell=20,gw=Math.ceil(W/cell),gh=Math.ceil(H/cell);
@@ -198,7 +199,11 @@ document.addEventListener('DOMContentLoaded', function() {
       {base:'#F0EDE6',stones:[{name:'Blanca',size:'1',pct:80},{name:'Negra',size:'1',pct:20}],title:'Blanco fino',r:1.18},
       {base:'#D0A49C',stones:[{name:'Rosa oscura',size:'2',pct:90},{name:'Blanca',size:'2',pct:10}],title:'Rosa pálido',r:0.8},
       {base:'#545250',stones:[{name:'Negra',size:'2',pct:50},{name:'Gris oscura',size:'2',pct:30},{name:'Ocre/dorada',size:'2',pct:20}],title:'Antracita oro',r:1},
-      {base:'#E8E4DC',stones:[{name:'Blanca rodada',size:'5',pct:100}],title:'Piedra blanca rodada N°5',r:0.9}
+      {base:'#E8E4DC',stones:[{name:'Blanca rodada',size:'5',pct:100}],title:'Piedra blanca rodada N°5',r:0.9},
+      {base:'#E8E4DC',stones:[{name:'Rodocrosita',size:'2',pct:70},{name:'Blanca',size:'2',pct:30}],title:'Puna — rodocrosita argentina',r:0.85},
+      {base:'#DED4C0',stones:[{name:'Travertino',size:'3',pct:80},{name:'Blanca',size:'1',pct:20}],title:'Salta — travertino NOA',r:0.9},
+      {base:'#E8E4DC',stones:[{name:'Conchilla',size:'1',pct:60},{name:'Blanca',size:'1',pct:40}],title:'Nácar — conchilla patagónica',r:1.0},
+      {base:'#646058',stones:[{name:'Latón',size:'2',pct:35},{name:'Negra',size:'2',pct:65}],title:'Latón — metálico premium',r:0.95}
     ];
     const SLABS=[
       {name:'Arabescato',tipo:'Mármol',bg:'#E8E7E3',style:'marble',veins:['#8E8C88','#6A6864'],veinW:3,veinA:.55,seed:2,r:0.8},
@@ -230,9 +235,9 @@ document.addEventListener('DOMContentLoaded', function() {
       {img:'life-1.jpg',title:'Rincón de trabajo',tag:'Ambiente'},
       {img:'proj-2.jpg',title:'Obra en Córdoba',tag:'Proyecto'},
       {img:'proj-3.jpg',title:'Detalle de obra',tag:'Proyecto'},
-      {img:'cocina-ambiente.jpg',title:'Cocina en terracota',tag:'Ambiente'},
-      {img:'mesa-ambiente.jpg',title:'Mesa de comedor',tag:'Ambiente'},
-      {img:'mesa-ambienteop2.jpg',title:'Detalle de mesa',tag:'Detalle'},
+      {img:'cocina-ambiente.jpg.webp',title:'Cocina en terracota',tag:'Ambiente'},
+      {img:'mesa-ambiente.jpg.jpg',title:'Mesa de comedor',tag:'Ambiente'},
+      {img:'mesa-ambienteop2.jpg.jpg',title:'Detalle de mesa',tag:'Detalle'},
       {img:'pasted-1781733750827-0.png',title:'Combinación de materiales',tag:'Inspiración'},
       {img:'pasted-1781733758235-0.png',title:'Paleta natural',tag:'Inspiración'},
       {img:'pasted-1781734716790-0.png',title:'Moodboard cálido',tag:'Inspiración'}

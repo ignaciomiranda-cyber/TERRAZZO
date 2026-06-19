@@ -231,6 +231,50 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
       "color_rgb":            [236, 235, 228],
       "descripcion_visual":   "Blanco suave con bordes muy redondeados y suaves (aspecto canto rodado de río), superficie uniforme y lisa",
       "rodada":               true
+    },
+    "travertino": {
+      "nombre":               "Travertino",
+      "tipo":                 "caliza travertínica",
+      "variedad_argentina":   "Salta (canteras Casa del Viento, Huaytiquina, Norma) — azul cielo, crema, blanco",
+      "variedad_mundial":     "Tívoli (Italia) · Turquía — crema/nuez; policromo en Afganistán",
+      "mohs":                 3.0,
+      "translucido":          false,
+      "color_hex":            "#CEC0A0",
+      "color_rgb":            [206, 192, 160],
+      "descripcion_visual":   "Beige/crema cálido, textura porosa característica, look tierra suave y orgánico"
+    },
+    "rodocrosita": {
+      "nombre":               "Rodocrosita",
+      "tipo":                 "semipreciosa / carbonato de manganeso",
+      "variedad_argentina":   "Catamarca — piedra nacional argentina, bandeado rosa-rojo",
+      "variedad_mundial":     "Colorado (EE.UU.) · Perú",
+      "mohs":                 4.0,
+      "translucido":          false,
+      "color_hex":            "#D4607E",
+      "color_rgb":            [212, 96, 126],
+      "descripcion_visual":   "Rosa-rojo bandeado muy característico con patrón concéntrico único; la piedra nacional de Argentina"
+    },
+    "conchilla": {
+      "nombre":               "Conchilla / Madreperla",
+      "tipo":                 "no-piedra / orgánico",
+      "variedad_argentina":   "Costa atlántica patagónica · Estuario del Río de la Plata",
+      "variedad_mundial":     "Global — reciclado de conchillas de moluscos",
+      "mohs":                 3.0,
+      "translucido":          false,
+      "color_hex":            "#E8D8C4",
+      "color_rgb":            [232, 216, 196],
+      "descripcion_visual":   "Nacarado blanco-crema con destellos iridiscentes, textura orgánica marina, muy especial"
+    },
+    "laton": {
+      "nombre":               "Chips de latón",
+      "tipo":                 "no-piedra / metal",
+      "variedad_argentina":   "Industrial — torneado/fresado de latón nacional",
+      "variedad_mundial":     "Global — tendencia contract/hotelería premium",
+      "mohs":                 3.0,
+      "translucido":          false,
+      "color_hex":            "#C8A460",
+      "color_rgb":            [200, 164, 96],
+      "descripcion_visual":   "Dorado metálico brillante, chips irregulares de latón, look premium industrial-glamour"
     }
   },
 
@@ -2006,6 +2050,206 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
         "tono":                  "blanco rodado natural",
         "contraste":             "ninguno",
         "look_ntma":             "Venetian XL"
+      }
+    },
+
+    {
+      "id": "P_Puna",
+      "codigo": "P · Puna",
+      "serie": "P",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "blanco",
+        "marmolina": true,
+        "pigmento_id": null,
+        "pigmento_pct": 0,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Rodocrosita argentina — piedra nacional de Catamarca como chip principal"
+      },
+      "chips": [
+        {
+          "piedra_id":         "rodocrosita",
+          "nombre_piedra":     "Rodocrosita",
+          "variedad":          "Catamarca — piedra nacional argentina",
+          "proporcion":        0.70,
+          "pct_en_agregado":   70,
+          "granulometria_key": "2",
+          "granulometria_mm":  "6–10",
+          "granulometria_desc":"mediano",
+          "color_hex":         "#D4607E"
+        },
+        {
+          "piedra_id":         "blanca",
+          "nombre_piedra":     "Mármol blanco",
+          "variedad":          "Los Gigantes / La Toma",
+          "proporcion":        0.30,
+          "pct_en_agregado":   30,
+          "granulometria_key": "2",
+          "granulometria_mm":  "6–10",
+          "granulometria_desc":"mediano",
+          "color_hex":         "#F0EDE6"
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#E8E4DC",
+        "paleta_hex":            ["#D4607E", "#F0EDE6", "#E8E4DC"],
+        "color_predominante_hex":"#CC7890",
+        "descripcion":           "Rodocrosita argentina (70%) + mármol blanco (30%). La piedra nacional de Catamarca, de bandeado rosa-rojo único, como chip protagonista. Look sudamericano exclusivo.",
+        "tono":                  "rosa-rojo bandeado argentino",
+        "contraste":             "alto",
+        "look_ntma":             "Venetian"
+      }
+    },
+
+    {
+      "id": "P_Salta",
+      "codigo": "P · Salta",
+      "serie": "P",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "blanco",
+        "marmolina": true,
+        "pigmento_id": null,
+        "pigmento_pct": 0,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Travertino salteño como chip protagonista — canteras Casa del Viento, Huaytiquina"
+      },
+      "chips": [
+        {
+          "piedra_id":         "travertino",
+          "nombre_piedra":     "Travertino salteño",
+          "variedad":          "Salta (canteras Casa del Viento, Huaytiquina)",
+          "proporcion":        0.80,
+          "pct_en_agregado":   80,
+          "granulometria_key": "3",
+          "granulometria_mm":  "10–20",
+          "granulometria_desc":"grande",
+          "color_hex":         "#CEC0A0"
+        },
+        {
+          "piedra_id":         "blanca",
+          "nombre_piedra":     "Mármol blanco",
+          "variedad":          "Los Gigantes / La Toma",
+          "proporcion":        0.20,
+          "pct_en_agregado":   20,
+          "granulometria_key": "1",
+          "granulometria_mm":  "3–6",
+          "granulometria_desc":"pequeño / fino",
+          "color_hex":         "#F0EDE6"
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#E8E4DC",
+        "paleta_hex":            ["#CEC0A0", "#F0EDE6", "#E8E4DC"],
+        "color_predominante_hex":"#D8CCBC",
+        "descripcion":           "Travertino salteño (80%) chips grandes con acento blanco fino (20%). Tonos tierra cálidos, look geológico del NOA. Evoca las quebradas y canteras de Salta.",
+        "tono":                  "tierra cálida travertino",
+        "contraste":             "bajo",
+        "look_ntma":             "Venetian"
+      }
+    },
+
+    {
+      "id": "P_Nacar",
+      "codigo": "P · Nácar",
+      "serie": "P",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "blanco",
+        "marmolina": true,
+        "pigmento_id": null,
+        "pigmento_pct": 0,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Conchilla/madreperla patagónica — efecto iridiscente único"
+      },
+      "chips": [
+        {
+          "piedra_id":         "conchilla",
+          "nombre_piedra":     "Conchilla / Madreperla",
+          "variedad":          "Costa atlántica patagónica",
+          "proporcion":        0.60,
+          "pct_en_agregado":   60,
+          "granulometria_key": "1",
+          "granulometria_mm":  "3–6",
+          "granulometria_desc":"pequeño / fino",
+          "color_hex":         "#E8D8C4"
+        },
+        {
+          "piedra_id":         "blanca",
+          "nombre_piedra":     "Mármol blanco",
+          "variedad":          "Los Gigantes / La Toma",
+          "proporcion":        0.40,
+          "pct_en_agregado":   40,
+          "granulometria_key": "1",
+          "granulometria_mm":  "3–6",
+          "granulometria_desc":"pequeño / fino",
+          "color_hex":         "#F0EDE6"
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#E8E4DC",
+        "paleta_hex":            ["#E8D8C4", "#F0EDE6", "#E8E4DC"],
+        "color_predominante_hex":"#EDE4D8",
+        "descripcion":           "60% conchilla/madreperla patagónica + 40% mármol blanco. Destellos iridiscentes orgánicos únicos. Look marino-natural artesanal. La conchilla aporta textura irregular con nacarado sutil.",
+        "tono":                  "nácar-blanco iridiscente",
+        "contraste":             "bajo",
+        "look_ntma":             "Standard — efecto especial"
+      }
+    },
+
+    {
+      "id": "P_Laton",
+      "codigo": "P · Latón",
+      "serie": "P",
+      "linea": "instone_premium",
+      "estado": "hecha",
+      "fabricacion": {
+        "cemento": "gris",
+        "marmolina": true,
+        "pigmento_id": "negro",
+        "pigmento_pct": 0.5,
+        "plastificante_pct": 6,
+        "relacion_cemento_agregado": "50/50",
+        "nota_fabricacion": "Chips de latón + negro sobre base gris oscura — terrazzo metálico premium tendencia hotelería/contract"
+      },
+      "chips": [
+        {
+          "piedra_id":         "laton",
+          "nombre_piedra":     "Chips de latón",
+          "variedad":          "Torneado industrial — latón nacional",
+          "proporcion":        0.35,
+          "pct_en_agregado":   35,
+          "granulometria_key": "2",
+          "granulometria_mm":  "6–10",
+          "granulometria_desc":"mediano",
+          "color_hex":         "#C8A460"
+        },
+        {
+          "piedra_id":         "negra",
+          "nombre_piedra":     "Mármol negro",
+          "variedad":          "Nero Marquina / local",
+          "proporcion":        0.65,
+          "pct_en_agregado":   65,
+          "granulometria_key": "2",
+          "granulometria_mm":  "6–10",
+          "granulometria_desc":"mediano",
+          "color_hex":         "#1E1E1E"
+        }
+      ],
+      "visual": {
+        "color_matriz_hex":      "#787870",
+        "paleta_hex":            ["#C8A460", "#1E1E1E", "#787870"],
+        "color_predominante_hex":"#484038",
+        "descripcion":           "Chips de latón dorado (35%) sobre negro dominante (65%) con base gris oscura. Terrazzo metálico premium — look hotelería y espacios contract de alta gama.",
+        "tono":                  "negro-dorado metálico",
+        "contraste":             "muy alto (oro sobre negro)",
+        "look_ntma":             "Venetian — metallic"
       }
     }
 
