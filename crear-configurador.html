@@ -78,100 +78,23 @@ body{font-family:'Inter',-apple-system,sans-serif;background:transparent;color:#
 /* toast */
 #cfg-toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(12px);background:#1A1A18;color:#fff;padding:10px 20px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:1000;white-space:nowrap}
 
-/* mode tabs */
-.mode-tabs{display:flex;gap:4px;background:#EFEBE3;border-radius:12px;padding:4px;margin-bottom:24px}
-.mode-tab{flex:1;font-family:inherit;font-size:13px;font-weight:600;padding:9px 14px;border:none;border-radius:9px;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s;background:transparent;color:#6a6460}
-.mode-tab.active{background:#fff;color:#1A1A18;box-shadow:0 1px 4px rgba(0,0,0,.10)}
-
-/* creator layout */
-.creator-wrap{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
-@media(max-width:680px){.creator-wrap{grid-template-columns:1fr}}
-.creator-panel{background:#F7F4EF;border-radius:18px;padding:20px;border:1px solid #ECE8E0}
-
-.base-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
-.base-btn{width:100%;aspect-ratio:1;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;position:relative}
-.base-btn:hover{transform:scale(1.06)}
-.base-btn.sel{border-color:#1A1A18;box-shadow:0 0 0 2px #fff inset}
-.base-btn span{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:8px;font-weight:700;color:rgba(0,0,0,.55);letter-spacing:.02em;text-transform:uppercase;line-height:1.2;padding:0 2px}
-
-.stone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stone-btn{display:flex;flex-direction:column;align-items:center;gap:5px;background:#fff;border:2px solid #ECE8E0;border-radius:12px;padding:10px 6px 8px;cursor:pointer;transition:border-color .15s,box-shadow .15s;font-family:inherit}
-.stone-btn:hover{border-color:#C0BBB4}
-.stone-btn.sel{border-color:#1A1A18;box-shadow:0 0 0 1px #1A1A18}
-.stone-btn .sw{width:36px;height:36px;border-radius:50%;border:1px solid rgba(0,0,0,.09)}
-.stone-btn .sn{font-size:10px;font-weight:600;color:#1A1A18;text-align:center;line-height:1.25}
-
-.preview-box{background:#F7F4EF;border-radius:18px;border:1px solid #ECE8E0;overflow:hidden}
-.preview-box canvas{display:block;width:100%;height:auto;border-radius:18px 18px 0 0}
-.preview-controls{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
-.mix-row{display:flex;align-items:center;gap:10px;background:#fff;border-radius:10px;padding:10px 12px;border:1px solid #ECE8E0}
-.mix-row .sw{width:28px;height:28px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.08)}
-.mix-row .mn{flex:1;min-width:0}
-.mix-row .mn span{display:block;font-size:12px;font-weight:600;color:#1A1A18}
-.mix-row .mn em{display:block;font-size:10px;color:#9b958a;font-style:normal}
-.mix-row select{font-family:inherit;font-size:11px;padding:3px 6px;border:1px solid #D7D1C6;border-radius:6px;background:#fff;color:#1A1A18;cursor:pointer}
-.mix-row input[type=range]{width:70px;accent-color:#1A1A18}
-.mix-row .pct{font-size:12px;font-weight:700;color:#1A1A18;min-width:32px;text-align:right}
-.mix-row .rm{background:none;border:none;cursor:pointer;color:#9b958a;font-size:16px;padding:0 2px;line-height:1;transition:color .15s}
-.mix-row .rm:hover{color:#c0392b}
-
-.preview-empty{text-align:center;padding:48px 20px;color:#9b958a;font-size:13px}
-.creator-cta{display:flex;gap:8px;padding:0 20px 16px}
-.creator-cta button{flex:1;font-family:inherit;font-size:13px;font-weight:700;padding:11px 16px;border-radius:100px;border:none;cursor:pointer;transition:background .15s}
-.cta-primary{background:#1A1A18;color:#fff}.cta-primary:hover{background:#333}
-.cta-secondary{background:#EFEBE3;color:#1A1A18}.cta-secondary:hover{background:#E2DDD3}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="hdr">
     <div>
-      <h1>Configurador de terrazzo</h1>
-      <p class="sub">Elegí piedras y base para crear tu mezcla, o explorá el catálogo de mezclas reales</p>
+      <h1>Configurador de mezcla</h1>
+      <p class="sub">Seleccioná una mezcla real para ver su composición, origen y pedirla</p>
     </div>
-    <span class="count-badge" id="count-badge" style="display:none">…</span>
+    <span class="count-badge" id="count-badge">…</span>
   </div>
 
-  <div class="mode-tabs">
-    <button class="mode-tab active" id="tab-crear" onclick="switchMode('crear')">Crear tu mezcla</button>
-    <button class="mode-tab" id="tab-catalogo" onclick="switchMode('catalogo')">Catálogo de mezclas</button>
-  </div>
-
-  <!-- ── CREAR TU MEZCLA ─────────────────────────────────── -->
-  <div id="section-crear">
-    <div class="creator-wrap">
-      <div>
-        <div class="creator-panel">
-          <div class="section-lbl">Base de cemento</div>
-          <div class="base-grid" id="base-grid"></div>
-          <div class="section-lbl">Piedras y agregados</div>
-          <div class="stone-grid" id="stone-grid-picker"></div>
-        </div>
-      </div>
-      <div>
-        <div class="preview-box">
-          <canvas id="preview-canvas" width="480" height="360"></canvas>
-          <div class="preview-controls" id="mix-rows">
-            <div class="preview-empty" id="preview-empty">Elegí al menos una piedra para ver la mezcla</div>
-          </div>
-        </div>
-        <div class="creator-cta">
-          <button class="cta-primary" onclick="saveMix()">Guardar mezcla</button>
-          <button class="cta-secondary" onclick="clearMix()">Limpiar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── CATÁLOGO ─────────────────────────────────────────── -->
-  <div id="section-catalogo" style="display:none">
-    <div class="filters" id="filters"></div>
-    <div id="loading" class="loading-state">Cargando mezclas…</div>
-    <div id="error" class="error-state" style="display:none"></div>
-    <div class="gallery" id="gallery"></div>
-    <div class="detail" id="detail"></div>
-    <span class="count-badge" id="count-badge-cat" style="margin-bottom:10px;display:inline-flex">…</span>
-  </div>
+  <div class="filters" id="filters"></div>
+  <div id="loading" class="loading-state">Cargando mezclas…</div>
+  <div id="error" class="error-state" style="display:none"></div>
+  <div class="gallery" id="gallery"></div>
+  <div class="detail" id="detail"></div>
 </div>
 
 <div id="cfg-toast"></div>
@@ -2833,224 +2756,6 @@ function buildFilters(lineas){
   });
 }
 
-// ── applyFilter patch: use correct badge id ────────────────────────────────
-const _origApplyFilter=applyFilter;
-function applyFilter(key){
-  activeFilter=key;
-  const gallery=document.getElementById('gallery');
-  gallery.innerHTML='';
-  const shown=key==='Todas'?ALL:ALL.filter(m=>m.linea===key);
-  shown.forEach(m=>gallery.appendChild(buildCard(m)));
-  const badge=document.getElementById('count-badge-cat');
-  if(badge) badge.textContent=shown.length+' mezclas';
-  if(selectedId) closeDetail();
-  setTimeout(postHeight,700);
-}
-
-// ── Modo tabs ──────────────────────────────────────────────────────────────
-function switchMode(mode){
-  document.getElementById('section-crear').style.display   = mode==='crear'    ? '' : 'none';
-  document.getElementById('section-catalogo').style.display= mode==='catalogo' ? '' : 'none';
-  document.getElementById('tab-crear').classList.toggle('active',    mode==='crear');
-  document.getElementById('tab-catalogo').classList.toggle('active', mode==='catalogo');
-  setTimeout(postHeight,400);
-}
-
-// ── Configurador interactivo ───────────────────────────────────────────────
-const BASES_UI=[
-  {id:'blanco_nat',  label:'Blanco',   hex:'#E8E4DC'},
-  {id:'gris_port',   label:'Gris',     hex:'#9A9A8E'},
-  {id:'grafito',     label:'Grafito',  hex:'#4A4A44'},
-  {id:'marron_warm', label:'Cálido',   hex:'#C8B89A'},
-  {id:'verde_menta', label:'Verde',    hex:'#C8D8C0'},
-  {id:'rojo_terra',  label:'Terrac.',  hex:'#C88070'},
-  {id:'azul_noche',  label:'Azul',     hex:'#2E4278'},
-  {id:'azul_suave',  label:'Cielo',    hex:'#4A6898'},
-];
-
-let customBase=BASES_UI[0].hex;
-let customStones=[];  // [{piedra_id, nombre, color_hex, rodada, granKey, pct}]
-
-function initCreator(){
-  const piedras=MEZCLAS_DATA.piedras;
-  // Base grid
-  const bg=document.getElementById('base-grid');
-  BASES_UI.forEach(b=>{
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='base-btn'+(b.hex===customBase?' sel':'');
-    btn.style.background=b.hex;
-    btn.innerHTML=`<span>${b.label}</span>`;
-    btn.onclick=()=>{
-      customBase=b.hex;
-      document.querySelectorAll('.base-btn').forEach(el=>el.classList.remove('sel'));
-      btn.classList.add('sel');
-      renderPreview();
-    };
-    bg.appendChild(btn);
-  });
-
-  // Stone grid
-  const sg=document.getElementById('stone-grid-picker');
-  Object.entries(piedras).forEach(([pid,p])=>{
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='stone-btn';
-    btn.id='sbtn-'+pid;
-    // swatch: rodada → ellipse via border-radius
-    const swStyle=p.rodada?'border-radius:40% 60% 55% 45%;':'';
-    btn.innerHTML=`<div class="sw" style="background:${p.color_hex||'#ccc'};${swStyle}"></div><span class="sn">${shortName(p.nombre)}</span>`;
-    btn.onclick=()=>toggleStone(pid,p);
-    sg.appendChild(btn);
-  });
-
-  renderPreview();
-}
-
-function shortName(n){
-  // shorten long names for the grid
-  const map={'Mármol blanco':'Blanca','Mármol negro':'Negra','Mármol gris claro':'Gris clara','Mármol gris oscuro':'Gris oscura',
-    'Mármol rosa':'Rosa','Mármol rosa oscuro':'Rosa osc.','Mármol marrón':'Marrón','Cuarzo/ónix ocre':'Ocre','Mármol verde jade':'Verde jade',
-    'Cuarzo celeste':'Celeste','Beige mármol':'Beige','Mármol naranja':'Naranja','Mármol rojo':'Roja',
-    'Piedra blanca rodada':'Rodada N°5','Travertino':'Travertino','Rodocrosita':'Rodocrosita',
-    'Conchilla / Madreperla':'Conchilla','Chips de latón':'Latón'};
-  return map[n]||n.split(' ').slice(0,2).join(' ');
-}
-
-function updateStoneBadge(pid){
-  const count=customStones.filter(s=>s.piedra_id===pid).length;
-  const btn=document.getElementById('sbtn-'+pid);
-  if(!btn) return;
-  let badge=btn.querySelector('.sbadge');
-  if(count>0){
-    btn.classList.add('sel');
-    if(!badge){
-      badge=document.createElement('span');
-      badge.className='sbadge';
-      badge.style.cssText='position:absolute;top:-5px;right:-5px;background:#1A1A18;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;pointer-events:none;border:2px solid #fff';
-      btn.style.position='relative';
-      btn.appendChild(badge);
-    }
-    badge.textContent=count;
-  } else {
-    btn.classList.remove('sel');
-    if(badge) badge.remove();
-  }
-}
-
-function toggleStone(pid,p){
-  // Always add — allows multiple of same stone (different sizes)
-  customStones.push({
-    piedra_id: pid,
-    nombre: p.nombre,
-    color_hex: p.color_hex||'#ccc',
-    rodada: !!p.rodada,
-    granKey: p.rodada?'5':'2',
-    pct: 0
-  });
-  normalizePcts();
-  updateStoneBadge(pid);
-  renderMixRows();
-  renderPreview();
-}
-
-function normalizePcts(){
-  if(!customStones.length) return;
-  // Assign equal share to any entry with pct=0 (newly added)
-  const n=customStones.length;
-  const share=Math.round(100/n);
-  customStones.forEach((s,i)=>{
-    if(s.pct===0) s.pct=i===n-1?100-share*(n-1):share;
-  });
-  // Re-scale all so total = 100
-  const tot=customStones.reduce((a,s)=>a+s.pct,0);
-  if(tot>0&&tot!==100){
-    customStones.forEach(s=>s.pct=Math.max(1,Math.round(s.pct/tot*100)));
-    // Fix rounding drift on last element
-    const t2=customStones.reduce((a,s)=>a+s.pct,0);
-    if(t2!==100) customStones[customStones.length-1].pct+=100-t2;
-  }
-}
-
-function renderMixRows(){
-  const cont=document.getElementById('mix-rows');
-  const empty=document.getElementById('preview-empty');
-  if(!customStones.length){
-    cont.innerHTML='';
-    cont.appendChild(empty||Object.assign(document.createElement('div'),{className:'preview-empty',textContent:'Elegí al menos una piedra para ver la mezcla'}));
-    return;
-  }
-  cont.innerHTML='';
-  customStones.forEach((s,i)=>{
-    const row=document.createElement('div');
-    row.className='mix-row';
-    const swStyle=s.rodada?'border-radius:40% 60% 55% 45%;':'';
-    row.innerHTML=`
-      <div class="sw" style="background:${s.color_hex};${swStyle}"></div>
-      <div class="mn"><span>${shortName(s.nombre)}</span><em>${s.rodada?'Canto rodado':'Chip angular'}</em></div>
-      <select onchange="changeGran(${i},this.value)">
-        <option value="1"${s.granKey==='1'?' selected':''}>N°1 fino 3–6mm</option>
-        <option value="2"${s.granKey==='2'?' selected':''}>N°2 med. 6–10mm</option>
-        <option value="3"${s.granKey==='3'?' selected':''}>N°3 gde. 10–20mm</option>
-        ${s.rodada?`<option value="5"${s.granKey==='5'?' selected':''}>N°5 rodado 30mm</option>`:''}
-      </select>
-      <input type="range" min="5" max="95" value="${s.pct}" oninput="changePct(${i},+this.value,this)">
-      <span class="pct" id="pct-${i}">${s.pct}%</span>
-      <button class="rm" onclick="removeStone(${i})" title="Quitar">×</button>`;
-    cont.appendChild(row);
-  });
-}
-
-function changeGran(i,v){customStones[i].granKey=v;renderPreview();}
-function changePct(i,v,el){
-  customStones[i].pct=v;
-  document.getElementById('pct-'+i).textContent=v+'%';
-  renderPreview();
-}
-function removeStone(i){
-  const s=customStones.splice(i,1)[0];
-  if(customStones.length) normalizePcts();
-  updateStoneBadge(s.piedra_id);
-  renderMixRows();
-  renderPreview();
-}
-function clearMix(){
-  const ids=[...new Set(customStones.map(s=>s.piedra_id))];
-  customStones=[];
-  ids.forEach(pid=>updateStoneBadge(pid));
-  renderMixRows();
-  renderPreview();
-}
-function saveMix(){
-  if(!customStones.length){toast('Agregá al menos una piedra primero');return;}
-  toast('Mezcla guardada ✓');
-}
-
-function renderPreview(){
-  const cv=document.getElementById('preview-canvas');
-  if(!cv) return;
-  const W=480,H=360;
-  if(!customStones.length){
-    // Just render base
-    const fake={visual:{color_matriz_hex:customBase},chips:[]};
-    renderMezcla(cv,fake,W,H);
-    return;
-  }
-  const tot=customStones.reduce((a,s)=>a+s.pct,0)||100;
-  const fakeMezcla={
-    visual:{color_matriz_hex:customBase},
-    chips:customStones.map(s=>({
-      piedra_id:   s.piedra_id,
-      nombre_piedra:s.nombre,
-      color_hex:   s.color_hex,
-      rodada:      s.rodada,
-      proporcion:  s.pct/tot,
-      pct_en_agregado: s.pct,
-      granulometria_key: s.granKey
-    }))
-  };
-  renderMezcla(cv,fakeMezcla,W,H);
-}
 
 // ── Init ──────────────────────────────────────────────────────────────────
 async function init(){
@@ -3060,36 +2765,19 @@ async function init(){
 
     document.getElementById('loading').style.display='none';
 
-    // Build interactive creator
-    initCreator();
-
-    // Detect available lineas for catalog
     const lineas=['instone_premium','blangino_terrazzo','blangino_compact']
       .filter(l=>ALL.some(m=>m.linea===l));
 
     buildFilters(lineas);
-    // Don't auto-render all 42 cards unless catalog tab is active
-    const badge=document.getElementById('count-badge-cat');
-    if(badge) badge.textContent=ALL.length+' mezclas';
+    applyFilter('Todas');
   }catch(e){
     document.getElementById('loading').style.display='none';
     const err=document.getElementById('error');
     err.style.display='block';
-    err.textContent='Error al cargar el configurador: '+e.message;
+    err.textContent='No se pudo cargar mezclas.json: '+e.message+'. Verificá que el archivo esté en la misma carpeta.';
     console.error('[crear-configurador]',e);
   }
 }
-
-// Lazy-load catalog when tab is first opened
-let catalogBuilt=false;
-const _switchMode=switchMode;
-switchMode=function(mode){
-  _switchMode(mode);
-  if(mode==='catalogo'&&!catalogBuilt){
-    catalogBuilt=true;
-    applyFilter('Todas');
-  }
-};
 
 document.addEventListener('DOMContentLoaded',init);
 
