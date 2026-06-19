@@ -2917,40 +2917,58 @@ function shortName(n){
   return map[n]||n.split(' ').slice(0,2).join(' ');
 }
 
-function toggleStone(pid,p){
-  const idx=customStones.findIndex(s=>s.piedra_id===pid);
+function updateStoneBadge(pid){
+  const count=customStones.filter(s=>s.piedra_id===pid).length;
   const btn=document.getElementById('sbtn-'+pid);
-  if(idx>=0){
-    customStones.splice(idx,1);
-    btn.classList.remove('sel');
-  } else {
-    // Default pct: equal share
-    customStones.push({
-      piedra_id: pid,
-      nombre: p.nombre,
-      color_hex: p.color_hex||'#ccc',
-      rodada: !!p.rodada,
-      granKey: p.rodada?'5':'2',
-      pct: 0  // will be normalized
-    });
+  if(!btn) return;
+  let badge=btn.querySelector('.sbadge');
+  if(count>0){
     btn.classList.add('sel');
+    if(!badge){
+      badge=document.createElement('span');
+      badge.className='sbadge';
+      badge.style.cssText='position:absolute;top:-5px;right:-5px;background:#1A1A18;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;pointer-events:none;border:2px solid #fff';
+      btn.style.position='relative';
+      btn.appendChild(badge);
+    }
+    badge.textContent=count;
+  } else {
+    btn.classList.remove('sel');
+    if(badge) badge.remove();
   }
+}
+
+function toggleStone(pid,p){
+  // Always add — allows multiple of same stone (different sizes)
+  customStones.push({
+    piedra_id: pid,
+    nombre: p.nombre,
+    color_hex: p.color_hex||'#ccc',
+    rodada: !!p.rodada,
+    granKey: p.rodada?'5':'2',
+    pct: 0
+  });
   normalizePcts();
+  updateStoneBadge(pid);
   renderMixRows();
   renderPreview();
 }
 
 function normalizePcts(){
   if(!customStones.length) return;
-  // Give equal share if pct=0 (just added); keep existing ratios otherwise
-  const zeroAll=customStones.every(s=>s.pct===0);
-  if(zeroAll){
-    const share=Math.round(100/customStones.length);
-    customStones.forEach((s,i)=>s.pct=i===customStones.length-1?100-share*(customStones.length-1):share);
-  } else {
-    // scale existing so they sum to 100 if a stone was removed
-    const tot=customStones.reduce((a,s)=>a+s.pct,0);
-    if(tot>0) customStones.forEach(s=>s.pct=Math.max(1,Math.round(s.pct/tot*100)));
+  // Assign equal share to any entry with pct=0 (newly added)
+  const n=customStones.length;
+  const share=Math.round(100/n);
+  customStones.forEach((s,i)=>{
+    if(s.pct===0) s.pct=i===n-1?100-share*(n-1):share;
+  });
+  // Re-scale all so total = 100
+  const tot=customStones.reduce((a,s)=>a+s.pct,0);
+  if(tot>0&&tot!==100){
+    customStones.forEach(s=>s.pct=Math.max(1,Math.round(s.pct/tot*100)));
+    // Fix rounding drift on last element
+    const t2=customStones.reduce((a,s)=>a+s.pct,0);
+    if(t2!==100) customStones[customStones.length-1].pct+=100-t2;
   }
 }
 
@@ -2991,15 +3009,15 @@ function changePct(i,v,el){
 }
 function removeStone(i){
   const s=customStones.splice(i,1)[0];
-  const btn=document.getElementById('sbtn-'+s.piedra_id);
-  if(btn) btn.classList.remove('sel');
   if(customStones.length) normalizePcts();
+  updateStoneBadge(s.piedra_id);
   renderMixRows();
   renderPreview();
 }
 function clearMix(){
+  const ids=[...new Set(customStones.map(s=>s.piedra_id))];
   customStones=[];
-  document.querySelectorAll('.stone-btn.sel').forEach(b=>b.classList.remove('sel'));
+  ids.forEach(pid=>updateStoneBadge(pid));
   renderMixRows();
   renderPreview();
 }
