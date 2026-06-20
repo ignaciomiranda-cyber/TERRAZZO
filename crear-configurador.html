@@ -40,6 +40,9 @@ h1{font-size:22px;font-weight:700;letter-spacing:-.01em;margin-bottom:5px;color:
 .ssl{font-size:10px;color:#9b958a}
 .spct{font-size:11px;font-weight:700;min-width:30px;text-align:right;color:#1A1A18}
 input[type=range]{flex:1;accent-color:#1A1A18}
+.pct-input{width:46px;text-align:center;border:1px solid #D7D1C6;border-radius:6px;padding:4px 5px;font-size:13px;font-weight:700;color:#1A1A18;outline:none;background:#fff;-moz-appearance:textfield;}
+.pct-input::-webkit-outer-spin-button,.pct-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pct-input:focus{border-color:#1A1A18}
 .totrow{font-size:11px;color:#9b958a;padding-top:8px;border-top:1px solid #E4DFD5;margin-top:6px}
 .tok{color:#3F5953}.terr{color:#E0491A}
 .addrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
@@ -1620,16 +1623,23 @@ function renderList(){
     const row=document.createElement('div');row.className='stone-row';
     row.innerHTML=`<div class="sdot" style="background:${sd.h}"></div>
     <div class="si"><span class="snl">${s.name}</span><span class="ssl">${SZP[s.size].label}</span></div>
-    <input type="range" min="0" max="100" step="1" value="${s.pct}" oninput="updatePct('${s.key}',this.value)">
-    <span class="spct" id="p_${sk}">${s.pct}%</span>
+    <input type="range" min="0" max="100" step="1" value="${s.pct}" oninput="updatePct('${s.key}',this.value,true)">
+    <input type="number" class="pct-input" id="p_${sk}" min="0" max="100" step="1" value="${s.pct}" oninput="updatePct('${s.key}',this.value,false)">
+    <span style="font-size:11px;color:#9b958a">%</span>
     <button type="button" class="rbtn" onclick="removeStone('${s.key}')">✕</button>`;
     c.appendChild(row);
   });updateTot();
 }
-function updatePct(key,val){
-  const s=customStones.find(s=>s.key===key);if(!s)return;s.pct=parseInt(val);
-  const el=document.getElementById('p_'+key.replace(/[^a-zA-Z0-9]/g,'_'));
-  if(el)el.textContent=val+'%';updateTot();renderCustom();
+function updatePct(key,val,fromSlider){
+  const s=customStones.find(s=>s.key===key);if(!s)return;
+  const n=Math.max(0,Math.min(100,parseInt(val)||0));s.pct=n;
+  const sk=key.replace(/[^a-zA-Z0-9]/g,'_');
+  const numEl=document.getElementById('p_'+sk);
+  if(numEl){
+    if(fromSlider)numEl.value=n;
+    else{const row=numEl.closest('.stone-row');if(row){const range=row.querySelector('input[type=range]');if(range)range.value=n;}}
+  }
+  updateTot();renderCustom();
 }
 function updateTot(){
   const tot=customStones.reduce((a,s)=>a+s.pct,0);const el=document.getElementById('tot');
