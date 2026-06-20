@@ -151,11 +151,17 @@ button.abtn:hover{background:#EFEBE3}
 .ks-tag b{color:#1A1A18;font-weight:700}
 .ks-scene-legend{margin-top:12px;font-size:12px;color:#6f6a60;text-align:center;letter-spacing:.01em;max-width:560px;margin-left:auto;margin-right:auto;text-wrap:pretty}
 /* Moodboard stage */
-.mb-stage{position:relative;width:100%;min-height:540px;border-radius:12px;border:1px solid #E4DFD5;overflow:hidden;padding:0;background:radial-gradient(130% 100% at 50% -10%,rgba(255,255,255,.5),rgba(255,255,255,0) 55%),repeating-linear-gradient(91deg,#E9E2D4 0px,#E9E2D4 3px,#E4DCCC 3px,#E4DCCC 6px),#E8E1D3;box-shadow:inset 0 0 90px rgba(120,95,60,.12);touch-action:none}
-.mb-backing{position:absolute;left:33.333%;top:50%;width:520px;max-width:58%;height:296px;background:#F1ECE2;transform:translate(-50%,-50%) rotate(-1.6deg);box-shadow:0 34px 64px -24px rgba(70,52,32,.30)}
+.mb-stage{position:relative;width:100%;min-height:540px;border-radius:12px;border:1px solid #E4DFD5;overflow:hidden;padding:0;background:#fff;touch-action:none}
+.mb-stage.mb-grid-on{background-image:linear-gradient(rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px);background-size:40px 40px}
+.mb-backing{display:none}
 .mb-zone{position:absolute;top:0;bottom:0;pointer-events:none;z-index:0}
-.mb-zone-dep{right:0;width:33.333%;background:repeating-linear-gradient(91deg,rgba(120,95,60,.05) 0px,rgba(120,95,60,.05) 3px,rgba(120,95,60,.02) 3px,rgba(120,95,60,.02) 6px),rgba(120,95,60,.045);box-shadow:inset 1px 0 0 rgba(120,95,60,.18)}
-.mb-zone-div{position:absolute;top:0;bottom:0;left:66.666%;width:0;border-left:1px dashed rgba(120,95,60,.32);pointer-events:none;z-index:1}
+.mb-zone-dep{right:0;width:33.333%;background:transparent;border-left:1px solid #E4DFD5}
+.mb-zone-div{display:none}
+.mb-caps-hidden .mb-cap{display:none!important}
+.mb-close{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:rgba(26,26,24,.72);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;display:none;align-items:center;justify-content:center;z-index:10;padding:0;font-family:inherit}
+.mb-sample:not(.is-empty):hover .mb-close{display:flex}
+.mb-sw{font-size:11px;font-weight:600;padding:6px 12px;border:1px solid #D7D1C6;border-radius:100px;background:#fff;color:#6f6a60;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s,border-color .15s}
+.mb-sw.active{background:#1A1A18;color:#fff;border-color:#1A1A18}
 .mb-zone-label{position:absolute;top:11px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#A99F8B;pointer-events:none;z-index:1}
 .mb-zone-label.l{left:15px}
 .mb-zone-label.r{right:15px;text-align:right}
@@ -301,7 +307,11 @@ button.abtn:hover{background:#EFEBE3}
           </div>
       </div>
       <div class="mb-controls">
-        <span class="mb-drag-hint">Arrastrá las muestras para acomodarlas como quieras</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button type="button" class="mb-sw" id="sw-straight" onclick="toggleMbStraight(this)">Cruzadas</button>
+          <button type="button" class="mb-sw active" id="sw-caps" onclick="toggleMbCaps(this)">Nombres</button>
+          <button type="button" class="mb-sw" id="sw-grid" onclick="toggleMbGrid(this)">Grilla</button>
+        </div>
         <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
       </div>
       <div class="kscene" id="kscene">
@@ -842,7 +852,7 @@ const PISOS=[
   {slug:'honey-oak',       name:'Honey Oak',       spec:'Roble · símil madera', bg:'#BE8147'},
   {slug:'grey-oak',        name:'Grey Oak',        spec:'Roble · símil madera', bg:'#BCB2A5'},
 ];
-let selCortinas=[],selTelas=[],selPisos=['honey-oak'];
+let selCortinas=[],selTelas=[],selPisos=[];
 const PANTONE=[
   {slug:'roasted-russet', code:'19-1541', name:'Roasted Russet', hex:'#7E3A33'},
   {slug:'tinsel',         code:'16-0945', name:'Tinsel',         hex:'#C99A4E'},
@@ -1416,8 +1426,21 @@ function ksView(v){
 
 function mbKey(el){ if(el.id==='mb-sample-terr')return 'terr'; const s=el.getAttribute('data-slot'); if(s!=null)return 'm'+s; const t=el.getAttribute('data-stone'); if(t!=null)return 's'+t; const c=el.getAttribute('data-cort'); if(c!=null)return 'c'+c; const w=el.getAttribute('data-tela'); if(w!=null)return 'w'+w; const f=el.getAttribute('data-piso'); if(f!=null)return 'f'+f; const pn=el.getAttribute('data-pan'); if(pn!=null)return 'p'+pn; return null; }
 const MB_DEFAULTS={terr:{fx:.82,fy:.30,rot:-2},m0:{fx:.79,fy:.34,rot:2},m1:{fx:.88,fy:.33,rot:-2},m2:{fx:.82,fy:.42,rot:3},c0:{fx:.84,fy:.41,rot:-2},s0:{fx:.79,fy:.55,rot:-3},s1:{fx:.88,fy:.56,rot:2},w0:{fx:.80,fy:.63,rot:3},f0:{fx:.88,fy:.59,rot:-2},p0:{fx:.78,fy:.73,rot:2},p1:{fx:.84,fy:.74,rot:-2},p2:{fx:.90,fy:.72,rot:3}};
-let mbPos={}, mbZ=20, mbReady=false;
+let mbPos={}, mbZ=20, mbReady=false, mbStraight=false, mbCapsOn=true, mbGridOn=false;
 function mbDeposit(el){ if(!mbReady)return; const k=mbKey(el); if(!k)return; delete mbPos[k]; saveMbPos(); mbApply(el); }
+function toggleMbStraight(btn){mbStraight=!mbStraight;btn.classList.toggle('active',mbStraight);btn.textContent=mbStraight?'Rectas':'Cruzadas';mbApplyAll();}
+function toggleMbCaps(btn){mbCapsOn=!mbCapsOn;btn.classList.toggle('active',mbCapsOn);document.getElementById('mb-stage').classList.toggle('mb-caps-hidden',!mbCapsOn);}
+function toggleMbGrid(btn){mbGridOn=!mbGridOn;btn.classList.toggle('active',mbGridOn);document.getElementById('mb-stage').classList.toggle('mb-grid-on',mbGridOn);}
+function mbClearSample(el,e){
+  e.stopPropagation();
+  if(el.id==='mb-sample-terr'){mbTerrazzo=null;renderMoodboard();return;}
+  if(el.classList.contains('mb-mel')){const sl=selFaplacs[+el.getAttribute('data-slot')];if(sl)selectFaplac(sl);return;}
+  if(el.classList.contains('mb-stone')){const sl=selStones[+el.getAttribute('data-stone')];if(sl)selectSlab(sl);return;}
+  if(el.classList.contains('mb-cort')){const sl=selCortinas[+el.getAttribute('data-cort')];if(sl)selectCortina(sl);return;}
+  if(el.classList.contains('mb-tela')){const sl=selTelas[+el.getAttribute('data-tela')];if(sl)selectTela(sl);return;}
+  if(el.classList.contains('mb-piso')){const sl=selPisos[+el.getAttribute('data-piso')];if(sl)selectPiso(sl);return;}
+  if(el.classList.contains('mb-pan')){const sl=selPantones[+el.getAttribute('data-pan')];if(sl)selectPantone(sl);return;}
+}
 function loadMbPos(){ try{mbPos=JSON.parse(localStorage.getItem('ins_mb_pos')||'null')||{};}catch(e){mbPos={};} }
 function saveMbPos(){ try{localStorage.setItem('ins_mb_pos',JSON.stringify(mbPos));}catch(e){} }
 function mbStageSize(){ const r=document.getElementById('mb-stage').getBoundingClientRect(); return {W:r.width,H:r.height}; }
@@ -1427,7 +1450,7 @@ function mbApply(el){
   const {W,H}=mbStageSize(); const w=el.offsetWidth,h=el.offsetHeight;
   el.style.left=(p.fx*W - w/2)+'px';
   el.style.top=(p.fy*H - h/2)+'px';
-  el.style.transform='rotate('+(p.rot||0)+'deg)';
+  el.style.transform='rotate('+(mbStraight?0:(p.rot||0))+'deg)';
 }
 function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
 function mbEnableDrag(el){
@@ -1462,7 +1485,13 @@ function mbEnableDrag(el){
 function mbResetLayout(){ mbPos={}; saveMbPos(); mbApplyAll(); }
 function mbInitDnD(){
   loadMbPos();
-  document.querySelectorAll('#mb-stage .mb-sample').forEach(mbEnableDrag);
+  document.querySelectorAll('#mb-stage .mb-sample').forEach(el=>{
+    mbEnableDrag(el);
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='mb-close';btn.textContent='×';
+    btn.addEventListener('click',e=>mbClearSample(el,e));
+    el.appendChild(btn);
+  });
   mbApplyAll();
   mbReady=true;
   window.addEventListener('resize',()=>setTimeout(mbApplyAll,60));
