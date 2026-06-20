@@ -620,7 +620,7 @@ const STONES=[
 ];
 const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"3":{minR:14,maxR:22,label:"N°3"},"5":{minR:30,maxR:56,label:"N°5"}};
 const RS=480;
-const TOTAL_COVERAGE=0.88;
+const TOTAL_COVERAGE=0.96;
 
 const FAPLAC=[
   {slug:'petiribi',     name:'Petiribí',     linea:'Mesopotamia',   bg:'#9E7C3C', tex:'wood'},
@@ -1515,13 +1515,13 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
   }).sort((a,b)=>b.sp.maxR-a.sp.maxR);
   const placer=makePlacer();const all=[];
   specs.forEach(({s,sp,count},si)=>{
-    let placed=0;const maxTries=count*20;
+    let placed=0;const maxTries=count*50;
     for(let i=0;i<maxTries&&placed<count;i++){
       const rx=sp.minR+Math.random()*(sp.maxR-sp.minR);
       const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
       if(pad*2>=RS)continue;
       const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md*.88)){placer.add(x,y,md*.88,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+      if(!placer.overlaps(x,y,md*.20)){placer.add(x,y,md*.20,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
     }
   });
   all.sort((a,b)=>b.r-a.r);
