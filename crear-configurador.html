@@ -1463,11 +1463,11 @@ function angularPath(ctx,cx,cy,rx,ry,seed){
   ctx.closePath();
 }
 function roundedPath(ctx,cx,cy,rx,ry,seed){
-  const N=10,ba=hash2(seed*1.1,seed*0.9)*Math.PI,asp=0.68+hash2(seed,seed*1.7)*0.30;
+  const N=12,ba=hash2(seed*1.1,seed*0.9)*Math.PI,asp=0.50+hash2(seed,seed*1.7)*0.46;
   const pts=[];
   for(let i=0;i<N;i++){
     const a=ba+(i/N)*Math.PI*2;
-    const b=1+(hash2(seed+i*.41,seed*1.9+i)-.5)*.18+(hash2(seed*.8+i,i*1.4)-.5)*.07;
+    const b=1+(hash2(seed+i*.41,seed*1.9+i)-.5)*.38+(hash2(seed*.8+i,i*1.4)-.5)*.16;
     pts.push([cx+Math.cos(a)*rx*b, cy+Math.sin(a)*ry*asp*b]);
   }
   const L=N;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
