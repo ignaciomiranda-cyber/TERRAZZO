@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const roundedPath=(ctx,cx,cy,rx,ry,seed)=>{const angle=hash2(seed*1.31,seed*0.73)*Math.PI;const scx=0.82+hash2(seed*2.1,seed*0.41)*0.18;const scy=0.72+hash2(seed*0.9,seed*1.83)*0.18;ctx.beginPath();ctx.ellipse(cx,cy,rx*scx,ry*scy,angle,0,Math.PI*2);};
 
     const STONES={
-      'Mármol blanco':'#EDEAE2','Mármol gris':'#A8A6A2','Mármol negro':'#242220',
+      'Mármol blanco':'#EDEAE2','Mármol gris (Bardiglio)':'#A8A6A2','Serpentinita / Granito Rumi Black':'#242220',
       'Mármol verde':'#588A5E','Mármol rojo':'#9E3826',
       'Granito gris':'#646260','Granito verde':'#385A3C',
       'Rosa Córdoba':'#D29E94',
@@ -196,20 +196,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── catalog data ──────────────────────────────────────────
     const TERR=[
-      {base:'#F0EDE6',stones:[{name:'Mármol blanco',size:'2',pct:60},{name:'Mármol negro',size:'2',pct:8},{name:'Rosa Córdoba',size:'2',pct:20},{name:'Ónix miel',size:'2',pct:12}],title:'Confeti cálido',r:0.78},
+      {base:'#F0EDE6',stones:[{name:'Mármol blanco',size:'2',pct:60},{name:'Serpentinita / Granito Rumi Black',size:'2',pct:8},{name:'Rosa Córdoba',size:'2',pct:20},{name:'Ónix miel',size:'2',pct:12}],title:'Confeti cálido',r:0.78},
       {base:'#1A1A18',stones:[{name:'Mármol blanco',size:'5',pct:100}],title:'Tuxedo grande',r:1},
       {base:'#B45C4C',stones:[{name:'Mármol blanco',size:'2',pct:40},{name:'Rosa Córdoba',size:'2',pct:60}],title:'Terracota rosado',r:0.8},
-      {base:'#88A686',stones:[{name:'Mármol blanco',size:'2',pct:55},{name:'Mármol negro',size:'2',pct:45}],title:'Verde salvia',r:1},
-      {base:'#C4C2BC',stones:[{name:'Mármol negro',size:'1',pct:45},{name:'Mármol gris',size:'2',pct:35},{name:'Ónix miel',size:'1',pct:20}],title:'Gris pulido',r:0.72},
-      {base:'#F0EDE6',stones:[{name:'Mármol blanco',size:'1',pct:80},{name:'Mármol negro',size:'1',pct:20}],title:'Blanco fino',r:1.18},
+      {base:'#88A686',stones:[{name:'Mármol blanco',size:'2',pct:55},{name:'Serpentinita / Granito Rumi Black',size:'2',pct:45}],title:'Verde salvia',r:1},
+      {base:'#C4C2BC',stones:[{name:'Serpentinita / Granito Rumi Black',size:'1',pct:45},{name:'Mármol gris (Bardiglio)',size:'2',pct:35},{name:'Ónix miel',size:'1',pct:20}],title:'Gris pulido',r:0.72},
+      {base:'#F0EDE6',stones:[{name:'Mármol blanco',size:'1',pct:80},{name:'Serpentinita / Granito Rumi Black',size:'1',pct:20}],title:'Blanco fino',r:1.18},
       {base:'#D0A49C',stones:[{name:'Ónix rojo',size:'2',pct:90},{name:'Mármol blanco',size:'2',pct:10}],title:'Rosa pálido',r:0.8},
-      {base:'#545250',stones:[{name:'Mármol negro',size:'2',pct:50},{name:'Granito gris',size:'2',pct:30},{name:'Ónix miel',size:'2',pct:20}],title:'Antracita oro',r:1},
+      {base:'#545250',stones:[{name:'Serpentinita / Granito Rumi Black',size:'2',pct:50},{name:'Granito gris',size:'2',pct:30},{name:'Ónix miel',size:'2',pct:20}],title:'Antracita oro',r:1},
       {base:'#E8E4DC',stones:[{name:'Blanca rodada',size:'5',pct:100}],title:'Piedra blanca rodada N°5',r:0.9},
       {base:'#E8E4DC',stones:[{name:'Rodocrosita',size:'2',pct:70},{name:'Mármol blanco',size:'2',pct:30}],title:'Puna — rodocrosita argentina',r:0.85},
       {base:'#DED4C0',stones:[{name:'Travertino',size:'3',pct:80},{name:'Mármol blanco',size:'1',pct:20}],title:'Salta — travertino NOA',r:0.9},
       {base:'#E8E4DC',stones:[{name:'Conchilla',size:'1',pct:60},{name:'Mármol blanco',size:'1',pct:40}],title:'Nácar — conchilla patagónica',r:1.0},
-      {base:'#646058',stones:[{name:'Latón',size:'2',pct:35},{name:'Mármol negro',size:'2',pct:65}],title:'Latón — metálico premium',r:0.95},
-      {base:'#2E4278',stones:[{name:'Mármol blanco',size:'2',pct:70},{name:'Mármol negro',size:'1',pct:30}],title:'Azul noche — marino oscuro',r:0.88},
+      {base:'#646058',stones:[{name:'Latón',size:'2',pct:35},{name:'Serpentinita / Granito Rumi Black',size:'2',pct:65}],title:'Latón — metálico premium',r:0.95},
+      {base:'#2E4278',stones:[{name:'Mármol blanco',size:'2',pct:70},{name:'Serpentinita / Granito Rumi Black',size:'1',pct:30}],title:'Azul noche — marino oscuro',r:0.88},
       {base:'#4A6898',stones:[{name:'Mármol blanco',size:'1',pct:100}],title:'Azul madrugada — pizarra suave',r:1.05}
     ];
     const SLABS=[
