@@ -331,7 +331,7 @@ button.abtn:hover{background:#EFEBE3}
         <div style="display:flex;gap:8px;align-items:center">
           <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
           <button type="button" class="mb-export" onclick="saveRealmood()" title="Guardar composición">&#9632; Guardar</button>
-          <button type="button" class="mb-export" onclick="mbExport()" title="Exportar como imagen PNG">&#8681; Exportar</button>
+          <button type="button" id="mb-export-btn" class="mb-export" onclick="mbExport()" title="Exportar como imagen PNG">&#8681; Exportar</button>
         </div>
       </div>
       <div class="kscene" id="kscene">
@@ -1545,22 +1545,33 @@ function loadRealmood(){
 function mbExport(){
   const stage=document.getElementById('mb-stage');
   if(!stage||typeof html2canvas==='undefined'){alert('Error al exportar');return;}
-  const btn=document.querySelector('.mb-export');
+  const btn=document.getElementById('mb-export-btn');
   if(btn){btn.textContent='Exportando…';btn.disabled=true;}
   const closeBtns=stage.querySelectorAll('.mb-close');
   closeBtns.forEach(b=>{b.style.display='none';});
-  html2canvas(stage,{
-    useCORS:true,
-    allowTaint:true,
-    scale:2,
-    backgroundColor:'#ffffff',
-    logging:false
-  }).then(canvas=>{
+  html2canvas(stage,{useCORS:true,allowTaint:true,scale:2,backgroundColor:'#ffffff',logging:false}).then(captured=>{
     closeBtns.forEach(b=>{b.style.display='';});
     if(btn){btn.innerHTML='&#8681; Exportar';btn.disabled=false;}
+    const SCALE=2;
+    const cropW=Math.floor(captured.width*(2/3));
+    const cropH=captured.height;
+    const HDR=Math.round(56*SCALE);
+    const out=document.createElement('canvas');
+    out.width=cropW; out.height=HDR+cropH;
+    const ctx=out.getContext('2d');
+    ctx.fillStyle='#fff';
+    ctx.fillRect(0,0,cropW,HDR+cropH);
+    const FS=Math.round(18*SCALE);
+    ctx.font='700 '+FS+'px -apple-system,Helvetica Neue,Arial,sans-serif';
+    ctx.fillStyle='#1A1A18';
+    ctx.textBaseline='middle';
+    ctx.fillText('realmood',Math.round(20*SCALE),HDR/2);
+    ctx.fillStyle='#E4DFD5';
+    ctx.fillRect(0,HDR-1,cropW,1);
+    ctx.drawImage(captured,0,0,cropW,cropH,0,HDR,cropW,cropH);
     const link=document.createElement('a');
-    link.download='moodboard-instone.png';
-    link.href=canvas.toDataURL('image/png');
+    link.download='moodboard-realmood.png';
+    link.href=out.toDataURL('image/png');
     link.click();
   }).catch(()=>{
     closeBtns.forEach(b=>{b.style.display='';});
