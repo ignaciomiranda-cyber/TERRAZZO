@@ -158,8 +158,8 @@ button.abtn:hover{background:#EFEBE3}
 .mb-zone-dep{right:0;width:33.333%;background:transparent;border-left:1px solid #E4DFD5}
 .mb-zone-div{display:none}
 .mb-caps-hidden .mb-cap{display:none!important}
-.mb-close{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:rgba(26,26,24,.72);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;display:none;align-items:center;justify-content:center;z-index:10;padding:0;font-family:inherit}
-.mb-sample:not(.is-empty):hover .mb-close{display:flex}
+.mb-close{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(26,26,24,.75);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;display:none;align-items:center;justify-content:center;z-index:10;padding:0;font-family:inherit;pointer-events:none}
+.mb-sample:not(.is-empty):hover .mb-close{display:flex;pointer-events:auto}
 .mb-sw{font-size:11px;font-weight:600;padding:6px 12px;border:1px solid #D7D1C6;border-radius:100px;background:#fff;color:#6f6a60;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s,border-color .15s}
 .mb-sw.active{background:#1A1A18;color:#fff;border-color:#1A1A18}
 .mb-zone-label{position:absolute;top:11px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#A99F8B;pointer-events:none;z-index:1}
@@ -1455,32 +1455,41 @@ function mbApply(el){
 function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
 function mbEnableDrag(el){
   const key=mbKey(el); if(!key)return;
-  let sx,sy,ol,ot,W,H,dragging=false;
+  let sx,sy,ol,ot,dragging=false,moveFn,upFn;
   el.addEventListener('pointerdown',e=>{
     if(el.classList.contains('is-empty'))return;
-    dragging=true;
-    const s=mbStageSize();W=s.W;H=s.H;
+    if(e.target.classList.contains('mb-close'))return;
+    e.preventDefault();
+    const s=mbStageSize();
+    if(!s.W||!s.H)return;
     sx=e.clientX;sy=e.clientY;
     ol=parseFloat(el.style.left)||0; ot=parseFloat(el.style.top)||0;
     el.style.zIndex=(++mbZ);
     el.classList.add('dragging');
-    try{el.setPointerCapture(e.pointerId);}catch(_){}
-    e.preventDefault();
+    dragging=true;
+    moveFn=ev=>{
+      if(!dragging)return;
+      el.style.left=(ol+(ev.clientX-sx))+'px';
+      el.style.top=(ot+(ev.clientY-sy))+'px';
+    };
+    upFn=()=>{
+      if(!dragging)return;
+      dragging=false;
+      el.classList.remove('dragging');
+      window.removeEventListener('pointermove',moveFn);
+      window.removeEventListener('pointerup',upFn);
+      window.removeEventListener('pointercancel',upFn);
+      const {W,H}=mbStageSize();
+      if(!W||!H)return;
+      const w=el.offsetWidth,h=el.offsetHeight;
+      const cur=mbPos[key]||MB_DEFAULTS[key]||{rot:0};
+      mbPos[key]={fx:((parseFloat(el.style.left)||0)+w/2)/W, fy:((parseFloat(el.style.top)||0)+h/2)/H, rot:cur.rot||0};
+      saveMbPos();
+    };
+    window.addEventListener('pointermove',moveFn);
+    window.addEventListener('pointerup',upFn);
+    window.addEventListener('pointercancel',upFn);
   });
-  el.addEventListener('pointermove',e=>{
-    if(!dragging)return;
-    el.style.left=(ol+(e.clientX-sx))+'px';
-    el.style.top=(ot+(e.clientY-sy))+'px';
-  });
-  function end(){
-    if(!dragging)return; dragging=false; el.classList.remove('dragging');
-    const w=el.offsetWidth,h=el.offsetHeight;
-    const cur=mbPos[key]||MB_DEFAULTS[key]||{rot:0};
-    mbPos[key]={fx:((parseFloat(el.style.left)||0)+w/2)/W, fy:((parseFloat(el.style.top)||0)+h/2)/H, rot:cur.rot||0};
-    saveMbPos();
-  }
-  el.addEventListener('pointerup',end);
-  el.addEventListener('pointercancel',end);
 }
 function mbResetLayout(){ mbPos={}; saveMbPos(); mbApplyAll(); }
 function mbInitDnD(){
@@ -1489,6 +1498,7 @@ function mbInitDnD(){
     mbEnableDrag(el);
     const btn=document.createElement('button');
     btn.type='button';btn.className='mb-close';btn.textContent='×';
+    btn.addEventListener('pointerdown',e=>e.stopPropagation());
     btn.addEventListener('click',e=>mbClearSample(el,e));
     el.appendChild(btn);
   });
