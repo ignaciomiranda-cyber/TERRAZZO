@@ -183,9 +183,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const [br,bg,bb]=h2r(baseHex);
       const id=ctx.createImageData(W,H);const d=id.data;const sc=0.006;
       for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-        const n=fbm(x*sc,y*sc,5),n2=fbm(x*sc*4+30,y*sc*4+70,3);
-        const grain=(hash2(x*0.7+5,y*1.1+9)-.5)*9;
-        const g=(n-.5)*15+(n2-.5)*7+grain,i=(y*W+x)*4;
+        const n=fbm(x*sc,y*sc,3);
+        const grain=(hash2(x*0.7+5,y*1.1+9)-.5)*11;
+        const g=(n-.5)*18+grain,i=(y*W+x)*4;
         d[i]=clamp(br+g,0,255);d[i+1]=clamp(bg+g,0,255);d[i+2]=clamp(bb+g,0,255);d[i+3]=255;
       }
       ctx.putImageData(id,0,0);

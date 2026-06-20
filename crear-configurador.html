@@ -619,7 +619,7 @@ const STONES=[
   {name:"Blanca rodada",      h:"#ECEBE4",h2:"#D8D7D0",h3:"#C4C3BC",rodada:true},
 ];
 const SZP={"1":{minR:4,maxR:10,label:"N°1"},"2":{minR:10,maxR:28,label:"N°2/3"},"3":{minR:14,maxR:22,label:"N°3"},"5":{minR:30,maxR:56,label:"N°5"}};
-const RS=640;
+const RS=480;
 const TOTAL_COVERAGE=0.88;
 
 const FAPLAC=[
@@ -1499,9 +1499,9 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
   const [br,bg,bb]=h2r(baseHex);
   const id=ctx.createImageData(RS,RS);const d=id.data;const sc=0.006;
   for(let y=0;y<RS;y++)for(let x=0;x<RS;x++){
-    const n=fbm(x*sc,y*sc,5),n2=fbm(x*sc*4+30,y*sc*4+70,3);
-    const grain=(hash2(x*0.7+5,y*1.1+9)-.5)*9;
-    const g=(n-.5)*15+(n2-.5)*7+grain,i=(y*RS+x)*4;
+    const n=fbm(x*sc,y*sc,3);
+    const grain=(hash2(x*0.7+5,y*1.1+9)-.5)*11;
+    const g=(n-.5)*18+grain,i=(y*RS+x)*4;
     d[i]=clamp(br+g,0,255);d[i+1]=clamp(bg+g,0,255);d[i+2]=clamp(bb+g,0,255);d[i+3]=255;
   }
   ctx.putImageData(id,0,0);
@@ -1680,8 +1680,9 @@ function updatePct(key,val,fromSlider){
     if(fromSlider)numEl.value=n;
     else{const row=numEl.closest('.stone-row');if(row){const range=row.querySelector('input[type=range]');if(range)range.value=n;}}
   }
-  updateTot();renderCustom();
+  updateTot();debRenderCustom();
 }
+let _dbt=null;function debRenderCustom(){clearTimeout(_dbt);_dbt=setTimeout(renderCustom,130);}
 function updateTot(){
   const tot=customStones.reduce((a,s)=>a+s.pct,0);const el=document.getElementById('tot');
   if(!customStones.length){el.textContent='';return;}
