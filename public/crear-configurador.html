@@ -247,7 +247,10 @@ button.abtn:hover{background:#EFEBE3}
   .slab-row{grid-template-columns:repeat(auto-fill,minmax(82px,1fr))}
   .tex-row{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
 }
+.mb-export{font-size:11px;font-weight:600;padding:6px 14px;border:1px solid #1A1A18;border-radius:100px;background:#fff;color:#1A1A18;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s;display:inline-flex;align-items:center;gap:5px}
+.mb-export:hover{background:#1A1A18;color:#fff}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="app">
@@ -312,7 +315,10 @@ button.abtn:hover{background:#EFEBE3}
           <button type="button" class="mb-sw active" id="sw-caps" onclick="toggleMbCaps(this)">Nombres</button>
           <button type="button" class="mb-sw" id="sw-grid" onclick="toggleMbGrid(this)">Grilla</button>
         </div>
-        <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
+          <button type="button" class="mb-export" onclick="mbExport()" title="Exportar como imagen PNG">&#8681; Exportar</button>
+        </div>
       </div>
       <div class="kscene" id="kscene">
         <div class="ks-frame">
@@ -1489,6 +1495,32 @@ function mbEnableDrag(el){
   });
 }
 function mbResetLayout(){ mbPos={}; saveMbPos(); mbApplyAll(); }
+function mbExport(){
+  const stage=document.getElementById('mb-stage');
+  if(!stage||typeof html2canvas==='undefined'){alert('Error al exportar');return;}
+  const btn=document.querySelector('.mb-export');
+  if(btn){btn.textContent='Exportando…';btn.disabled=true;}
+  const closeBtns=stage.querySelectorAll('.mb-close');
+  closeBtns.forEach(b=>{b.style.display='none';});
+  html2canvas(stage,{
+    useCORS:true,
+    allowTaint:true,
+    scale:2,
+    backgroundColor:'#ffffff',
+    logging:false
+  }).then(canvas=>{
+    closeBtns.forEach(b=>{b.style.display='';});
+    if(btn){btn.innerHTML='&#8681; Exportar';btn.disabled=false;}
+    const link=document.createElement('a');
+    link.download='moodboard-instone.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }).catch(()=>{
+    closeBtns.forEach(b=>{b.style.display='';});
+    if(btn){btn.innerHTML='&#8681; Exportar';btn.disabled=false;}
+    alert('No se pudo exportar el moodboard.');
+  });
+}
 function mbInitDnD(){
   loadMbPos();
   document.querySelectorAll('#mb-stage .mb-sample').forEach(el=>{
