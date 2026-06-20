@@ -382,8 +382,56 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-crear').innerHTML='<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px;margin:-24px -26px -64px;width:calc(100% + 52px)"></iframe>';
     const cf=$('crear-frame');
     if(cf)cf.addEventListener('load',()=>{try{const d=cf.contentDocument;const fo=d.querySelector('footer');if(fo)fo.style.display='none';const ap=d.querySelector('.app');if(ap){ap.style.paddingTop='6px';ap.style.maxWidth='1040px';}const fit=()=>{cf.style.height=Math.max(1000,d.documentElement.scrollHeight+12)+'px';};fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(d.body);}d.addEventListener('click',()=>setTimeout(fit,300));setTimeout(fit,400);}catch(e){}});
-    window.addEventListener('message',e=>{const h=e&&e.data&&e.data.crearHeight;if(typeof h==='number'&&cf)cf.style.height=h+'px';});
-    $('view-mood').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>','Tus realmood','Tus moodboards de materiales guardados aparecerán acá. Guardá muestras desde Inicio o Explorar para empezar a armarlos.',{label:'Explorar inspiración',go:'inicio'});
+    window.addEventListener('message',e=>{
+      const h=e&&e.data&&e.data.crearHeight;if(typeof h==='number'&&cf)cf.style.height=h+'px';
+      if(e&&e.data&&e.data.rmSaved)loadMoodList();
+    });
+    // ── Tus realmood list ─────────────────────────────────────────
+    function fmtDate(iso){try{const d=new Date(iso);return d.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'2-digit'});}catch(e){return '';}}
+    function loadMoodList(){
+      const vm=$('view-mood');if(!vm)return;
+      let list;try{list=JSON.parse(localStorage.getItem('ins_realmoods')||'[]');}catch(e){list=[];}
+      list=[...list].reverse();
+      if(!list.length){
+        vm.innerHTML='<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">Tus realmood</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">Creá un realmood en el configurador y guardalo para verlo acá.</p><button type="button" data-goto="crear" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Crear realmood</button></div>';
+        vm.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>setView(el.getAttribute('data-goto'))));
+        return;
+      }
+      let html='<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:24px"><h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Tus realmood</h1><span style="font-size:13px;color:#9b958a">'+list.length+' guardado'+(list.length!==1?'s':'')+'</span></div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">';
+      list.forEach((rm,i)=>{
+        const st=rm.state||{};
+        const tags=[st.terrazzo?'Terrazzo':'',... (st.faplacs||[]).slice(0,1).map(()=>'Melamina'),(st.stones||[]).slice(0,1).map(()=>'Piedra'),(st.pisos||[]).slice(0,1).map(()=>'Piso')].filter(Boolean).join(' · ')||'Sin materiales';
+        html+='<div data-rm-id="'+rm.id+'" style="background:#fff;border-radius:16px;border:1px solid #E4DFD5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">'
+          +'<div style="height:8px;background:linear-gradient(90deg,#1A1A18,#6f6a60)"></div>'
+          +'<div style="padding:18px 18px 14px">'
+          +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rm.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">'+tags+'</div>'
+          +'<div style="font-size:10px;color:#B3AD9F;margin-bottom:14px">Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>'
+          +'<div style="display:flex;gap:8px">'
+          +'<button type="button" class="rm-load-btn" style="flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Cargar</button>'
+          +'<button type="button" class="rm-del-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Borrar</button>'
+          +'</div></div></div>';
+      });
+      html+='</div>';
+      vm.innerHTML=html;
+      vm.querySelectorAll('[data-rm-id]').forEach(card=>{
+        const id=card.getAttribute('data-rm-id');
+        card.querySelector('.rm-load-btn').addEventListener('click',()=>{
+          setView('crear');
+          setTimeout(()=>{const f=$('crear-frame');if(f)f.contentWindow.postMessage({loadRmId:id},'*');},400);
+        });
+        card.querySelector('.rm-del-btn').addEventListener('click',()=>{
+          if(!confirm('¿Borrar este realmood?'))return;
+          let lst;try{lst=JSON.parse(localStorage.getItem('ins_realmoods')||'[]');}catch(e){lst=[];}
+          lst=lst.filter(x=>x.id!==id);
+          try{localStorage.setItem('ins_realmoods',JSON.stringify(lst));}catch(e){}
+          loadMoodList();
+          toast('Realmood eliminado');
+        });
+      });
+    }
+    loadMoodList();
     $('view-saved').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Tus proyectos guardados','Los proyectos que guardes desde Explorar quedarán acá para volver a verlos y reutilizar sus materiales.',{label:'Ver proyectos de Córdoba',go:'explorar'});
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
@@ -395,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
       navBtns.forEach(b=>{const a=b.getAttribute('data-view')===v;b.style.background=a?'#EFEBE3':'transparent';b.style.color=a?'#1A1A18':'#3a3733';b.style.fontWeight=a?'600':'500';b._active=a;});
       const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
       if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
+      if(v==='mood')loadMoodList();
       $('ins-search').value='';doSearch('');
     };
     navBtns.forEach(b=>{

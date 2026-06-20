@@ -262,6 +262,11 @@ button.abtn:hover{background:#EFEBE3}
 }
 .mb-export{font-size:11px;font-weight:600;padding:6px 14px;border:1px solid #D7D1C6;border-radius:100px;background:#fff;color:#6f6a60;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s,border-color .15s;display:inline-flex;align-items:center;gap:5px}
 .mb-export:hover{background:#1A1A18;color:#fff;border-color:#1A1A18}
+.rm-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.rm-name-input{flex:1;min-width:180px;font-family:inherit;font-size:17px;font-weight:600;color:#1A1A18;border:none;border-bottom:2px solid #E4DFD5;padding:5px 0;outline:none;background:transparent;letter-spacing:-.01em;transition:border-color .15s}
+.rm-name-input:focus{border-color:#1A1A18}
+.rm-name-input::placeholder{color:#C4BEB2;font-weight:500}
+.rm-save-badge{font-size:11px;color:#B3AD9F;white-space:nowrap;flex:none}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
@@ -271,6 +276,11 @@ button.abtn:hover{background:#EFEBE3}
   <p class="subtitle">Componé tu moodboard: arrastrá las muestras y elegí materiales por proveedor</p>
 
 
+  <div class="rm-header">
+    <input id="rm-name" type="text" class="rm-name-input" placeholder="Nombre del proyecto…" oninput="scheduleAutoSave()">
+    <span class="rm-save-badge" id="rm-save-badge">Sin guardar</span>
+    <button type="button" class="mb-export" onclick="newRealmood()" title="Crear nuevo realmood vacío" style="flex:none">+ Nuevo</button>
+  </div>
   <div class="moodboard-section" style="margin-top:4px;border-top:none;padding-top:0">
     <div class="mb-viewtoggle">
       <button type="button" class="ks-tab active" data-view="board" onclick="ksView('board')">Tablero</button>
@@ -1342,6 +1352,7 @@ function renderMoodboard(){
     leg.textContent=parts.length?parts.join('   ×   '):'Elegí muestras: van al depósito (derecha) y las arrastrás al moodboard para combinarlas.';
   }
   if(typeof renderKitchen==='function')renderKitchen();
+  scheduleAutoSave();
 }
 function updateMbPreview(){renderMoodboard();}
 
@@ -1509,26 +1520,54 @@ function mbEnableDrag(el){
   });
 }
 function mbResetLayout(){ mbPos={}; saveMbPos(); mbApplyAll(); }
-function saveRealmood(){
-  const state={
-    terrazzo:mbTerrazzo,
-    faplacs:selFaplacs.slice(),
-    stones:selStones.slice(),
-    cortinas:selCortinas.slice(),
-    telas:selTelas.slice(),
-    pisos:selPisos.slice(),
-    pantones:selPantones.slice(),
-    straight:mbStraight,
-    caps:mbCapsOn,
-    grid:mbGridOn
-  };
-  try{localStorage.setItem('ins_realmood',JSON.stringify(state));}catch(e){}
-  showToast('Realmood guardado');
+function newRealmood(){
+  rmActiveId=null;
+  try{localStorage.removeItem(RM_ACTIVE);}catch(e){}
+  const ni=document.getElementById('rm-name');if(ni)ni.value='';
+  const badge=document.getElementById('rm-save-badge');if(badge)badge.textContent='Sin guardar';
+  selFaplacs.splice(0);selStones.splice(0);selCortinas.splice(0);selTelas.splice(0);selPisos.splice(0);selPantones.splice(0);
+  mbTerrazzo=null;mbPos={};saveMbPos();
+  document.querySelectorAll('.faplac-swatch.selected,.slab-swatch.selected,.tex-swatch.selected').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.faplac-badge').forEach(b=>{b.style.display='none';b.textContent='';});
+  renderMoodboard();
 }
-function loadRealmood(){
-  let state;
-  try{state=JSON.parse(localStorage.getItem('ins_realmood')||'null');}catch(e){return;}
+let rmActiveId=null;
+let rmAutoTimer=null;
+const RM_KEY='ins_realmoods';
+const RM_ACTIVE='ins_rm_active';
+function getRmList(){try{return JSON.parse(localStorage.getItem(RM_KEY)||'[]');}catch(e){return[];}}
+function saveRmList(list){try{localStorage.setItem(RM_KEY,JSON.stringify(list));}catch(e){}}
+function buildRmState(){return{terrazzo:mbTerrazzo,faplacs:selFaplacs.slice(),stones:selStones.slice(),cortinas:selCortinas.slice(),telas:selTelas.slice(),pisos:selPisos.slice(),pantones:selPantones.slice(),straight:mbStraight,caps:mbCapsOn,grid:mbGridOn};}
+function scheduleAutoSave(){
+  clearTimeout(rmAutoTimer);
+  const badge=document.getElementById('rm-save-badge');
+  if(badge)badge.textContent='…';
+  rmAutoTimer=setTimeout(()=>saveRealmood(true),4000);
+}
+function saveRealmood(silent){
+  const name=(document.getElementById('rm-name')?.value||'').trim()||'Sin nombre';
+  const state=buildRmState();
+  const list=getRmList();
+  const now=new Date().toISOString();
+  if(rmActiveId){
+    const idx=list.findIndex(x=>x.id===rmActiveId);
+    if(idx>=0)list[idx]={...list[idx],name,updatedAt:now,state};
+    else list.push({id:rmActiveId,name,createdAt:now,updatedAt:now,state});
+  }else{
+    rmActiveId='rm-'+Date.now();
+    try{localStorage.setItem(RM_ACTIVE,rmActiveId);}catch(e){}
+    list.push({id:rmActiveId,name,createdAt:now,updatedAt:now,state});
+  }
+  saveRmList(list);
+  try{localStorage.setItem('ins_realmood',JSON.stringify(state));}catch(e){}
+  try{parent.postMessage({rmSaved:true,id:rmActiveId},'*');}catch(e){}
+  const badge=document.getElementById('rm-save-badge');
+  if(badge){const t=new Date();badge.textContent='Guardado '+t.getHours()+':'+String(t.getMinutes()).padStart(2,'0');}
+  if(!silent)showToast('Realmood guardado');
+}
+function applyRmState(state,name){
   if(!state)return;
+  if(name&&document.getElementById('rm-name'))document.getElementById('rm-name').value=name;
   if(state.straight!==undefined&&state.straight!==mbStraight){const b=document.getElementById('sw-straight');if(b)toggleMbStraight(b);}
   if(state.caps!==undefined&&state.caps!==mbCapsOn){const b=document.getElementById('sw-caps');if(b)toggleMbCaps(b);}
   if(state.grid!==undefined&&state.grid!==mbGridOn){const b=document.getElementById('sw-grid');if(b)toggleMbGrid(b);}
@@ -1542,6 +1581,27 @@ function loadRealmood(){
     (state.pantones||[]).forEach(s=>selectPantone(s));
   },150);
 }
+function loadRealmood(){
+  let activeId;try{activeId=localStorage.getItem(RM_ACTIVE);}catch(e){}
+  const list=getRmList();
+  let rm=null;
+  if(activeId)rm=list.find(x=>x.id===activeId);
+  if(!rm&&list.length)rm=list[list.length-1];
+  if(!rm){let old;try{old=JSON.parse(localStorage.getItem('ins_realmood')||'null');}catch(e){}if(old){applyRmState(old);return;}}
+  if(!rm)return;
+  rmActiveId=rm.id;
+  applyRmState(rm.state,rm.name);
+}
+window.addEventListener('message',e=>{
+  if(e&&e.data&&e.data.loadRmId){
+    const list=getRmList();const rm=list.find(x=>x.id===e.data.loadRmId);
+    if(!rm)return;
+    rmActiveId=rm.id;
+    try{localStorage.setItem(RM_ACTIVE,rm.id);}catch(e){}
+    applyRmState(rm.state,rm.name);
+    showToast('Cargando "'+rm.name+'"…');
+  }
+});
 function mbExport(){
   const stage=document.getElementById('mb-stage');
   if(!stage||typeof html2canvas==='undefined'){alert('Error al exportar');return;}
