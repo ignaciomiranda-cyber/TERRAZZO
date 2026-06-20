@@ -1455,13 +1455,12 @@ function mbApply(el){
 function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
 function mbEnableDrag(el){
   const key=mbKey(el); if(!key)return;
-  let sx,sy,ol,ot,dragging=false,moveFn,upFn;
+  let sx,sy,ol,ot,W,H,dragging=false,moveFn,upFn;
   el.addEventListener('pointerdown',e=>{
     if(el.classList.contains('is-empty'))return;
     if(e.target.classList.contains('mb-close'))return;
     e.preventDefault();
-    const s=mbStageSize();
-    if(!s.W||!s.H)return;
+    const s=mbStageSize();W=s.W||el.parentElement.offsetWidth||600;H=s.H||el.parentElement.offsetHeight||540;
     sx=e.clientX;sy=e.clientY;
     ol=parseFloat(el.style.left)||0; ot=parseFloat(el.style.top)||0;
     el.style.zIndex=(++mbZ);
@@ -1479,9 +1478,7 @@ function mbEnableDrag(el){
       window.removeEventListener('pointermove',moveFn);
       window.removeEventListener('pointerup',upFn);
       window.removeEventListener('pointercancel',upFn);
-      const {W,H}=mbStageSize();
-      if(!W||!H)return;
-      const w=el.offsetWidth,h=el.offsetHeight;
+      const w=el.offsetWidth||100,h=el.offsetHeight||100;
       const cur=mbPos[key]||MB_DEFAULTS[key]||{rot:0};
       mbPos[key]={fx:((parseFloat(el.style.left)||0)+w/2)/W, fy:((parseFloat(el.style.top)||0)+h/2)/H, rot:cur.rot||0};
       saveMbPos();
