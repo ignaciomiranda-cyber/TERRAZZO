@@ -1464,9 +1464,21 @@ function angularPath(ctx,cx,cy,rx,ry,seed){
   ctx.closePath();
 }
 function roundedPath(ctx,cx,cy,rx,ry,seed){
-  const aspect=0.72+hash2(seed,seed*1.7)*0.32;
-  const angle=hash2(seed*1.1,seed*0.9)*Math.PI;
-  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry*aspect,angle,0,Math.PI*2);
+  const N=10,ba=hash2(seed*1.1,seed*0.9)*Math.PI,asp=0.68+hash2(seed,seed*1.7)*0.30;
+  const pts=[];
+  for(let i=0;i<N;i++){
+    const a=ba+(i/N)*Math.PI*2;
+    const b=1+(hash2(seed+i*.41,seed*1.9+i)-.5)*.18+(hash2(seed*.8+i,i*1.4)-.5)*.07;
+    pts.push([cx+Math.cos(a)*rx*b, cy+Math.sin(a)*ry*asp*b]);
+  }
+  const L=N;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=0;i<L;i++){
+    const p0=pts[(i-1+L)%L],p1=pts[i],p2=pts[(i+1)%L],p3=pts[(i+2)%L];
+    const cp1x=p1[0]+(p2[0]-p0[0])/6,cp1y=p1[1]+(p2[1]-p0[1])/6;
+    const cp2x=p2[0]-(p3[0]-p1[0])/6,cp2y=p2[1]-(p3[1]-p1[1])/6;
+    ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,p2[0],p2[1]);
+  }
+  ctx.closePath();
 }
 function makePlacer(){
   const cell=20,gw=Math.ceil(RS/cell),gh=Math.ceil(RS/cell);
@@ -1509,7 +1521,7 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
       const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
       if(pad*2>=RS)continue;
       const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md+1)){placer.add(x,y,md+1,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+      if(!placer.overlaps(x,y,md*.88)){placer.add(x,y,md*.88,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
     }
   });
   all.sort((a,b)=>b.r-a.r);
