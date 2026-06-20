@@ -622,51 +622,86 @@ const RS=480;
 const TOTAL_COVERAGE=0.96;
 
 const FAPLAC=[
-  {slug:'petiribi',     name:'Petiribí',     linea:'Mesopotamia',   bg:'#9E7C3C', tex:'wood'},
-  {slug:'yute',         name:'Yute',         linea:'Mesopotamia',   bg:'#CABFA8', tex:'weave'},
-  {slug:'terracota',    name:'Terracota',    linea:'Mesopotamia',   bg:'#A05B40'},
-  {slug:'gris-caliza',  name:'Gris Caliza',  linea:'Mesopotamia',   bg:'#CAC4BA'},
-  {slug:'gris-basalto', name:'Gris Basalto', linea:'Mesopotamia',   bg:'#9D9D9A'},
-  {slug:'gris-tapir',   name:'Gris Tapir',   linea:'Mesopotamia',   bg:'#AA9F90'},
-  {slug:'amatista',     name:'Amatista',     linea:'Mesopotamia',   bg:'#BDA7B5'},
-  {slug:'jade',         name:'Jade',         linea:'Mesopotamia',   bg:'#95AD8B'},
-  {slug:'kiri',         name:'Kiri',         linea:'Mesopotamia',   bg:'#E1D4BA', tex:'wood'},
-  {slug:'paraiso',      name:'Paraíso',      linea:'Mesopotamia',   bg:'#D2B589', tex:'wood'},
-  {slug:'black-extreme-matt', name:'Black Extreme Matt', linea:'Táctil', bg:'#2B3034'},
-  {slug:'white-extreme-gloss',name:'White Extreme Gloss',linea:'Táctil', bg:'#F1F0EC', tex:'gloss'},
-  {slug:'grey-extreme-matt',  name:'Grey Extreme Matt',  linea:'Táctil', bg:'#5A5C59'},
-  {slug:'sauco',        name:'Sauco',        linea:'Blend',         bg:'#2B2B29', tex:'wood'},
-  {slug:'merlot',       name:'Merlot',       linea:'Blend',         bg:'#4A3127', tex:'wood'},
-  {slug:'pinot-gris',   name:'Pinot Gris',   linea:'Blend',         bg:'#C8C1B6', tex:'wood'},
-  {slug:'camellia',     name:'Camellia',     linea:'Blend',         bg:'#D9C3A0', tex:'wood'},
-  {slug:'scotch',       name:'Scotch',       linea:'Blend',         bg:'#BE9A63', tex:'wood'},
-  {slug:'amaranto',     name:'Amaranto',     linea:'Blend',         bg:'#E3DCCE'},
-  {slug:'coliseo',      name:'Coliseo',      linea:'Urban Concept', bg:'#8D7F72'},
-  {slug:'seda-azzurra', name:'Seda Azzurra', linea:'Hilados',       bg:'#0D2A34', tex:'weave'},
-  {slug:'tribal',       name:'Tribal',       linea:'Étnica',        bg:'#897C6F'},
-  {slug:'sahara',       name:'Sahara',       linea:'Étnica',        bg:'#CCBBA0'},
-  {slug:'tuareg',       name:'Tuareg',       linea:'Étnica',        bg:'#0B3A3D'},
-  {slug:'himalaya',     name:'Himalaya',     linea:'Étnica',        bg:'#DCB7A8'},
-  {slug:'safari',       name:'Safari',       linea:'Étnica',        bg:'#6A6A4A'},
-  {slug:'everest',      name:'Everest',      linea:'Étnica',        bg:'#F7F5EF'},
+  {slug:'petiribi',      name:'Petiribí',              linea:'Mesopotamia',   photo:'faplac/Petiribí.jpg'},
+  {slug:'yute',          name:'Yute',                  linea:'Mesopotamia',   photo:'faplac/Yute.jpg'},
+  {slug:'terracota',     name:'Terracota',             linea:'Mesopotamia',   photo:'faplac/Terracota.jpg'},
+  {slug:'gris-caliza',   name:'Gris Caliza',           linea:'Mesopotamia',   photo:'faplac/Gris Caliza.jpg'},
+  {slug:'gris-basalto',  name:'Gris Basalto',          linea:'Mesopotamia',   photo:'faplac/Gris Basalto.jpg'},
+  {slug:'gris-tapir',    name:'Gris Tapir',            linea:'Mesopotamia',   photo:'faplac/Gris Tapir.jpg'},
+  {slug:'amatista',      name:'Amatista',              linea:'Mesopotamia',   photo:'faplac/Amatista.jpg'},
+  {slug:'jade',          name:'Jade',                  linea:'Mesopotamia',   photo:'faplac/Jade.jpg'},
+  {slug:'kiri',          name:'Kiri',                  linea:'Mesopotamia',   photo:'faplac/Kiri.jpg'},
+  {slug:'paraiso',       name:'Paraíso',               linea:'Mesopotamia',   photo:'faplac/Paraíso.jpg'},
+  {slug:'sauco',         name:'Sauco',                 linea:'Blend',         photo:'faplac/Sauco.jpg'},
+  {slug:'merlot',        name:'Merlot',                linea:'Blend',         photo:'faplac/Merlot.jpg'},
+  {slug:'pinot-gris',    name:'Pinot Gris',            linea:'Blend',         photo:'faplac/Pinot Gris.jpg'},
+  {slug:'camellia',      name:'Camellia',              linea:'Blend',         photo:'faplac/Camellia.jpg'},
+  {slug:'scotch',        name:'Scotch',                linea:'Blend',         photo:'faplac/Scotch.jpg'},
+  {slug:'amaranto',      name:'Amaranto',              linea:'Blend',         photo:'faplac/Amaranto.jpg'},
+  {slug:'carvalho-mezzo',name:'Carvalho Mezzo',        linea:'Maderas',       photo:'faplac/Carvalho Mezzo.jpg'},
+  {slug:'cedro-woodtext',name:'Cedro Woodtext',        linea:'Maderas',       photo:'faplac/Cedro Woodtext.jpg'},
+  {slug:'roble-amer',    name:'Roble Americano Nature',linea:'Maderas',       photo:'faplac/Roble Americano Nature.jpg'},
+  {slug:'roble-dakar',   name:'Roble Dakar Woodtext',  linea:'Maderas',       photo:'faplac/Roble Dakar Woodtext.jpg'},
+  {slug:'roble-escan',   name:'Roble Escandinavo',     linea:'Maderas',       photo:'faplac/Roble Escandinavo.jpg'},
+  {slug:'nogal-terra',   name:'Nogal Terracota',       linea:'Maderas',       photo:'faplac/Nogal Terracota.jpg'},
+  {slug:'olmo-finl',     name:'Olmo Finlandés',        linea:'Maderas',       photo:'faplac/Olmo Finlandés.jpg'},
+  {slug:'teka-artico',   name:'Teka Artico',           linea:'Maderas',       photo:'faplac/Teka Artico.jpg'},
+  {slug:'nocce-milano',  name:'Nocce Milano',          linea:'Maderas',       photo:'faplac/Nocce Milano.jpg'},
+  {slug:'coliseo',       name:'Coliseo',               linea:'Urban Concept', photo:'faplac/Coliseo.jpg'},
+  {slug:'grafito',       name:'Grafito',               linea:'Urban Concept', photo:'faplac/Grafito.jpg'},
+  {slug:'negro-profundo',name:'Negro Profundo',        linea:'Urban Concept', photo:'faplac/Negro Profundo.jpg'},
+  {slug:'aluminio',      name:'Aluminio',              linea:'Urban Concept', photo:'faplac/Aluminio.jpg'},
+  {slug:'litio',         name:'Litio',                 linea:'Urban Concept', photo:'faplac/Litio.jpg'},
+  {slug:'street',        name:'Street',                linea:'Urban Concept', photo:'faplac/Street.jpg'},
+  {slug:'seda-giorno',   name:'Seda Giorno',           linea:'Hilados',       photo:'faplac/Seda Giorno.jpg'},
+  {slug:'seda-notte',    name:'Seda Notte',            linea:'Hilados',       photo:'faplac/Seda Notte.jpg'},
+  {slug:'lino-blanco',   name:'Lino Blanco',           linea:'Hilados',       photo:'faplac/Lino Blanco.jpg'},
+  {slug:'lino-chiaro',   name:'Lino Chiaro',           linea:'Hilados',       photo:'faplac/Lino Chiaro.jpg'},
+  {slug:'lino-negro',    name:'Lino Negro',            linea:'Hilados',       photo:'faplac/Lino Negro.jpg'},
+  {slug:'tribal',        name:'Tribal',                linea:'Étnica',        photo:'faplac/Tribal.jpg'},
+  {slug:'sahara',        name:'Sahara',                linea:'Étnica',        photo:'faplac/Sahara.jpg'},
+  {slug:'tuareg',        name:'Tuareg',                linea:'Étnica',        photo:'faplac/Tuareg.jpg'},
+  {slug:'himalaya',      name:'Himalaya',              linea:'Étnica',        photo:'faplac/Himalaya.jpg'},
+  {slug:'safari',        name:'Safari',                linea:'Étnica',        photo:'faplac/Safari.jpg'},
+  {slug:'everest',       name:'Everest',               linea:'Étnica',        photo:'faplac/Everest.jpg'},
+  {slug:'almendra',      name:'Almendra',              linea:'Colores',       photo:'faplac/Almendra.jpg'},
+  {slug:'amberes',       name:'Amberes',               linea:'Colores',       photo:'faplac/Amberes.jpg'},
+  {slug:'baltico',       name:'Báltico',               linea:'Colores',       photo:'faplac/Báltico.jpg'},
+  {slug:'blanco-nature', name:'Blanco Nature',         linea:'Colores',       photo:'faplac/Blanco Nature.jpg'},
+  {slug:'blanco-tundra', name:'Blanco Tundra',         linea:'Colores',       photo:'faplac/Blanco Tundra.jpg'},
+  {slug:'caju',          name:'Cajú',                  linea:'Colores',       photo:'faplac/Cajú.jpg'},
+  {slug:'ceniza',        name:'Ceniza',                linea:'Colores',       photo:'faplac/Ceniza.jpg'},
+  {slug:'ebano-negro',   name:'Ebano Negro',           linea:'Colores',       photo:'faplac/Ebano Negro.jpg'},
+  {slug:'gaudi',         name:'Gaudí',                 linea:'Colores',       photo:'faplac/Gaudí.jpg'},
+  {slug:'gris-humo',     name:'Gris Humo',             linea:'Colores',       photo:'faplac/Gris Humo.jpg'},
+  {slug:'helsinki',      name:'Helsinki',              linea:'Colores',       photo:'faplac/Helsinki.jpg'},
+  {slug:'home',          name:'Home',                  linea:'Colores',       photo:'faplac/Home.jpg'},
+  {slug:'mont-blanc',    name:'Mont Blanc',            linea:'Colores',       photo:'faplac/Mont Blanc.jpg'},
+  {slug:'praga',         name:'Praga',                 linea:'Colores',       photo:'faplac/Praga.jpg'},
+  {slug:'venezia',       name:'Venezia',               linea:'Colores',       photo:'faplac/Venezia.jpg'},
+  {slug:'viena',         name:'Viena',                 linea:'Colores',       photo:'faplac/Viena.jpg'},
 ];
-const FAPLAC_LINEAS=['Mesopotamia','Táctil','Blend','Urban Concept','Hilados','Étnica'];
+const FAPLAC_LINEAS=['Mesopotamia','Blend','Maderas','Urban Concept','Hilados','Étnica','Colores'];
 const TEX_TILE={wood:'melamina/wood.png',weave:'melamina/weave.png'};
 function styleMelamina(el,f){
   if(!el)return;
-  el.style.backgroundColor=f.bg;
   el.style.backgroundRepeat='no-repeat';
   el.style.backgroundPosition='center';
   el.style.backgroundSize='cover';
-  if(f.tex&&TEX_TILE[f.tex]){
-    el.style.backgroundImage='url("'+TEX_TILE[f.tex]+'")';
-    el.style.backgroundBlendMode='overlay';
-  }else if(f.tex==='gloss'){
-    el.style.backgroundImage='linear-gradient(125deg,rgba(255,255,255,.55),rgba(255,255,255,0) 30%,rgba(0,0,0,.07) 66%,rgba(255,255,255,.3))';
-    el.style.backgroundBlendMode='normal';
+  el.style.backgroundBlendMode='normal';
+  if(f.photo){
+    el.style.backgroundColor='#ccc';
+    el.style.backgroundImage='url("'+f.photo+'")';
   }else{
-    el.style.backgroundImage='linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.04) 55%,rgba(0,0,0,.09))';
-    el.style.backgroundBlendMode='normal';
+    el.style.backgroundColor=f.bg||'#ccc';
+    if(f.tex&&TEX_TILE[f.tex]){
+      el.style.backgroundImage='url("'+TEX_TILE[f.tex]+'")';
+      el.style.backgroundBlendMode='overlay';
+    }else if(f.tex==='gloss'){
+      el.style.backgroundImage='linear-gradient(125deg,rgba(255,255,255,.55),rgba(255,255,255,0) 30%,rgba(0,0,0,.07) 66%,rgba(255,255,255,.3))';
+    }else{
+      el.style.backgroundImage='linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.04) 55%,rgba(0,0,0,.09))';
+    }
   }
 }
 
