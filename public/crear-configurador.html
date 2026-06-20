@@ -157,7 +157,8 @@ button.abtn:hover{background:#EFEBE3}
 .mb-zone{position:absolute;top:0;bottom:0;pointer-events:none;z-index:0}
 .mb-zone-dep{right:0;width:33.333%;background:transparent;border-left:1px solid #E4DFD5}
 .mb-zone-div{display:none}
-.mb-caps-hidden .mb-cap{display:none!important}
+.mb-caps-hidden .mb-cap{display:none}
+.mb-caps-hidden .mb-sample:not(.is-empty):hover .mb-cap{display:flex!important}
 .mb-close{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(26,26,24,.75);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;display:none;align-items:center;justify-content:center;z-index:10;padding:0;font-family:inherit;pointer-events:none}
 .mb-sample:not(.is-empty):hover .mb-close{display:flex;pointer-events:auto}
 .mb-sw{font-size:11px;font-weight:600;padding:6px 12px;border:1px solid #D7D1C6;border-radius:100px;background:#fff;color:#6f6a60;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s,border-color .15s}
@@ -235,20 +236,32 @@ button.abtn:hover{background:#EFEBE3}
 .tex-name{font-size:10px;color:#3a3733;font-weight:600;letter-spacing:.01em;line-height:1.25;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tex-spec{font-size:9px;color:#9b958a;letter-spacing:.02em;margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:600px){
-  .mb-sample-terr{width:168px;height:168px}
-  .mb-mel{width:82px;height:184px}
-  .mb-stone{width:106px;height:106px}
-  .mb-cort{width:80px;height:184px}
-  .mb-tela{width:106px;height:106px}
-  .mb-piso{width:80px;height:184px}
-  .mb-pan{width:96px;height:128px}
-  .mb-backing{height:224px}
-  .mb-stage{min-height:392px}
+  .app{padding:20px 14px}
+  h1{font-size:18px}
+  .tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{white-space:nowrap}
+  .presets-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .custom-layout{gap:20px}
+  .mb-controls{flex-wrap:wrap;gap:8px}
+  .mb-stage{min-height:380px}
+  .mb-sample-terr{width:148px;height:148px}
+  .mb-mel{width:76px;height:168px}
+  .mb-stone{width:96px;height:96px}
+  .mb-cort{width:72px;height:168px}
+  .mb-tela{width:96px;height:96px}
+  .mb-piso{width:72px;height:168px}
+  .mb-pan{width:86px;height:114px}
+  .mb-backing{height:200px}
   .slab-row{grid-template-columns:repeat(auto-fill,minmax(82px,1fr))}
-  .tex-row{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+  .tex-row{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+  .mb-sw{padding:5px 10px;font-size:10px}
+  .mb-reset{padding:5px 10px;font-size:10px}
+  .mb-export{padding:5px 10px;font-size:10px}
+  .ks-scene-legend{font-size:11px}
 }
-.mb-export{font-size:11px;font-weight:600;padding:6px 14px;border:1px solid #1A1A18;border-radius:100px;background:#fff;color:#1A1A18;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s;display:inline-flex;align-items:center;gap:5px}
-.mb-export:hover{background:#1A1A18;color:#fff}
+.mb-export{font-size:11px;font-weight:600;padding:6px 14px;border:1px solid #D7D1C6;border-radius:100px;background:#fff;color:#6f6a60;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s,border-color .15s;display:inline-flex;align-items:center;gap:5px}
+.mb-export:hover{background:#1A1A18;color:#fff;border-color:#1A1A18}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
@@ -273,7 +286,7 @@ button.abtn:hover{background:#EFEBE3}
           <div class="mb-sample mb-sample-terr is-empty" id="mb-sample-terr">
             <canvas id="mb-terr-canvas" width="440" height="440"></canvas>
             <span class="mb-cap" id="mb-cap-terr">—</span>
-            <span class="mb-ghost-label">Terrazzo</span>
+            <span class="mb-ghost-label">Terrazzo Instone</span>
           </div>
           <div class="mb-sample mb-mel is-empty" data-slot="0">
             <div class="mb-mel-fill"></div><span class="mb-cap"></span><span class="mb-ghost-label">Melamina 1</span>
@@ -317,6 +330,7 @@ button.abtn:hover{background:#EFEBE3}
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           <button type="button" class="mb-reset" onclick="mbResetLayout()">Reacomodar</button>
+          <button type="button" class="mb-export" onclick="saveRealmood()" title="Guardar composición">&#9632; Guardar</button>
           <button type="button" class="mb-export" onclick="mbExport()" title="Exportar como imagen PNG">&#8681; Exportar</button>
         </div>
       </div>
@@ -1264,7 +1278,7 @@ function renderMoodboard(){
     const was=terrEl.classList.contains('is-empty');
     renderTerrazzo(document.getElementById('mb-terr-canvas'),mbTerrazzo.baseHex,mbTerrazzo.stones);
     terrEl.classList.remove('is-empty');
-    mbCap(document.getElementById('mb-cap-terr'),'Terrazzo',mbTerrazzo.label,'Instone');
+    mbCap(document.getElementById('mb-cap-terr'),'Terrazzo Instone',mbTerrazzo.label,'realmood');
     if(was)mbDeposit(terrEl);
   }else{ terrEl.classList.add('is-empty'); }
   document.querySelectorAll('.mb-mel').forEach((el,i)=>{
@@ -1495,6 +1509,39 @@ function mbEnableDrag(el){
   });
 }
 function mbResetLayout(){ mbPos={}; saveMbPos(); mbApplyAll(); }
+function saveRealmood(){
+  const state={
+    terrazzo:mbTerrazzo,
+    faplacs:selFaplacs.slice(),
+    stones:selStones.slice(),
+    cortinas:selCortinas.slice(),
+    telas:selTelas.slice(),
+    pisos:selPisos.slice(),
+    pantones:selPantones.slice(),
+    straight:mbStraight,
+    caps:mbCapsOn,
+    grid:mbGridOn
+  };
+  try{localStorage.setItem('ins_realmood',JSON.stringify(state));}catch(e){}
+  showToast('Realmood guardado');
+}
+function loadRealmood(){
+  let state;
+  try{state=JSON.parse(localStorage.getItem('ins_realmood')||'null');}catch(e){return;}
+  if(!state)return;
+  if(state.straight!==undefined&&state.straight!==mbStraight){const b=document.getElementById('sw-straight');if(b)toggleMbStraight(b);}
+  if(state.caps!==undefined&&state.caps!==mbCapsOn){const b=document.getElementById('sw-caps');if(b)toggleMbCaps(b);}
+  if(state.grid!==undefined&&state.grid!==mbGridOn){const b=document.getElementById('sw-grid');if(b)toggleMbGrid(b);}
+  setTimeout(()=>{
+    if(state.terrazzo)setMbTerrazzo(state.terrazzo.baseHex,state.terrazzo.stones,state.terrazzo.label);
+    (state.faplacs||[]).forEach(s=>selectFaplac(s));
+    (state.stones||[]).forEach(s=>selectSlab(s));
+    (state.cortinas||[]).forEach(s=>selectCortina(s));
+    (state.telas||[]).forEach(s=>selectTela(s));
+    (state.pisos||[]).forEach(s=>selectPiso(s));
+    (state.pantones||[]).forEach(s=>selectPantone(s));
+  },150);
+}
 function mbExport(){
   const stage=document.getElementById('mb-stage');
   if(!stage||typeof html2canvas==='undefined'){alert('Error al exportar');return;}
@@ -1816,6 +1863,7 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
 buildPresetGrid();buildBaseGrid();buildStonePicker();buildFaplac();buildSlabs();buildCortinas();buildTusor();buildPisos();buildPantone();buildKitchen();restoreFromUrl();
 updateMbPreview();
 mbInitDnD();
+if(!new URLSearchParams(window.location.search).get('v'))loadRealmood();
 // ── Altura sin costuras hacia el shell Pinterest (postMessage) ──
 (function(){
   function postH(){var h=document.documentElement.scrollHeight;if(h<200)return;try{parent.postMessage({crearHeight:h+16},'*');}catch(e){}}
