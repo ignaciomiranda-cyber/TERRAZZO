@@ -146,13 +146,37 @@ document.addEventListener('DOMContentLoaded', function() {
     function drawChip(ctx,p){
       const def=STONES[p.st.name]||'#888';const [r,g,b]=h2r(def);
       const isRodada=ROUNDED_STONES.has(p.st.name);
-      const chipPath=(cx,cy,rx,ry,seed)=>isRodada?roundedPath(ctx,cx,cy,rx,ry,seed):angularPath(ctx,cx,cy,rx,ry,seed);
-      chipPath(p.x,p.y,p.rx,p.ry,p.seed);
+      const seed=p.seed;const md=Math.max(p.rx,p.ry);
+      if(isRodada){
+        const cv=(hash2(seed*1.1,seed*.5)-.5)*8;
+        ctx.save();
+        roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+        ctx.fillStyle=`rgb(${clamp(r+cv,0,255)},${clamp(g+cv,0,255)},${clamp(b+cv,0,255)})`;ctx.fill();
+        roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.clip();
+        const rim=ctx.createRadialGradient(p.x,p.y,md*0.45,p.x,p.y,md*1.1);
+        rim.addColorStop(0,'rgba(0,0,0,0)');rim.addColorStop(1,'rgba(0,0,0,0.24)');
+        ctx.fillStyle=rim;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+        const hx=p.x-p.rx*0.24,hy=p.y-p.ry*0.26;
+        const hg=ctx.createRadialGradient(hx,hy,0,hx,hy,md*0.78);
+        hg.addColorStop(0,'rgba(255,255,255,0.90)');hg.addColorStop(0.22,'rgba(255,255,255,0.45)');
+        hg.addColorStop(0.60,'rgba(255,255,255,0.07)');hg.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=hg;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+        const spx=p.x-p.rx*0.08,spy=p.y-p.ry*0.40;
+        const sg=ctx.createRadialGradient(spx,spy,0,spx,spy,md*0.20);
+        sg.addColorStop(0,'rgba(255,255,255,0.60)');sg.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=sg;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+        ctx.restore();
+        roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+        ctx.strokeStyle='rgba(160,158,150,0.55)';ctx.lineWidth=clamp(md*.055,.8,2.4);ctx.stroke();
+        return;
+      }
+      const chipPath=(cx,cy,rx,ry,s)=>angularPath(ctx,cx,cy,rx,ry,s);
+      chipPath(p.x,p.y,p.rx,p.ry,seed);
       ctx.fillStyle=`rgb(${r},${g},${b})`;ctx.fill();
       ctx.lineWidth=1;ctx.strokeStyle='rgba(0,0,0,.12)';ctx.stroke();
       const hl=ctx.createLinearGradient(p.x-p.rx,p.y-p.ry,p.x+p.rx,p.y+p.ry);
       hl.addColorStop(0,'rgba(255,255,255,.28)');hl.addColorStop(.5,'rgba(255,255,255,0)');hl.addColorStop(1,'rgba(0,0,0,.10)');
-      chipPath(p.x,p.y,p.rx,p.ry,p.seed);ctx.fillStyle=hl;ctx.fill();
+      chipPath(p.x,p.y,p.rx,p.ry,seed);ctx.fillStyle=hl;ctx.fill();
     }
     function renderTerr(cv,baseHex,stones,W,H){
       cv.width=W;cv.height=H;const ctx=cv.getContext('2d');
@@ -169,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const totalPct=active.reduce((a,s)=>a+s.pct,0);const totalArea=W*H*0.86;
       const specs=active.map(s=>{const sp=SZP[s.size];const avgR=(sp.min+sp.max)/2;const avgArea=Math.PI*avgR*avgR*0.65;const count=Math.max(1,Math.round(totalArea*(s.pct/totalPct)/avgArea));return{s,sp,count};}).sort((a,b)=>b.sp.max-a.sp.max);
       const placer=makePlacer(W,H);const all=[];
-      specs.forEach(({s,sp,count},si)=>{let placed=0;const maxTries=count*20;for(let i=0;i<maxTries&&placed<count;i++){const rx=sp.min+Math.random()*(sp.max-sp.min);const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+1;if(pad*2>=Math.min(W,H))continue;const x=pad+Math.random()*(W-pad*2);const y=pad+Math.random()*(H-pad*2);if(!placer.overlaps(x,y,md*0.72)){placer.add(x,y,md*0.72);all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}}});
+      specs.forEach(({s,sp,count},si)=>{let placed=0;const maxTries=count*20;for(let i=0;i<maxTries&&placed<count;i++){const rx=sp.min+Math.random()*(sp.max-sp.min);const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+1;if(pad*2>=Math.min(W,H))continue;const x=pad+Math.random()*(W-pad*2);const y=pad+Math.random()*(H-pad*2);if(!placer.overlaps(x,y,md+1)){placer.add(x,y,md+1);all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}}});
       all.sort((a,b)=>b.r-a.r);all.forEach(p=>drawChip(ctx,p));
       const micro=Math.round(W*H*0.0013);
       for(let i=0;i<micro;i++){const x=Math.random()*W,y=Math.random()*H;let pick=Math.random()*totalPct,sel=active[0];for(const a of active){pick-=a.pct;if(pick<=0){sel=a;break;}}const [r,g,b]=h2r(STONES[sel.name]||'#888');const cv2=(Math.random()-.5)*16;const rr=0.6+Math.random()*1.6;angularPath(ctx,x,y,rr,rr*(0.7+Math.random()*0.6),Math.random()*200);ctx.fillStyle=`rgba(${clamp(r+cv2,0,255)},${clamp(g+cv2,0,255)},${clamp(b+cv2,0,255)},${0.5+Math.random()*0.32})`;ctx.fill();}

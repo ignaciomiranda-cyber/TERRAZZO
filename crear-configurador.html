@@ -1509,7 +1509,7 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
       const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+2;
       if(pad*2>=RS)continue;
       const x=pad+Math.random()*(RS-pad*2);const y=pad+Math.random()*(RS-pad*2);
-      if(!placer.overlaps(x,y,md*0.72)){placer.add(x,y,md*0.72,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
+      if(!placer.overlaps(x,y,md+1)){placer.add(x,y,md+1,{});all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}
     }
   });
   all.sort((a,b)=>b.r-a.r);
@@ -1534,10 +1534,39 @@ function renderTerrazzo(canvas,baseHex,stonesArr){
   sheen.addColorStop(1,'rgba(0,0,0,0.045)');
   ctx.fillStyle=sheen;ctx.fillRect(0,0,RS,RS);
 }
+function drawRoundedChip(ctx,p,br,bg,bb){
+  const st=STONES.find(s=>s.name===p.st.name)||STONES[0];
+  const [r,g,b]=h2r(st.h);const seed=p.seed;const md=Math.max(p.rx,p.ry);
+  const cv=(hash2(seed*1.1,seed*.5)-.5)*8;
+  ctx.save();
+  roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+  ctx.fillStyle=`rgb(${clamp(r+cv,0,255)},${clamp(g+cv,0,255)},${clamp(b+cv,0,255)})`;ctx.fill();
+  roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.clip();
+  // edge vignette: darker around perimeter
+  const rim=ctx.createRadialGradient(p.x,p.y,md*0.45,p.x,p.y,md*1.1);
+  rim.addColorStop(0,'rgba(0,0,0,0)');rim.addColorStop(1,'rgba(0,0,0,0.24)');
+  ctx.fillStyle=rim;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+  // primary highlight: upper-left bright spot
+  const hx=p.x-p.rx*0.24,hy=p.y-p.ry*0.26;
+  const hg=ctx.createRadialGradient(hx,hy,0,hx,hy,md*0.78);
+  hg.addColorStop(0,'rgba(255,255,255,0.90)');hg.addColorStop(0.22,'rgba(255,255,255,0.45)');
+  hg.addColorStop(0.60,'rgba(255,255,255,0.07)');hg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=hg;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+  // specular micro-highlight
+  const spx=p.x-p.rx*0.08,spy=p.y-p.ry*0.40;
+  const sg=ctx.createRadialGradient(spx,spy,0,spx,spy,md*0.20);
+  sg.addColorStop(0,'rgba(255,255,255,0.60)');sg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=sg;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+  ctx.restore();
+  roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+  ctx.strokeStyle=`rgba(${clamp(br-45,0,255)},${clamp(bg-45,0,255)},${clamp(bb-45,0,255)},0.52)`;
+  ctx.lineWidth=clamp(md*.055,.8,2.4);ctx.stroke();
+}
 function drawChip(ctx,p,br,bg,bb){
   const st=STONES.find(s=>s.name===p.st.name)||STONES[0];
+  if(st.rodada){drawRoundedChip(ctx,p,br,bg,bb);return;}
   const [r,g,b]=h2r(st.h),[r2,g2,b2]=h2r(st.h2),[r3,g3,b3]=h2r(st.h3);const seed=p.seed;
-  const chipPath=(sx,sy,srx,sry)=>st.rodada?roundedPath(ctx,sx,sy,srx,sry,seed):angularPath(ctx,sx,sy,srx,sry,seed);
+  const chipPath=(sx,sy,srx,sry)=>angularPath(ctx,sx,sy,srx,sry,seed);
   const cv=(hash2(seed*1.1,seed*.5)-.5)*14;
   ctx.save();chipPath(p.x,p.y,p.rx,p.ry);
   ctx.fillStyle=`rgb(${clamp(r+cv,0,255)},${clamp(g+cv,0,255)},${clamp(b+cv,0,255)})`;ctx.fill();
