@@ -200,8 +200,20 @@ button.abtn:hover{background:#EFEBE3}
 .prov-count{margin-left:auto;font-size:10px;color:#9b958a;font-weight:600;letter-spacing:.01em}
 .prov-caret{font-size:17px;font-weight:300;color:#9b958a;width:16px;text-align:center;transition:transform .2s;line-height:1}
 .prov-head.open .prov-caret{transform:rotate(45deg)}
-.prov-body{display:none;padding:6px 0 24px}
+.prov-body{display:none;padding:0}
 .prov-body.open{display:block}
+.sub-prov{border-top:1px solid #EDE8E0}
+.sub-prov:first-child{border-top:none}
+.sub-prov-head{display:flex;align-items:center;gap:10px;width:100%;background:#F9F7F4;border:none;cursor:pointer;padding:11px 14px;font-family:inherit;text-align:left}
+.sub-prov-head:hover{background:#F0EBE3}
+.sub-prov-name{font-size:11px;font-weight:700;letter-spacing:.06em;color:#6F6A60;text-transform:uppercase}
+.sub-prov-caret{font-size:14px;color:#9b958a;margin-left:auto;transition:transform .2s;line-height:1}
+.sub-prov-head.open .sub-prov-caret{transform:rotate(45deg)}
+.sub-prov-body{display:none;padding:12px 0 20px}
+.sub-prov-body.open{display:block}
+.sub-prov-soon{padding:14px 16px;color:#B3AD9F;font-size:12px;font-style:italic;margin:0}
+.faplac-col-btn{font-family:inherit;font-size:11px;font-weight:600;padding:4px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#6F6A60;cursor:pointer;letter-spacing:.02em}
+.faplac-col-btn.active{background:#1A1A18;color:#fff;border-color:#1A1A18}
 .slab-group{margin-bottom:22px}
 .slab-group:last-child{margin-bottom:0}
 .slab-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
@@ -373,6 +385,9 @@ button.abtn:hover{background:#EFEBE3}
             <span class="prov-count" id="count-terrazzo">Elegí del catálogo o creá tu mezcla</span><span class="prov-caret">+</span>
           </button>
           <div class="prov-body open" id="body-terrazzo">
+            <div class="sub-prov" data-sub="terr-instone">
+              <button type="button" class="sub-prov-head open" onclick="toggleSubProv('terr-instone')"><span class="sub-prov-name">Instone</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body open" id="sub-body-terr-instone" style="padding:12px 0 20px">
             <div class="tabs" style="margin-bottom:24px">
               <button type="button" class="tab active" onclick="switchTab('presets',this)">Muestras del catálogo</button>
               <button type="button" class="tab" onclick="switchTab('custom',this)">Crear mezcla</button>
@@ -445,49 +460,84 @@ button.abtn:hover{background:#EFEBE3}
             </div>
           </div>
         </div>
+              </div>
+            </div>
+            <div class="sub-prov" data-sub="terr-blangino">
+              <button type="button" class="sub-prov-head" onclick="toggleSubProv('terr-blangino')"><span class="sub-prov-name">Blangino</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body" id="sub-body-terr-blangino"><p class="sub-prov-soon">Próximamente · Catálogo en preparación</p></div>
+            </div>
           </div>
         </div>
         <div class="prov" data-prov="faplac">
           <button type="button" class="prov-head" onclick="toggleProv('faplac')">
-            <span class="prov-idx">02</span><span class="prov-name">Melamina · Faplac</span>
+            <span class="prov-idx">02</span><span class="prov-name">Melaminas</span>
             <span class="prov-count" id="count-faplac">Elegí hasta 3</span><span class="prov-caret">+</span>
           </button>
-          <div class="prov-body" id="body-faplac"><div class="faplac-grid" id="faplac-grid"></div></div>
+          <div class="prov-body" id="body-faplac">
+            <div class="sub-prov" data-sub="mel-faplac">
+              <button type="button" class="sub-prov-head open" onclick="toggleSubProv('mel-faplac')"><span class="sub-prov-name">Faplac</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body open" id="sub-body-mel-faplac" style="padding:8px 0 20px">
+                <div style="display:flex;gap:6px;padding:4px 0 12px;flex-wrap:wrap">
+                  <button type="button" class="faplac-col-btn active" onclick="filterFaplacCol(null,this)">Todas</button>
+                  <button type="button" class="faplac-col-btn" onclick="filterFaplacCol('Expero',this)">Expero</button>
+                  <button type="button" class="faplac-col-btn" onclick="filterFaplacCol('Mocona',this)">Mocona</button>
+                </div>
+                <div class="faplac-grid" id="faplac-grid"></div>
+              </div>
+            </div>
+            <div class="sub-prov" data-sub="mel-egger">
+              <button type="button" class="sub-prov-head" onclick="toggleSubProv('mel-egger')"><span class="sub-prov-name">Egger</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body" id="sub-body-mel-egger"><p class="sub-prov-soon">Próximamente · Catálogo en preparación</p></div>
+            </div>
+          </div>
         </div>
         <div class="prov" data-prov="destefano">
           <button type="button" class="prov-head" onclick="toggleProv('destefano')">
             <span class="prov-idx">03</span><span class="prov-name">Piedras &amp; Tablas · De Stefano</span>
             <span class="prov-count" id="count-destefano">Elegí hasta 2</span><span class="prov-caret">+</span>
           </button>
-          <div class="prov-body" id="body-destefano"><div class="slab-grid" id="slab-grid"></div></div>
+          <div class="prov-body" id="body-destefano" style="padding:6px 0 24px"><div class="slab-grid" id="slab-grid"></div></div>
         </div>
         <div class="prov" data-prov="cortinas">
           <button type="button" class="prov-head" onclick="toggleProv('cortinas')">
             <span class="prov-idx">04</span><span class="prov-name">Cortinas · Gasa</span>
             <span class="prov-count" id="count-cortinas">Elegí 1</span><span class="prov-caret">+</span>
           </button>
-          <div class="prov-body" id="body-cortinas"><div class="tex-row" id="cortina-grid"></div></div>
+          <div class="prov-body" id="body-cortinas" style="padding:6px 0 24px"><div class="tex-row" id="cortina-grid"></div></div>
         </div>
         <div class="prov" data-prov="tusor">
           <button type="button" class="prov-head" onclick="toggleProv('tusor')">
-            <span class="prov-idx">05</span><span class="prov-name">Telas de tapizado · Tusor</span>
+            <span class="prov-idx">05</span><span class="prov-name">Telas de tapizado</span>
             <span class="prov-count" id="count-tusor">Elegí 1</span><span class="prov-caret">+</span>
           </button>
-          <div class="prov-body" id="body-tusor"><div class="tex-row" id="tusor-grid"></div></div>
+          <div class="prov-body" id="body-tusor">
+            <div class="sub-prov" data-sub="tela-tusor">
+              <button type="button" class="sub-prov-head open" onclick="toggleSubProv('tela-tusor')"><span class="sub-prov-name">Tusor</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body open" id="sub-body-tela-tusor"><div class="tex-row" id="tusor-grid"></div></div>
+            </div>
+            <div class="sub-prov" data-sub="tela-prov2">
+              <button type="button" class="sub-prov-head" onclick="toggleSubProv('tela-prov2')"><span class="sub-prov-name">Proveedor 2</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body" id="sub-body-tela-prov2"><p class="sub-prov-soon">Próximamente · Catálogo en preparación</p></div>
+            </div>
+            <div class="sub-prov" data-sub="tela-prov3">
+              <button type="button" class="sub-prov-head" onclick="toggleSubProv('tela-prov3')"><span class="sub-prov-name">Proveedor 3</span><span class="sub-prov-caret">+</span></button>
+              <div class="sub-prov-body" id="sub-body-tela-prov3"><p class="sub-prov-soon">Próximamente · Catálogo en preparación</p></div>
+            </div>
+          </div>
         </div>
         <div class="prov" data-prov="pisos">
           <button type="button" class="prov-head" onclick="toggleProv('pisos')">
             <span class="prov-idx">06</span><span class="prov-name">Pisos · Símil madera</span>
             <span class="prov-count" id="count-pisos">Elegí 1</span><span class="prov-caret">+</span>
           </button>
-          <div class="prov-body" id="body-pisos"><div class="tex-row" id="pisos-grid"></div></div>
+          <div class="prov-body" id="body-pisos" style="padding:6px 0 24px"><div class="tex-row" id="pisos-grid"></div></div>
         </div>
         <div class="prov" data-prov="pantone">
           <button type="button" class="prov-head" onclick="toggleProv('pantone')">
             <span class="prov-idx">07</span><span class="prov-name">Pantone · Paleta</span>
             <span class="prov-count" id="count-pantone">Elegí hasta 3</span><span class="prov-caret">+</span>
           </button>
-          <div class="prov-body" id="body-pantone"><div class="tex-row pan-row" id="pantone-grid"></div></div>
+          <div class="prov-body" id="body-pantone" style="padding:6px 0 24px"><div class="tex-row pan-row" id="pantone-grid"></div></div>
         </div>
       </div>
     </div>
@@ -863,6 +913,20 @@ function toggleProv(id){
   document.querySelectorAll('.prov-head').forEach(h=>h.classList.remove('open'));
   if(!isOpen){body.classList.add('open');head.classList.add('open');}
 }
+function toggleSubProv(id){
+  const body=document.getElementById('sub-body-'+id);
+  const head=document.querySelector('.sub-prov[data-sub="'+id+'"] .sub-prov-head');
+  if(!body||!head)return;
+  const isOpen=body.classList.contains('open');
+  if(isOpen){body.classList.remove('open');head.classList.remove('open');}
+  else{body.classList.add('open');head.classList.add('open');}
+}
+const FAPLAC_COLECCIONES={'Expero':['Mesopotamia','Blend','Maderas','Urban Concept'],'Mocona':['Hilados','Étnica','Colores']};
+function filterFaplacCol(col,btn){
+  document.querySelectorAll('.faplac-col-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  buildFaplac(col);
+}
 
 const CORTINAS=[
   {slug:'gasa-camille-blanco',     name:'Gasa Camille Blanco',     spec:'100% poliéster · 2.20 m', bg:'#F1ECE3'},
@@ -1234,9 +1298,10 @@ async function submitQuote(){
 }
 
 let selFaplacs=[];
-function buildFaplac(){
+function buildFaplac(col){
   const wrap=document.getElementById('faplac-grid');wrap.innerHTML='';
-  FAPLAC_LINEAS.forEach(linea=>{
+  const lineas=col?(FAPLAC_COLECCIONES[col]||FAPLAC_LINEAS):FAPLAC_LINEAS;
+  lineas.forEach(linea=>{
     const items=FAPLAC.filter(f=>f.linea===linea);
     if(!items.length)return;
     const grp=document.createElement('div');grp.className='faplac-group';
