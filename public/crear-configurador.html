@@ -191,7 +191,17 @@ button.abtn:hover{background:#EFEBE3}
 .faplac-swatch{position:relative}
 .faplac-badge{position:absolute;top:5px;right:5px;width:17px;height:17px;border-radius:50%;background:#1A1A18;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:1;z-index:2}
 .faplac-swatch.selected .faplac-badge{display:flex}
-.mb-providers{margin-top:30px;border-top:1px solid #E4DFD5}
+.mb-search-wrap{margin:20px 0 4px;position:relative}
+.mb-search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none}
+.mb-search-input{width:100%;padding:10px 14px 10px 40px;border:1px solid #E4DFD5;border-radius:10px;font-size:13px;font-family:inherit;background:#FAFAF8;color:#1A1A18;outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+.mb-search-input:focus{border-color:#1A1A18}
+.mb-searching .prov{display:none}
+.mb-searching .prov.mb-has-match{display:block}
+.mb-searching .mb-has-match .prov-body{display:block!important}
+.mb-searching .mb-has-match .sub-prov-body{display:block!important}
+.mb-searching #faplac-tab-muestras{display:block!important}
+[data-mbhide]{display:none!important}
+.mb-providers{margin-top:8px;border-top:1px solid #E4DFD5}
 .prov{border-bottom:1px solid #E4DFD5}
 .prov-head{display:flex;align-items:center;gap:14px;width:100%;background:transparent;border:none;cursor:pointer;padding:16px 2px;font-family:inherit;text-align:left}
 .prov-head:hover{opacity:.7}
@@ -382,6 +392,11 @@ button.abtn:hover{background:#EFEBE3}
         <div class="ks-scene-legend">Las muestras que elegís abajo se aplican a la escena: terrazzo en el backsplash (entre alacena y mesada), melaminas en la alacena y el bajo mesada, piedra en la mesada, tu piso en el suelo y la cortina sobre la ventana para probar el color.</div>
       </div>
       <div class="mb-legend" id="mb-legend">Elegí un terrazzo, melaminas, piedras, cortinas, tapizados y pisos para componer tu moodboard.</div>
+      <div class="mb-search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="mb-mat-search" type="search" class="mb-search-input" placeholder="Buscar material, proveedor o color…" oninput="mbSearch(this.value)">
+      </div>
+      <p id="mb-search-empty" style="display:none;font-size:13px;color:#9b958a;text-align:center;padding:20px 0;margin:0">Sin resultados para esa búsqueda.</p>
       <div class="mb-providers">
         <div class="prov" data-prov="terrazzo">
           <button type="button" class="prov-head open" onclick="toggleProv('terrazzo')">
@@ -970,6 +985,32 @@ function switchFaplacTab(tab,btn){
   const p=document.getElementById('faplac-tab-proveedores');
   if(m)m.style.display=tab==='muestras'?'block':'none';
   if(p)p.style.display=tab==='proveedores'?'block':'none';
+}
+function mbSearch(q){
+  q=(q||'').trim().toLowerCase();
+  const wrap=document.querySelector('.mb-providers');
+  const empty=document.getElementById('mb-search-empty');
+  wrap.classList.remove('mb-searching');
+  document.querySelectorAll('.prov.mb-has-match').forEach(el=>el.classList.remove('mb-has-match'));
+  document.querySelectorAll('[data-mbhide]').forEach(el=>el.removeAttribute('data-mbhide'));
+  if(empty)empty.style.display='none';
+  if(!q)return;
+  wrap.classList.add('mb-searching');
+  let total=0;
+  document.querySelectorAll('.prov').forEach(prov=>{
+    const provN=(prov.querySelector('.prov-name')?.textContent||'').toLowerCase();
+    const subN=Array.from(prov.querySelectorAll('.sub-prov-name')).map(n=>n.textContent.toLowerCase());
+    const byName=provN.includes(q)||subN.some(n=>n.includes(q));
+    let cnt=0;
+    prov.querySelectorAll('.preset-card,.faplac-swatch,.slab-swatch,.tex-swatch').forEach(item=>{
+      const t=(item.textContent||'').toLowerCase();
+      const ok=byName||t.includes(q);
+      if(!ok)item.setAttribute('data-mbhide','1');
+      else cnt++;
+    });
+    if(cnt>0||byName){prov.classList.add('mb-has-match');total+=cnt;}
+  });
+  if(empty)empty.style.display=total?'none':'block';
 }
 
 const CORTINAS=[
