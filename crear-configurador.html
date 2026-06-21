@@ -262,29 +262,55 @@ button.abtn:hover{background:#EFEBE3}
 .tex-name{font-size:10px;color:#3a3733;font-weight:600;letter-spacing:.01em;line-height:1.25;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tex-spec{font-size:9px;color:#9b958a;letter-spacing:.02em;margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:600px){
-  .app{padding:20px 14px}
+  .app{padding:16px 12px}
   h1{font-size:18px}
   .tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{white-space:nowrap}
-  .presets-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
-  .custom-layout{gap:20px}
-  .mb-controls{flex-wrap:wrap;gap:8px}
-  .mb-stage{min-height:380px}
-  .mb-sample-terr{width:148px;height:148px}
-  .mb-mel{width:76px;height:168px}
-  .mb-stone{width:96px;height:96px}
-  .mb-cort{width:72px;height:168px}
-  .mb-tela{width:96px;height:96px}
-  .mb-piso{width:72px;height:168px}
-  .mb-pan{width:86px;height:114px}
-  .mb-backing{height:200px}
-  .slab-row{grid-template-columns:repeat(auto-fill,minmax(82px,1fr))}
-  .tex-row{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
-  .mb-sw{padding:5px 10px;font-size:10px}
-  .mb-reset{padding:5px 10px;font-size:10px}
-  .mb-export{padding:5px 10px;font-size:10px}
+  .tab{white-space:nowrap;font-size:13px;padding:8px 14px}
+  .presets-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+  .custom-layout{flex-direction:column;gap:20px}
+  .custom-ctrl,.custom-preview{width:100%!important}
+  .custom-preview canvas{width:100%!important;height:auto!important;aspect-ratio:1}
+  .mb-controls{flex-wrap:wrap;gap:6px}
+  .mb-stage{min-height:320px}
+  .mb-sample-terr{width:120px;height:120px}
+  .mb-mel{width:64px;height:140px}
+  .mb-stone{width:80px;height:80px}
+  .mb-cort{width:60px;height:140px}
+  .mb-tela{width:80px;height:80px}
+  .mb-piso{width:60px;height:140px}
+  .mb-pan{width:72px;height:96px}
+  .mb-backing{height:160px}
+  .slab-row{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+  .tex-row{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+  .faplac-row{gap:6px}
+  .faplac-swatch{min-width:80px}
+  .faplac-swatch .faplac-color{height:60px}
+  .mb-sw,.mb-reset,.mb-export{padding:5px 10px;font-size:10px}
   .ks-scene-legend{font-size:11px}
+  /* Sub-prov tap targets */
+  .sub-prov-head{padding:12px 12px!important}
+  .sub-prov-name{font-size:10px!important}
+  .sub-prov-body{padding:8px 0 14px!important}
+  /* Faplac tabs */
+  .faplac-tab-btn{font-size:11px;padding:8px 10px}
+  /* Provider cards: 1 column on very small screens */
+  .faplac-prov-card{padding:12px}
+  .faplac-prov-logo{width:44px;height:44px;font-size:8px}
+  /* Prov head tap targets */
+  .prov-head{padding:13px 2px!important;min-height:48px}
+  .prov-name{font-size:12px!important}
+  /* Search bar */
+  .mb-search-input{font-size:12px}
+  /* Rm-header */
+  .rm-header{gap:8px}
+  .rm-name-input{font-size:15px}
+  .rm-save-badge{font-size:10px}
+}
+@media(max-width:380px){
+  .faplac-prov-grid{grid-template-columns:1fr!important}
+  .mb-sample-terr{width:100px;height:100px}
+  .presets-grid{grid-template-columns:repeat(auto-fill,minmax(95px,1fr))}
 }
 .mb-export{font-size:11px;font-weight:600;padding:6px 14px;border:1px solid #D7D1C6;border-radius:100px;background:#fff;color:#6f6a60;cursor:pointer;letter-spacing:.01em;transition:background .15s,color .15s,border-color .15s;display:inline-flex;align-items:center;gap:5px}
 .mb-export:hover{background:#1A1A18;color:#fff;border-color:#1A1A18}
@@ -505,7 +531,7 @@ button.abtn:hover{background:#EFEBE3}
                 </div>
                 <div id="faplac-tab-proveedores" style="display:none;padding:4px 0 16px">
                   <p style="font-size:12px;color:#9b958a;margin:0 0 14px;line-height:1.5">Distribuidores oficiales de las líneas Expero y Mocona</p>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+                  <div class="faplac-prov-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
                     <div class="faplac-prov-card">
                       <div class="faplac-prov-logo" style="background:#1B3F7A">Expero<br>Faplac</div>
                       <div style="font-size:12px;font-weight:700;color:#1A1A18;margin-bottom:3px">Línea Expero</div>
