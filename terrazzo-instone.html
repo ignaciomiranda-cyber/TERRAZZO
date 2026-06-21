@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0}
+html,body{margin:0;overflow-x:hidden}
 body{background:#fff}
 @keyframes vIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 ::-webkit-scrollbar{width:10px;height:10px}
@@ -31,9 +31,12 @@ body{background:#fff}
 #rm-mob-btn{display:none;background:transparent;border:none;cursor:pointer;padding:6px;color:#1A1A18;align-items:center;justify-content:center;border-radius:8px;flex:none}
 #rm-mob-overlay{display:none;position:fixed;inset:0;z-index:198;background:rgba(0,0,0,.3)}
 @media(max-width:768px){
-  /* Sidebar drawer */
-  #rm-nav{display:none;position:fixed;top:0;left:0;bottom:0;z-index:200;width:240px!important;box-shadow:4px 0 24px rgba(0,0,0,.14);padding:18px 12px!important}
+  /* Sidebar drawer — must use !important to override inline display:flex */
+  #rm-nav{display:none!important;position:fixed;top:0;left:0;bottom:0;z-index:200;width:240px!important;flex:none!important;height:100%!important;min-width:0!important;box-shadow:4px 0 24px rgba(0,0,0,.14);padding:18px 12px!important}
   #rm-nav.rm-open{display:flex!important}
+  /* Main takes full width once sidebar is gone */
+  .rm-wrap{overflow-x:hidden}
+  main{width:100%;min-width:0;max-width:100%}
   #rm-nav.rm-open [data-goto="inicio"]{justify-content:flex-start!important;padding:8px 12px 22px!important}
   #rm-nav.rm-open [data-view]{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
   #rm-nav.rm-open [data-view] span{display:inline!important}
