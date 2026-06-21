@@ -179,6 +179,7 @@ button.abtn:hover{background:#EFEBE3}
 .mb-cap-p{font-size:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6f6a60;text-wrap:pretty}
 .mb-mel .mb-cap,.mb-cort .mb-cap,.mb-tela .mb-cap,.mb-piso .mb-cap{opacity:0;transition:opacity .2s}
 .mb-mel:hover .mb-cap,.mb-cort:hover .mb-cap,.mb-tela:hover .mb-cap,.mb-piso:hover .mb-cap{opacity:1}
+.mb-stage:not(.mb-caps-hidden) .mb-mel .mb-cap,.mb-stage:not(.mb-caps-hidden) .mb-cort .mb-cap,.mb-stage:not(.mb-caps-hidden) .mb-tela .mb-cap,.mb-stage:not(.mb-caps-hidden) .mb-piso .mb-cap{opacity:1}
 .mb-ghost-label{display:none;font-size:11px;font-weight:600;letter-spacing:.04em;color:#A99F8B;width:100%;height:100%;align-items:center;justify-content:center;text-align:center}
 .mb-sample.is-empty{display:none}
 .mb-sample.is-empty canvas,.mb-sample.is-empty .mb-mel-fill,.mb-sample.is-empty .mb-cort-fill,.mb-sample.is-empty .mb-tela-fill,.mb-sample.is-empty .mb-piso-fill,.mb-sample.is-empty .pan-chip,.mb-sample.is-empty .mb-cap{opacity:0;visibility:hidden}
@@ -1659,7 +1660,7 @@ function mbApply(el){
   el.style.top=(p.fy*H - h/2)+'px';
   el.style.transform='rotate('+(mbStraight?0:(p.rot||0))+'deg)';
 }
-function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(mbApply); }
+function mbApplyAll(){ document.querySelectorAll('#mb-stage .mb-sample').forEach(el=>{if(!el.classList.contains('dragging'))mbApply(el);}); }
 function mbEnableDrag(el){
   const key=mbKey(el); if(!key)return;
   let sx,sy,ol,ot,W,H,dragging=false,moveFn,upFn;
