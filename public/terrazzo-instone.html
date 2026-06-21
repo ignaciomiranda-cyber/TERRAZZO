@@ -15,47 +15,76 @@ body{background:#fff}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:#E2DDD3;border-radius:8px}
 ::-webkit-scrollbar-thumb:hover{background:#D2CCC0}
+/* ── Collapsed sidebar ───────────────────────────────── */
+#rm-nav{overflow:visible}
+#rm-nav .rm-logo-text{display:none}
+#rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
+#rm-nav [data-view]{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
+#rm-nav [data-view] span{display:none!important}
+#rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
+#rm-nav [data-view]:hover::after{opacity:1}
+#rm-nav .rm-cfg-btn{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
+#rm-nav .rm-cfg-btn span{display:none!important}
+#rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
+#rm-nav .rm-cfg-btn:hover::after{opacity:1}
+/* ── Mobile nav ─────────────────────────────────────── */
+#rm-mob-btn{display:none;background:transparent;border:none;cursor:pointer;padding:6px;color:#1A1A18;align-items:center;justify-content:center;border-radius:8px;flex:none}
+#rm-mob-overlay{display:none;position:fixed;inset:0;z-index:198;background:rgba(0,0,0,.3)}
+@media(max-width:768px){
+  #rm-nav{display:none;position:fixed;top:0;left:0;bottom:0;z-index:200;width:240px!important;box-shadow:4px 0 24px rgba(0,0,0,.14);padding:18px 12px!important}
+  #rm-nav.rm-open{display:flex!important}
+  #rm-nav.rm-open [data-goto="inicio"]{justify-content:flex-start!important;padding:8px 12px 22px!important}
+  #rm-nav.rm-open [data-view]{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
+  #rm-nav.rm-open [data-view] span{display:inline!important}
+  #rm-nav.rm-open [data-view]::after{display:none}
+  #rm-nav.rm-open .rm-logo-text{display:inline!important}
+  #rm-nav.rm-open .rm-cfg-btn{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
+  #rm-nav.rm-open .rm-cfg-btn span{display:inline!important}
+  #rm-nav.rm-open .rm-cfg-btn::after{display:none}
+  #rm-mob-overlay.rm-open{display:block}
+  #rm-mob-btn{display:flex!important}
+}
 </style>
 </head>
 <body>
 
-<div style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
+<div class="rm-wrap" style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
 
-  <aside style="width:248px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 14px;gap:2px;background:#fff">
+  <aside id="rm-nav" style="width:62px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
     <button type="button" data-goto="inicio" style="display:flex;align-items:center;gap:10px;padding:8px 12px 22px;border:none;background:transparent;cursor:pointer;font-family:inherit;width:100%;text-align:left">
       <span style="width:30px;height:30px;border-radius:50%;background:#1A1A18;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:-.02em;flex:none">re</span>
-      <span style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
+      <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
     </button>
 
-    <button type="button" data-view="inicio" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
+    <button type="button" data-view="inicio" data-label="Novedades" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
       <span>Novedades</span>
     </button>
-    <button type="button" data-view="explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
       <span>Explorar</span>
     </button>
-    <button type="button" data-view="crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" data-view="crear" data-label="Crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
       <span>Crear</span>
     </button>
 
-    <div style="height:1px;background:#ECE8E0;margin:10px 12px"></div>
+    <div class="rm-divider" style="height:1px;background:#ECE8E0;margin:10px 12px"></div>
 
-    <button type="button" data-view="mood" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" data-view="mood" data-label="Tus realmood" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><rect x="6.5" y="7.5" width="5" height="5" rx="1"></rect><circle cx="16" cy="9.6" r="2"></circle><rect x="9" y="14" width="8" height="2.6" rx="1.1"></rect></svg>
       <span>Tus realmood</span>
     </button>
-    <button type="button" data-view="saved" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" data-view="saved" data-label="Proyectos guardados" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3.5 7.6a2 2 0 0 1 2-2h3a2 2 0 0 1 1.5.7l1.1 1.2h7.4a2 2 0 0 1 2 2v8.4a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2z"></path></svg>
       <span>Tus proyectos guardados</span>
     </button>
-    <button type="button" data-view="mensajes" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" data-view="mensajes" data-label="Mensajes" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
       <span>Mensajes</span>
     </button>
 
-    <button type="button" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s" onmouseenter="this.style.background='#F3F0EA'" onmouseleave="this.style.background='transparent'">
+    <button type="button" class="rm-cfg-btn" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s" onmouseenter="this.style.background='#F3F0EA'" onmouseleave="this.style.background='transparent'">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>Configuración</span>
     </button>
@@ -63,6 +92,9 @@ body{background:#fff}
 
   <main style="flex:1;min-width:0;display:flex;flex-direction:column">
     <div style="position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #ECE8E0;padding:13px 26px;display:flex;align-items:center;gap:16px">
+      <button id="rm-mob-btn" onclick="toggleMobMenu()" aria-label="Menú">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div style="position:relative;flex:1;max-width:none">
         <span style="position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
         <input id="ins-search" type="search" placeholder="Buscar terrazzo, materiales o proyectos…" style="width:100%;padding:13px 18px 13px 46px;border:none;border-radius:100px;font-size:14px;font-family:inherit;background:#EFEBE3;color:#1A1A18;outline:none">
@@ -105,6 +137,8 @@ body{background:#fff}
     </footer>
   </main>
 </div>
+
+<div id="rm-mob-overlay" onclick="toggleMobMenu()"></div>
 
 <div id="ins-toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A18;color:#fff;padding:11px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap">—</div>
 
@@ -445,6 +479,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
       if(v==='mood')loadMoodList();
       $('ins-search').value='';doSearch('');
+      const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
+      if(mNav)mNav.classList.remove('rm-open');if(mOv)mOv.classList.remove('rm-open');
     };
     navBtns.forEach(b=>{
       b.addEventListener('click',()=>setView(b.getAttribute('data-view')));
@@ -471,6 +507,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setView('inicio');
 });
+function toggleMobMenu(){
+  const nav=document.getElementById('rm-nav');
+  const ov=document.getElementById('rm-mob-overlay');
+  const open=nav.classList.contains('rm-open');
+  if(open){nav.classList.remove('rm-open');ov.classList.remove('rm-open');}
+  else{nav.classList.add('rm-open');ov.classList.add('rm-open');}
+}
 </script>
 </body>
 </html>
