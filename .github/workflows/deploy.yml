@@ -36,6 +36,7 @@ jobs:
           cp public/index.html out/index.html
           cp public/terrazzo-instone.html out/terrazzo-instone.html
           cp public/crear-configurador.html out/crear-configurador.html
+          cp public/Realmood-Hibrida-Isotipo.png out/Realmood-Hibrida-Isotipo.png
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
