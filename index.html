@@ -24,10 +24,12 @@ body{background:#fff}
 #rm-nav [data-view] span{display:none!important}
 #rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav [data-view]:hover::after{opacity:1}
+#rm-nav [data-view]:hover{z-index:301}
 #rm-nav .rm-cfg-btn{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
 #rm-nav .rm-cfg-btn span{display:none!important}
 #rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav .rm-cfg-btn:hover::after{opacity:1}
+#rm-nav .rm-cfg-btn:hover{z-index:301}
 /* ── Mobile nav ─────────────────────────────────────── */
 #rm-mob-btn{display:none;background:transparent;border:none;cursor:pointer;padding:6px;color:#1A1A18;align-items:center;justify-content:center;border-radius:8px;flex:none}
 #rm-mob-overlay{display:none;position:fixed;inset:0;z-index:198;background:rgba(0,0,0,.3)}
@@ -76,7 +78,7 @@ body{background:#fff}
 
   <aside id="rm-nav" style="width:62px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
     <button type="button" data-goto="inicio" style="display:flex;align-items:center;gap:10px;padding:8px 12px 22px;border:none;background:transparent;cursor:pointer;font-family:inherit;width:100%;text-align:left">
-      <img src="Realmood-Hibrida-Isotipo.png" alt="realmood" style="width:70px;height:70px;object-fit:contain;flex:none;display:block">
+      <img src="Realmood-Hibrida-Isotipo.png" alt="realmood" style="width:80px;height:80px;object-fit:contain;flex:none;display:block">
       <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
     </button>
 
@@ -554,7 +556,7 @@ function toggleMobMenu(){
     </button>
     <div style="margin-bottom:28px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-        <img src="Realmood-Hibrida-Isotipo.png" alt="realmood" style="width:70px;height:70px;object-fit:contain;flex:none;display:block">
+        <img src="Realmood-Hibrida-Isotipo.png" alt="realmood" style="width:80px;height:80px;object-fit:contain;flex:none;display:block">
         <span style="font-size:17px;font-weight:700;letter-spacing:.01em">realmood</span>
       </div>
       <h2 id="auth-title" style="margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:-.01em;color:#1A1A18">Iniciá sesión</h2>
