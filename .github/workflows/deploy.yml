@@ -31,6 +31,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Copy static HTML app over Next.js output
+        run: |
+          cp public/index.html out/index.html
+          cp public/terrazzo-instone.html out/terrazzo-instone.html
+          cp public/crear-configurador.html out/crear-configurador.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
