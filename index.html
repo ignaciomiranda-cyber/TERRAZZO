@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>realmood — Instone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:hidden}
+body{background:#fff}
+@keyframes vIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#E2DDD3;border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:#D2CCC0}
+/* ── Collapsed sidebar ───────────────────────────────── */
+#rm-nav{overflow:visible}
+#rm-nav .rm-logo-text{display:none}
+#rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
+#rm-nav [data-view]{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
+#rm-nav [data-view] span{display:none!important}
+#rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
+#rm-nav [data-view]:hover::after{opacity:1}
+#rm-nav .rm-cfg-btn{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
+#rm-nav .rm-cfg-btn span{display:none!important}
+#rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
+#rm-nav .rm-cfg-btn:hover::after{opacity:1}
+/* ── Mobile nav ─────────────────────────────────────── */
+#rm-mob-btn{display:none;background:transparent;border:none;cursor:pointer;padding:6px;color:#1A1A18;align-items:center;justify-content:center;border-radius:8px;flex:none}
+#rm-mob-overlay{display:none;position:fixed;inset:0;z-index:198;background:rgba(0,0,0,.3)}
+@media(max-width:768px){
+  /* Sidebar drawer — must use !important to override inline display:flex */
+  #rm-nav{display:none!important;position:fixed;top:0;left:0;bottom:0;z-index:200;width:240px!important;flex:none!important;height:100%!important;min-width:0!important;box-shadow:4px 0 24px rgba(0,0,0,.14);padding:18px 12px!important}
+  #rm-nav.rm-open{display:flex!important}
+  /* Main takes full width once sidebar is gone */
+  .rm-wrap{overflow-x:hidden}
+  main{width:100%;min-width:0;max-width:100%}
+  #rm-nav.rm-open [data-goto="inicio"]{justify-content:flex-start!important;padding:8px 12px 22px!important}
+  #rm-nav.rm-open [data-view]{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
+  #rm-nav.rm-open [data-view] span{display:inline!important}
+  #rm-nav.rm-open [data-view]::after{display:none}
+  #rm-nav.rm-open .rm-logo-text{display:inline!important}
+  #rm-nav.rm-open .rm-cfg-btn{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
+  #rm-nav.rm-open .rm-cfg-btn span{display:inline!important}
+  #rm-nav.rm-open .rm-cfg-btn::after{display:none}
+  #rm-mob-overlay.rm-open{display:block}
+  #rm-mob-btn{display:flex!important}
+  /* Top bar: compact & hide secondary buttons */
+  #rm-topbar{padding:10px 14px!important;gap:10px!important}
+  #rm-topbar input{padding:10px 14px 10px 40px!important;font-size:13px!important}
+  #rm-topbar input::placeholder{font-size:12px}
+  .rm-top-chat,.rm-top-avatar{display:none!important}
+  /* Main content: tight padding */
+  #rm-content{padding:16px 14px 48px!important}
+  /* Novedades / Explorar headings */
+  #view-inicio h1,#view-explorar h1{font-size:18px!important}
+  #view-inicio>div>span,#view-explorar>div>p{font-size:12px!important}
+  /* Masonry grids: smaller column to show more cards */
+  #grid-inicio{column-width:160px!important;column-gap:12px!important}
+  #grid-explorar{column-width:170px!important;column-gap:12px!important}
+  /* Category / city filter pills */
+  #inicio-ciudades,#inicio-cats,#explorar-filters{gap:6px!important;margin-bottom:14px!important}
+  /* Mood list cards */
+  #view-mood>div{padding:20px 0!important}
+  /* Footer */
+  footer{padding:14px 14px!important}
+}
+</style>
+</head>
+<body>
+
+<div class="rm-wrap" style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
+
+  <aside id="rm-nav" style="width:62px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
+    <button type="button" data-goto="inicio" style="display:flex;align-items:center;gap:10px;padding:8px 12px 22px;border:none;background:transparent;cursor:pointer;font-family:inherit;width:100%;text-align:left">
+      <span style="width:30px;height:30px;border-radius:50%;background:#1A1A18;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:-.02em;flex:none">re</span>
+      <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
+    </button>
+
+    <button type="button" data-view="inicio" data-label="Novedades" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
+      <span>Novedades</span>
+    </button>
+    <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
+      <span>Explorar</span>
+    </button>
+    <button type="button" data-view="crear" data-label="Crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
+      <span>Crear</span>
+    </button>
+
+    <div class="rm-divider" style="height:1px;background:#ECE8E0;margin:10px 12px"></div>
+
+    <button type="button" data-view="mood" data-label="Tus realmood" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><rect x="6.5" y="7.5" width="5" height="5" rx="1"></rect><circle cx="16" cy="9.6" r="2"></circle><rect x="9" y="14" width="8" height="2.6" rx="1.1"></rect></svg>
+      <span>Tus realmood</span>
+    </button>
+    <button type="button" data-view="saved" data-label="Proyectos guardados" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3.5 7.6a2 2 0 0 1 2-2h3a2 2 0 0 1 1.5.7l1.1 1.2h7.4a2 2 0 0 1 2 2v8.4a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2z"></path></svg>
+      <span>Tus proyectos guardados</span>
+    </button>
+    <button type="button" data-view="mensajes" data-label="Mensajes" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
+      <span>Mensajes</span>
+    </button>
+
+    <button type="button" class="rm-cfg-btn" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s" onmouseenter="this.style.background='#F3F0EA'" onmouseleave="this.style.background='transparent'">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <span>Configuración</span>
+    </button>
+  </aside>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <div id="rm-topbar" style="position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #ECE8E0;padding:13px 26px;display:flex;align-items:center;gap:16px">
+      <button id="rm-mob-btn" onclick="toggleMobMenu()" aria-label="Menú">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div style="position:relative;flex:1;max-width:none">
+        <span style="position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+        <input id="ins-search" type="search" placeholder="Buscar terrazzo, materiales o proyectos…" style="width:100%;padding:13px 18px 13px 46px;border:none;border-radius:100px;font-size:14px;font-family:inherit;background:#EFEBE3;color:#1A1A18;outline:none">
+      </div>
+      <button type="button" class="rm-top-chat" data-goto="mensajes" style="width:42px;height:42px;border-radius:50%;border:none;background:#EFEBE3;color:#1A1A18;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"></path></svg></button>
+      <div style="position:relative;flex:none">
+        <span id="rm-top-avatar" class="rm-top-avatar" onclick="handleAvatarClick()" style="width:42px;height:42px;border-radius:50%;background:#9b958a;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;user-select:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+        <div id="auth-user-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #E4DFD5;border-radius:14px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.13);min-width:200px;z-index:100">
+          <p id="auth-user-email" style="margin:0 0 4px;padding:8px 10px;font-size:12px;color:#9b958a;border-bottom:1px solid #ECE8E0;word-break:break-all"></p>
+          <button onclick="authSignOut()" style="width:100%;text-align:left;padding:8px 10px;background:transparent;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:#C0392B;border-radius:8px;margin-top:4px">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="rm-content" style="padding:24px 26px 64px;flex:1">
+
+      <section id="view-inicio" style="animation:vIn .35s ease">
+        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
+          <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Novedades</h1>
+          <span style="font-size:13px;color:#9b958a">Terrazzo, materiales y obras que combinan</span>
+        </div>
+        <div id="inicio-ciudades" style="display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
+        <div id="inicio-cats" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
+        <div id="grid-inicio" style="column-width:210px;column-gap:16px"></div>
+      </section>
+
+      <section id="view-explorar" style="display:none;animation:vIn .35s ease">
+        <div style="margin-bottom:6px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:7px">Córdoba · Capital</div>
+          <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Explorar proyectos y sus materiales</h1>
+          <p style="font-size:13px;color:#9b958a;margin:0">Obras realizadas con terrazzo Instone en Córdoba</p>
+        </div>
+        <div id="explorar-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px"></div>
+        <div id="grid-explorar" style="column-width:230px;column-gap:16px"></div>
+        <div id="explorar-empty" style="display:none;text-align:center;padding:48px 0;color:#9b958a;font-size:14px">No hay proyectos que coincidan con tu búsqueda.</div>
+      </section>
+
+      <section id="view-crear" style="display:none;animation:vIn .35s ease"></section>
+      <section id="view-mood" style="display:none;animation:vIn .35s ease"></section>
+      <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
+      <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
+
+    </div>
+    <footer style="padding:22px 26px;border-top:1px solid #ECE8E0;text-align:center">
+      <p style="margin:0;font-size:11px;color:#9b958a;letter-spacing:.02em">realmood es una marca registrada de mildesing sas. Todos los derechos reservados.</p>
+    </footer>
+  </main>
+</div>
+
+<div id="rm-mob-overlay" onclick="toggleMobMenu()"></div>
+
+<div id="ins-toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A18;color:#fff;padding:11px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap">—</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const $=id=>document.getElementById(id);
+    // ── noise + color helpers ─────────────────────────────────
+    const h2r=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const hash2=(x,y)=>Math.abs(Math.sin(x*127.1+y*311.7)*43758.5453)%1;
+    const vnoise=(x,y)=>{const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy;const ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy);const a=hash2(ix,iy),b=hash2(ix+1,iy),c=hash2(ix,iy+1),d=hash2(ix+1,iy+1);return(a+(b-a)*ux)+(c-a+(a-b-c+d)*ux)*uy;};
+    const fbm=(x,y,o)=>{let v=0,a=.5,f=1;for(let i=0;i<o;i++){v+=vnoise(x*f,y*f)*a;a*=.5;f*=2.1;}return v;};
+    const angularPath=(ctx,cx,cy,rx,ry,seed)=>{const sides=Math.floor(4+hash2(seed,seed*1.3)*4);const ba=hash2(seed*2.1,seed*.7)*Math.PI*2;const pts=[];for(let i=0;i<sides;i++){const t=i/sides;const angle=ba+t*Math.PI*2+(hash2(seed+i*.37,seed*1.9+i)-.5)*(Math.PI*2/sides)*0.6;const rf=0.55+Math.random()*0.45;pts.push([cx+Math.cos(angle)*rx*rf,cy+Math.sin(angle)*ry*rf]);}ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.closePath();};
+    const roundedPath=(ctx,cx,cy,rx,ry,seed)=>{const N=12,ba=hash2(seed*1.1,seed*0.9)*Math.PI,asp=0.50+hash2(seed,seed*1.7)*0.46;const pts=[];for(let i=0;i<N;i++){const a=ba+(i/N)*Math.PI*2;const b=1+(hash2(seed+i*.41,seed*1.9+i)-.5)*.38+(hash2(seed*.8+i,i*1.4)-.5)*.16;pts.push([cx+Math.cos(a)*rx*b,cy+Math.sin(a)*ry*asp*b]);}ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(let i=0;i<N;i++){const p0=pts[(i-1+N)%N],p1=pts[i],p2=pts[(i+1)%N],p3=pts[(i+2)%N];const cp1x=p1[0]+(p2[0]-p0[0])/6,cp1y=p1[1]+(p2[1]-p0[1])/6;const cp2x=p2[0]-(p3[0]-p1[0])/6,cp2y=p2[1]-(p3[1]-p1[1])/6;ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,p2[0],p2[1]);}ctx.closePath();};
+
+    const STONES={
+      'Mármol blanco':'#EDEAE2','Mármol gris (Bardiglio)':'#A8A6A2','Serpentinita / Granito Rumi Black':'#242220',
+      'Mármol verde':'#588A5E','Mármol rojo':'#9E3826',
+      'Granito gris':'#646260','Granito verde':'#385A3C',
+      'Rosa Córdoba':'#D29E94',
+      'Travertino':'#CEC0A0','Caliza':'#CCBEA0',
+      'Rodocrosita':'#D4607E','Conchilla':'#E8D8C4',
+      'Ónix miel':'#D4820A','Ónix naranja':'#C46A38','Ónix rojo':'#AE6E6A',
+      'Ónix marrón':'#AE8860','Ónix marrón oscuro':'#764E3E',
+      'Latón':'#C8A460',
+      'Blanca rodada':'#ECEBE4'
+    };
+    const ROUNDED_STONES=new Set(['Blanca rodada']);
+    const SZP={'1':{min:5,max:11},'2':{min:11,max:26},'3':{min:18,max:36},'5':{min:28,max:52}};
+
+    function makePlacer(W,H){
+      const cell=20,gw=Math.ceil(W/cell),gh=Math.ceil(H/cell);
+      const grid=Array.from({length:gw*gh},()=>[]);
+      const gcells=(x,y,r)=>{const x1=Math.max(0,Math.floor((x-r)/cell)),x2=Math.min(gw-1,Math.floor((x+r)/cell));const y1=Math.max(0,Math.floor((y-r)/cell)),y2=Math.min(gh-1,Math.floor((y+r)/cell));const out=[];for(let gx=x1;gx<=x2;gx++)for(let gy=y1;gy<=y2;gy++)out.push(gx+gy*gw);return out;};
+      return{
+        overlaps(x,y,r){for(const c of gcells(x,y,r))for(const p of grid[c]){const dx=p.x-x,dy=p.y-y,md=p.r+r+1;if(dx*dx+dy*dy<md*md)return true;}return false;},
+        add(x,y,r){for(const c of gcells(x,y,r))grid[c].push({x,y,r});}
+      };
+    }
+    function drawChip(ctx,p){
+      const def=STONES[p.st.name]||'#888';const [r,g,b]=h2r(def);
+      const isRodada=ROUNDED_STONES.has(p.st.name);
+      const seed=p.seed;const md=Math.max(p.rx,p.ry);
+      if(isRodada){
+        const cv=(hash2(seed*1.1,seed*.5)-.5)*8;
+        ctx.save();
+        roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+        ctx.fillStyle=`rgb(${clamp(r+cv,0,255)},${clamp(g+cv,0,255)},${clamp(b+cv,0,255)})`;ctx.fill();
+        roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);ctx.clip();
+        const rim=ctx.createRadialGradient(p.x,p.y,md*0.45,p.x,p.y,md*1.1);
+        rim.addColorStop(0,'rgba(0,0,0,0)');rim.addColorStop(1,'rgba(0,0,0,0.24)');
+        ctx.fillStyle=rim;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+        const hx=p.x-p.rx*0.24,hy=p.y-p.ry*0.26;
+        const hg=ctx.createRadialGradient(hx,hy,0,hx,hy,md*0.78);
+        hg.addColorStop(0,'rgba(255,255,255,0.90)');hg.addColorStop(0.22,'rgba(255,255,255,0.45)');
+        hg.addColorStop(0.60,'rgba(255,255,255,0.07)');hg.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=hg;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+        const spx=p.x-p.rx*0.08,spy=p.y-p.ry*0.40;
+        const sg=ctx.createRadialGradient(spx,spy,0,spx,spy,md*0.20);
+        sg.addColorStop(0,'rgba(255,255,255,0.60)');sg.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=sg;ctx.fillRect(p.x-md-2,p.y-md-2,md*2+4,md*2+4);
+        ctx.restore();
+        roundedPath(ctx,p.x,p.y,p.rx,p.ry,seed);
+        ctx.strokeStyle='rgba(160,158,150,0.55)';ctx.lineWidth=clamp(md*.055,.8,2.4);ctx.stroke();
+        return;
+      }
+      const chipPath=(cx,cy,rx,ry,s)=>angularPath(ctx,cx,cy,rx,ry,s);
+      chipPath(p.x,p.y,p.rx,p.ry,seed);
+      ctx.fillStyle=`rgb(${r},${g},${b})`;ctx.fill();
+      ctx.lineWidth=1;ctx.strokeStyle='rgba(0,0,0,.12)';ctx.stroke();
+      const hl=ctx.createLinearGradient(p.x-p.rx,p.y-p.ry,p.x+p.rx,p.y+p.ry);
+      hl.addColorStop(0,'rgba(255,255,255,.28)');hl.addColorStop(.5,'rgba(255,255,255,0)');hl.addColorStop(1,'rgba(0,0,0,.10)');
+      chipPath(p.x,p.y,p.rx,p.ry,seed);ctx.fillStyle=hl;ctx.fill();
+    }
+    function renderTerr(cv,baseHex,stones,W,H){
+      cv.width=W;cv.height=H;const ctx=cv.getContext('2d');
+      const [br,bg,bb]=h2r(baseHex);
+      const id=ctx.createImageData(W,H);const d=id.data;const sc=0.006;
+      for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+        const n=fbm(x*sc,y*sc,3);
+        const grain=(hash2(x*0.7+5,y*1.1+9)-.5)*11;
+        const g=(n-.5)*18+grain,i=(y*W+x)*4;
+        d[i]=clamp(br+g,0,255);d[i+1]=clamp(bg+g,0,255);d[i+2]=clamp(bb+g,0,255);d[i+3]=255;
+      }
+      ctx.putImageData(id,0,0);
+      const active=stones.filter(s=>s.pct>0);if(!active.length)return;
+      const totalPct=active.reduce((a,s)=>a+s.pct,0);const totalArea=W*H*0.96;
+      const specs=active.map(s=>{const sp=SZP[s.size];const avgR=(sp.min+sp.max)/2;const avgArea=Math.PI*avgR*avgR*0.65;const count=Math.max(1,Math.round(totalArea*(s.pct/totalPct)/avgArea));return{s,sp,count};}).sort((a,b)=>b.sp.max-a.sp.max);
+      const placer=makePlacer(W,H);const all=[];
+      specs.forEach(({s,sp,count},si)=>{let placed=0;const maxTries=count*50;for(let i=0;i<maxTries&&placed<count;i++){const rx=sp.min+Math.random()*(sp.max-sp.min);const ry=rx*(0.55+Math.random()*0.7);const md=Math.max(rx,ry);const pad=md+1;if(pad*2>=Math.min(W,H))continue;const x=pad+Math.random()*(W-pad*2);const y=pad+Math.random()*(H-pad*2);if(!placer.overlaps(x,y,md*.80)){placer.add(x,y,md*.80);all.push({x,y,rx,ry,r:md,st:s,seed:hash2(x*.01+si*10,y*.01+placed*.07)*200});placed++;}}});
+      all.sort((a,b)=>b.r-a.r);all.forEach(p=>drawChip(ctx,p));
+      const micro=Math.round(W*H*0.0013);
+      for(let i=0;i<micro;i++){const x=Math.random()*W,y=Math.random()*H;let pick=Math.random()*totalPct,sel=active[0];for(const a of active){pick-=a.pct;if(pick<=0){sel=a;break;}}const [r,g,b]=h2r(STONES[sel.name]||'#888');const cv2=(Math.random()-.5)*16;const rr=0.6+Math.random()*1.6;angularPath(ctx,x,y,rr,rr*(0.7+Math.random()*0.6),Math.random()*200);ctx.fillStyle=`rgba(${clamp(r+cv2,0,255)},${clamp(g+cv2,0,255)},${clamp(b+cv2,0,255)},${0.5+Math.random()*0.32})`;ctx.fill();}
+      const sheen=ctx.createRadialGradient(W*0.36,H*0.30,0,W*0.42,H*0.42,Math.max(W,H)*0.95);
+      sheen.addColorStop(0,'rgba(255,255,255,0.05)');sheen.addColorStop(1,'rgba(0,0,0,0.05)');
+      ctx.fillStyle=sheen;ctx.fillRect(0,0,W,H);
+    }
+    function renderSlab(cv,m,W,H){
+      cv.width=W;cv.height=H;const ctx=cv.getContext('2d');
+      const [br,bg,bb]=h2r(m.bg);const sc=m.style==='solid'?0.004:0.011;
+      const id=ctx.createImageData(W,H);const d=id.data;
+      for(let y=0;y<H;y++)for(let x=0;x<W;x++){const n=fbm(x*sc+(m.seed||0),y*sc+(m.seed||0),4);const g=(n-.5)*(m.style==='solid'?14:30);const i=(y*W+x)*4;d[i]=clamp(br+g,0,255);d[i+1]=clamp(bg+g,0,255);d[i+2]=clamp(bb+g,0,255);d[i+3]=255;}
+      ctx.putImageData(id,0,0);
+      if(m.style==='marble'||m.style==='quartzite'){
+        const veins=m.veins||['#9a9a9a'];const count=m.style==='quartzite'?5:4;ctx.lineCap='round';ctx.lineJoin='round';
+        for(let k=0;k<count;k++){const col=veins[k%veins.length];const [r,g,b]=h2r(col);let x=Math.random()*W,y=Math.random()*H*0.35;let ang=Math.random()*Math.PI*2;ctx.beginPath();ctx.moveTo(x,y);const segs=8+Math.floor(Math.random()*6);for(let s=0;s<segs;s++){ang+=(Math.random()-.5)*1.15;const len=W/segs*(.7+Math.random()*.9);const nx=x+Math.cos(ang)*len,ny=y+Math.sin(ang)*len;const mx=(x+nx)/2+(Math.random()-.5)*18,my=(y+ny)/2+(Math.random()-.5)*18;ctx.quadraticCurveTo(mx,my,nx,ny);x=nx;y=ny;}const w=m.veinW||2;ctx.lineWidth=w*2.4;ctx.strokeStyle=`rgba(${r},${g},${b},${(m.veinA||.5)*.16})`;ctx.stroke();ctx.lineWidth=w;ctx.strokeStyle=`rgba(${r},${g},${b},${m.veinA||.5})`;ctx.stroke();}
+      } else if(m.style==='granite'){
+        const cols=m.specks||['#333','#777'];const n=Math.round((m.density||1400)*(W*H)/(150*150));for(let i=0;i<n;i++){const x=Math.random()*W,y=Math.random()*H;const [r,g,b]=h2r(cols[Math.floor(Math.random()*cols.length)]);ctx.fillStyle=`rgba(${r},${g},${b},${.35+Math.random()*.5})`;ctx.beginPath();ctx.arc(x,y,.5+Math.random()*(Math.min(W,H)/90),0,Math.PI*2);ctx.fill();}
+      } else if(m.style==='terrazzo'){
+        const cols=m.chips||['#ccc','#aaa'];const n=Math.round((m.density||80)*(W*H)/(150*150));for(let i=0;i<n;i++){const x=Math.random()*W,y=Math.random()*H;const rad=(m.chipR||9)*(Math.min(W,H)/150);const rx=2+Math.random()*rad,ry=rx*(.6+Math.random()*.6);const [r,g,b]=h2r(cols[Math.floor(Math.random()*cols.length)]);angularPath(ctx,x,y,rx,ry,hash2(x*.1,y*.1)*100);ctx.fillStyle=`rgba(${r},${g},${b},.9)`;ctx.fill();ctx.lineWidth=.6;ctx.strokeStyle='rgba(0,0,0,.10)';ctx.stroke();}
+      }
+      const sh=ctx.createLinearGradient(0,0,W,H);sh.addColorStop(0,'rgba(255,255,255,.10)');sh.addColorStop(.5,'rgba(255,255,255,.02)');sh.addColorStop(1,'rgba(0,0,0,.06)');ctx.fillStyle=sh;ctx.fillRect(0,0,W,H);
+    }
+
+    // ── catalog data ──────────────────────────────────────────
+    const TERR=[
+      {base:'#F0EDE6',stones:[{name:'Mármol blanco',size:'2',pct:60},{name:'Serpentinita / Granito Rumi Black',size:'2',pct:8},{name:'Rosa Córdoba',size:'2',pct:20},{name:'Ónix miel',size:'2',pct:12}],title:'Confeti cálido',r:0.78},
+      {base:'#1A1A18',stones:[{name:'Mármol blanco',size:'5',pct:100}],title:'Tuxedo grande',r:1},
+      {base:'#B45C4C',stones:[{name:'Mármol blanco',size:'2',pct:40},{name:'Rosa Córdoba',size:'2',pct:60}],title:'Terracota rosado',r:0.8},
+      {base:'#88A686',stones:[{name:'Mármol blanco',size:'2',pct:55},{name:'Serpentinita / Granito Rumi Black',size:'2',pct:45}],title:'Verde salvia',r:1},
+      {base:'#C4C2BC',stones:[{name:'Serpentinita / Granito Rumi Black',size:'1',pct:45},{name:'Mármol gris (Bardiglio)',size:'2',pct:35},{name:'Ónix miel',size:'1',pct:20}],title:'Gris pulido',r:0.72},
+      {base:'#F0EDE6',stones:[{name:'Mármol blanco',size:'1',pct:80},{name:'Serpentinita / Granito Rumi Black',size:'1',pct:20}],title:'Blanco fino',r:1.18},
+      {base:'#D0A49C',stones:[{name:'Ónix rojo',size:'2',pct:90},{name:'Mármol blanco',size:'2',pct:10}],title:'Rosa pálido',r:0.8},
+      {base:'#545250',stones:[{name:'Serpentinita / Granito Rumi Black',size:'2',pct:50},{name:'Granito gris',size:'2',pct:30},{name:'Ónix miel',size:'2',pct:20}],title:'Antracita oro',r:1},
+      {base:'#E8E4DC',stones:[{name:'Blanca rodada',size:'5',pct:100}],title:'Piedra blanca rodada N°5',r:0.9},
+      {base:'#E8E4DC',stones:[{name:'Rodocrosita',size:'2',pct:70},{name:'Mármol blanco',size:'2',pct:30}],title:'Puna — rodocrosita argentina',r:0.85},
+      {base:'#DED4C0',stones:[{name:'Travertino',size:'3',pct:80},{name:'Mármol blanco',size:'1',pct:20}],title:'Salta — travertino NOA',r:0.9},
+      {base:'#E8E4DC',stones:[{name:'Conchilla',size:'1',pct:60},{name:'Mármol blanco',size:'1',pct:40}],title:'Nácar — conchilla patagónica',r:1.0},
+      {base:'#646058',stones:[{name:'Latón',size:'2',pct:35},{name:'Serpentinita / Granito Rumi Black',size:'2',pct:65}],title:'Latón — metálico premium',r:0.95},
+      {base:'#2E4278',stones:[{name:'Mármol blanco',size:'2',pct:70},{name:'Serpentinita / Granito Rumi Black',size:'1',pct:30}],title:'Azul noche — marino oscuro',r:0.88},
+      {base:'#4A6898',stones:[{name:'Mármol blanco',size:'1',pct:100}],title:'Azul madrugada — pizarra suave',r:1.05}
+    ];
+    const SLABS=[
+      {name:'Arabescato',tipo:'Mármol',bg:'#E8E7E3',style:'marble',veins:['#8E8C88','#6A6864'],veinW:3,veinA:.55,seed:2,r:0.8},
+      {name:'Amazónico',tipo:'Mármol',bg:'#43463A',style:'marble',veins:['#A88A3A','#C9C4B4'],veinW:2.5,veinA:.5,seed:18,r:1.16},
+      {name:'Absolute Black',tipo:'Sinterizado',bg:'#222426',style:'solid',seed:3,r:1},
+      {name:'Amazonite',tipo:'Cuarcita',bg:'#5FA89C',style:'quartzite',veins:['#2E6E64','#E8DCD0'],veinW:3,veinA:.45,seed:25,r:0.78},
+      {name:'Alpinus',tipo:'Granito',bg:'#D6D0C4',style:'granite',specks:['#3A4A36','#6E6452','#2A2A28'],density:1700,seed:5,r:1},
+      {name:'Arabescato Bianco',tipo:'Terrazzo',bg:'#E5DECF',style:'terrazzo',chips:['#CFE0DE','#E8E2D2','#D8C4B0','#A9B4AE'],density:80,chipR:11,seed:8,r:0.82}
+    ];
+    const MEL=[
+      {name:'Petiribí',bg:'#9E7C3C',wood:true},
+      {name:'Terracota',bg:'#A05B40'},
+      {name:'Jade',bg:'#95AD8B'},
+      {name:'Sauco',bg:'#2B2B29',wood:true},
+      {name:'Scotch',bg:'#BE9A63',wood:true},
+      {name:'Gris Basalto',bg:'#9D9D9A'},
+      {name:'Seda Azzurra',bg:'#0D2A34'}
+    ];
+    const PANTONE=[
+      {code:'19-1541',name:'Roasted Russet',hex:'#7E3A33'},
+      {code:'16-0945',name:'Tinsel',hex:'#C99A4E'},
+      {code:'14-6007',name:'Sea Foam',hex:'#AEC4B2'},
+      {code:'19-3926',name:'Crown Blue',hex:'#474C6A'}
+    ];
+    const PHOTOS=[
+      {img:'prod-eco.jpg',title:'Instalación ECO-005',tag:'Inspiración'},
+      {img:'prod-bangkok.jpg',title:'Sillas Bangkok',tag:'Mobiliario'},
+      {img:'prod-brass.jpg',title:'Mesa de vidrio y latón',tag:'Detalle'},
+      {img:'life-1.jpg',title:'Rincón de trabajo',tag:'Ambiente'},
+      {img:'proj-2.jpg',title:'Obra en Córdoba',tag:'Proyecto'},
+      {img:'proj-3.jpg',title:'Detalle de obra',tag:'Proyecto'},
+      {img:'cocina-ambiente.jpg.webp',title:'Cocina en terracota',tag:'Ambiente'},
+      {img:'mesa-ambiente.jpg.jpg',title:'Mesa de comedor',tag:'Ambiente'},
+      {img:'mesa-ambienteop2.jpg.jpg',title:'Detalle de mesa',tag:'Detalle'},
+      {img:'pasted-1781733750827-0.png',title:'Combinación de materiales',tag:'Inspiración'},
+      {img:'pasted-1781733758235-0.png',title:'Paleta natural',tag:'Inspiración'},
+      {img:'pasted-1781734716790-0.png',title:'Moodboard cálido',tag:'Inspiración'}
+    ];
+
+    // ── toast ─────────────────────────────────────────────────
+    let tT;
+    const toast=msg=>{const t=$('ins-toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';clearTimeout(tT);tT=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2400);};
+
+    // ── pin builder ───────────────────────────────────────────
+    const mkCard=(media,title,tag,opts)=>{
+      opts=opts||{};
+      const card=document.createElement('div');
+      card.setAttribute('data-title',(title+' '+(tag||'')+' '+(opts.search||'')).toLowerCase());
+      if(opts.filter)card.setAttribute('data-tag',opts.filter);
+      if(opts.cat)card.setAttribute('data-cat',opts.cat);
+      card.style.cssText='break-inside:avoid;margin-bottom:16px;display:inline-block;width:100%';
+      const inner=document.createElement('div');
+      inner.style.cssText='position:relative;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:zoom-in;transition:box-shadow .25s,transform .2s';
+      inner.appendChild(media);
+      const ov=document.createElement('div');
+      ov.style.cssText='position:absolute;inset:0;opacity:0;transition:opacity .18s;pointer-events:none;background:linear-gradient(180deg,rgba(26,26,24,.32) 0%,rgba(26,26,24,0) 26%,rgba(26,26,24,0) 60%,rgba(26,26,24,.45));';
+      inner.appendChild(ov);
+      const save=document.createElement('button');
+      save.type='button';save.textContent=opts.saveLabel||'Guardar';
+      save.style.cssText='position:absolute;top:12px;right:12px;background:#E0491A;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:9px 15px;cursor:pointer;opacity:0;transition:opacity .18s;';
+      save.addEventListener('click',e=>{e.stopPropagation();toast(opts.saveMsg||('Guardado en Tus realmood · '+title));});
+      inner.appendChild(save);
+      if(opts.overlayBtns){
+        const row=document.createElement('div');
+        row.style.cssText='position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;opacity:0;transition:opacity .18s;';
+        opts.overlayBtns.forEach(b=>{const bt=document.createElement('button');bt.type='button';bt.textContent=b.label;bt.style.cssText='font-family:inherit;font-size:12px;font-weight:700;padding:9px 14px;border-radius:100px;border:none;cursor:pointer;'+(b.primary?'background:#fff;color:#1A1A18;':'background:rgba(255,255,255,.22);color:#fff;border:1px solid rgba(255,255,255,.5);');bt.addEventListener('click',e=>{e.stopPropagation();toast(b.msg);});row.appendChild(bt);});
+        inner.appendChild(row);
+        inner._row=row;
+      }
+      inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';save.style.opacity='1';if(inner._row)inner._row.style.opacity='1';});
+      inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';save.style.opacity='0';if(inner._row)inner._row.style.opacity='0';});
+      card.appendChild(inner);
+      if(title&&opts.captionBelow!==false){
+        const cap=document.createElement('div');
+        cap.style.cssText='padding:9px 6px 2px';
+        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18">'+title+'</div>'+(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+tag+'</div>':'');
+        card.appendChild(cap);
+      }
+      return card;
+    };
+    const terrMedia=t=>{const c=document.createElement('canvas');c.style.cssText='display:block;width:100%';const W=360,H=Math.round(360*t.r);renderTerr(c,t.base,t.stones,W,H);return c;};
+    const slabMedia=m=>{const c=document.createElement('canvas');c.style.cssText='display:block;width:100%';const W=320,H=Math.round(320*m.r);renderSlab(c,m,W,H);return c;};
+    const melMedia=m=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;height:300px;background-color:'+m.bg+';background-image:'+(m.wood?'repeating-linear-gradient(92deg,rgba(255,255,255,.08) 0,rgba(0,0,0,.06) 6px,rgba(255,255,255,.05) 13px),linear-gradient(160deg,rgba(255,255,255,.14),rgba(0,0,0,.10))':'linear-gradient(155deg,rgba(255,255,255,.16),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12))')+';';return d;};
+    const panMedia=p=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;background:#fff';d.innerHTML='<div style="height:150px;background:'+p.hex+'"></div><div style="padding:10px 12px 14px"><div style="font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:13px;letter-spacing:-.02em;color:#111">PANTONE<sup style="font-size:7px">®</sup></div><div style="font-size:11px;font-weight:700;color:#111;margin-top:6px">'+p.code+'</div><div style="font-size:11px;font-weight:700;color:#111">'+p.name+'</div></div>';return d;};
+    const photoMedia=src=>{const im=document.createElement('img');im.src=src;im.loading='lazy';im.style.cssText='display:block;width:100%;height:auto';return im;};
+
+    // ── Inicio feed ───────────────────────────────────────────
+    const inicio=[];
+    TERR.forEach(t=>inicio.push(mkCard(terrMedia(t),t.title,'Terrazzo · Instone',{search:'terrazzo',cat:'Terrazzo'})));
+    SLABS.forEach(m=>inicio.push(mkCard(slabMedia(m),m.name,m.tipo+' · De Stefano',{search:'piedra '+m.tipo,cat:'Piedras'})));
+    MEL.forEach(m=>inicio.push(mkCard(melMedia(m),m.name,'Melamina · Faplac',{search:'melamina',cat:'Melaminas'})));
+    PANTONE.forEach(p=>inicio.push(mkCard(panMedia(p),p.name,'Pantone '+p.code,{captionBelow:false,search:'pantone color',cat:'Pantone'})));
+    PHOTOS.forEach(p=>inicio.push(mkCard(photoMedia(p.img),p.title,p.tag,{search:p.tag,cat:'Ambientes'})));
+    for(let i=inicio.length-1;i>0;i--){const j=Math.floor(hash2(i*3.1,i*7.7)*(i+1));[inicio[i],inicio[j]]=[inicio[j],inicio[i]];}
+    // Assign cities deterministically after shuffle
+    const CIUDADES_POOL=['Córdoba','Córdoba','Córdoba','Córdoba','Buenos Aires','Buenos Aires','Buenos Aires','Rosario','Mendoza','San Luis','Tucumán','Salta','Miami','Montevideo','Madrid','São Paulo'];
+    inicio.forEach((c,i)=>{c.setAttribute('data-ciudad',CIUDADES_POOL[Math.floor(hash2(i*2.3,i*4.7)*CIUDADES_POOL.length)]);});
+    const gi=$('grid-inicio');inicio.forEach(c=>gi.appendChild(c));
+    // Ciudad filter
+    const CIUDADES=['Todas','Córdoba','Buenos Aires','Rosario','Mendoza','San Luis','Tucumán','Salta','Miami','Montevideo','Madrid','São Paulo'];
+    const cwrapC=$('inicio-ciudades');let activeCity='Todas';const cityBtns={};
+    const cityStyle=(t,active)=>'font-family:inherit;font-size:12px;font-weight:'+(active?'600':'500')+';padding:6px 14px;border-radius:100px;cursor:pointer;border:1px solid '+(active?'#1A1A18':'#D7D1C6')+';background:'+(active?'#1A1A18':'transparent')+';color:'+(active?'#fff':'#6f6a60')+';white-space:nowrap;transition:all .15s;flex:none';
+    CIUDADES.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.style.cssText=cityStyle(t,t===activeCity);b.addEventListener('click',()=>{activeCity=t;Object.entries(cityBtns).forEach(([k,el])=>{el.style.cssText=cityStyle(k,k===t);});doSearch($('ins-search').value);});cityBtns[t]=b;cwrapC.appendChild(b);});
+    const ICATS=['Todos','Terrazzo','Piedras','Melaminas','Pantone','Ambientes'];
+    const cwrap=$('inicio-cats');let activeCat='Todos';const cbtns={};
+    ICATS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeCat;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeCat=t;Object.entries(cbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});doSearch($('ins-search').value);});cbtns[t]=b;cwrap.appendChild(b);});
+
+    // ── Explorar · Córdoba projects ───────────────────────────
+    const PROJECTS=[
+      {name:'Copa Tomada',barrio:'Nueva Córdoba',tag:'Local',img:'proj-1.jpg'},
+      {name:'Estructura roja',barrio:'Centro',tag:'Local',img:'proj-4.jpg'},
+      {name:'Cielorraso modular',barrio:'General Paz',tag:'Comedor',img:'proj-3.jpg'},
+      {name:'Cocina Cerro',barrio:'Cerro de las Rosas',tag:'Cocina',terr:TERR[0]},
+      {name:'Baño en blanco',barrio:'Nueva Córdoba',tag:'Baño',terr:TERR[5]},
+      {name:'Mesada granito',barrio:'General Paz',tag:'Cocina',slab:SLABS[4]},
+      {name:'Piso Cofico',barrio:'Cofico',tag:'Piso',terr:TERR[6]},
+      {name:'Local Güemes',barrio:'Güemes',tag:'Local',terr:TERR[2]},
+      {name:'Patio Villa Belgrano',barrio:'Villa Belgrano',tag:'Exterior',terr:TERR[3]},
+      {name:'Obra atelier',barrio:'Alberdi',tag:'Comedor',img:'proj-2.jpg'},
+      {name:'Mesada antracita',barrio:'Nueva Córdoba',tag:'Cocina',terr:TERR[7]},
+      {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4]}
+    ];
+    const ge=$('grid-explorar');
+    const projCards=[];
+    PROJECTS.forEach(p=>{
+      let media;
+      if(p.img)media=photoMedia(p.img);
+      else if(p.slab)media=slabMedia({...p.slab,r:0.82});
+      else media=terrMedia({...p.terr,r:0.82});
+      const card=mkCard(media,p.name,p.barrio+' · '+p.tag,{
+        filter:p.tag,search:p.barrio,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.name,
+        overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.name},{label:'Usar materiales',msg:'Cargando materiales de '+p.name}]
+      });
+      projCards.push(card);ge.appendChild(card);
+    });
+    const TAGS=['Todos','Cocina','Baño','Local','Comedor','Piso','Exterior'];
+    const fwrap=$('explorar-filters');let activeFilter='Todos';
+    const applyFilter=()=>{let shown=0;projCards.forEach(c=>{const ok=activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter;c.style.display=ok?'inline-block':'none';if(ok)shown++;});$('explorar-empty').style.display=shown?'none':'block';};
+    const fbtns={};
+    TAGS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeFilter;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeFilter=t;Object.entries(fbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});applyFilter();});fbtns[t]=b;fwrap.appendChild(b);});
+
+    // ── placeholder views ─────────────────────────────────────
+    const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
+    $('view-crear').innerHTML='<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px;margin:-24px -26px -64px;width:calc(100% + 52px)"></iframe>';
+    const cf=$('crear-frame');
+    if(cf)cf.addEventListener('load',()=>{try{const d=cf.contentDocument;const fo=d.querySelector('footer');if(fo)fo.style.display='none';const ap=d.querySelector('.app');if(ap){ap.style.paddingTop='6px';ap.style.maxWidth='1040px';}const fit=()=>{cf.style.height=Math.max(1000,d.documentElement.scrollHeight+12)+'px';};fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(d.body);}d.addEventListener('click',()=>setTimeout(fit,300));setTimeout(fit,400);}catch(e){}});
+    window.addEventListener('message',e=>{
+      const h=e&&e.data&&e.data.crearHeight;if(typeof h==='number'&&cf)cf.style.height=h+'px';
+      if(e&&e.data&&e.data.rmSaved)loadMoodList();
+    });
+    // ── Tus realmood list ─────────────────────────────────────────
+    function fmtDate(iso){try{const d=new Date(iso);return d.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'2-digit'});}catch(e){return '';}}
+    function loadMoodList(){
+      const vm=$('view-mood');if(!vm)return;
+      let list;try{list=JSON.parse(localStorage.getItem('ins_realmoods')||'[]');}catch(e){list=[];}
+      list=[...list].reverse();
+      if(!list.length){
+        vm.innerHTML='<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">Tus realmood</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">Creá un realmood en el configurador y guardalo para verlo acá.</p><button type="button" data-goto="crear" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Crear realmood</button></div>';
+        vm.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>setView(el.getAttribute('data-goto'))));
+        return;
+      }
+      let html='<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:24px"><h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Tus realmood</h1><span style="font-size:13px;color:#9b958a">'+list.length+' guardado'+(list.length!==1?'s':'')+'</span></div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">';
+      list.forEach((rm,i)=>{
+        const st=rm.state||{};
+        const tags=[st.terrazzo?'Terrazzo':'',... (st.faplacs||[]).slice(0,1).map(()=>'Melamina'),(st.stones||[]).slice(0,1).map(()=>'Piedra'),(st.pisos||[]).slice(0,1).map(()=>'Piso')].filter(Boolean).join(' · ')||'Sin materiales';
+        html+='<div data-rm-id="'+rm.id+'" style="background:#fff;border-radius:16px;border:1px solid #E4DFD5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">'
+          +'<div style="height:8px;background:linear-gradient(90deg,#1A1A18,#6f6a60)"></div>'
+          +'<div style="padding:18px 18px 14px">'
+          +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rm.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">'+tags+'</div>'
+          +'<div style="font-size:10px;color:#B3AD9F;margin-bottom:14px">Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>'
+          +'<div style="display:flex;gap:8px">'
+          +'<button type="button" class="rm-load-btn" style="flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Cargar</button>'
+          +'<button type="button" class="rm-del-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Borrar</button>'
+          +'</div></div></div>';
+      });
+      html+='</div>';
+      vm.innerHTML=html;
+      vm.querySelectorAll('[data-rm-id]').forEach(card=>{
+        const id=card.getAttribute('data-rm-id');
+        card.querySelector('.rm-load-btn').addEventListener('click',()=>{
+          setView('crear');
+          setTimeout(()=>{const f=$('crear-frame');if(f)f.contentWindow.postMessage({loadRmId:id},'*');},400);
+        });
+        card.querySelector('.rm-del-btn').addEventListener('click',()=>{
+          if(!confirm('¿Borrar este realmood?'))return;
+          let lst;try{lst=JSON.parse(localStorage.getItem('ins_realmoods')||'[]');}catch(e){lst=[];}
+          lst=lst.filter(x=>x.id!==id);
+          try{localStorage.setItem('ins_realmoods',JSON.stringify(lst));}catch(e){}
+          loadMoodList();
+          toast('Realmood eliminado');
+        });
+      });
+    }
+    loadMoodList();
+    $('view-saved').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Tus proyectos guardados','Los proyectos que guardes desde Explorar quedarán acá para volver a verlos y reutilizar sus materiales.',{label:'Ver proyectos de Córdoba',go:'explorar'});
+    $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
+
+    // ── view switching ────────────────────────────────────────
+    const VIEWS=['inicio','explorar','crear','mood','saved','mensajes'];
+    const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
+    const setView=v=>{
+      VIEWS.forEach(x=>{const s=$('view-'+x);if(s)s.style.display=x===v?'':'none';});
+      navBtns.forEach(b=>{const a=b.getAttribute('data-view')===v;b.style.background=a?'#EFEBE3':'transparent';b.style.color=a?'#1A1A18':'#3a3733';b.style.fontWeight=a?'600':'500';b._active=a;});
+      const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
+      if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
+      if(v==='mood')loadMoodList();
+      $('ins-search').value='';doSearch('');
+      const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
+      if(mNav)mNav.classList.remove('rm-open');if(mOv)mOv.classList.remove('rm-open');
+    };
+    navBtns.forEach(b=>{
+      b.addEventListener('click',()=>setView(b.getAttribute('data-view')));
+      b.addEventListener('mouseenter',()=>{if(!b._active)b.style.background='#F3F0EA';});
+      b.addEventListener('mouseleave',()=>{if(!b._active)b.style.background='transparent';});
+    });
+    document.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>setView(el.getAttribute('data-goto'))));
+
+    // ── search (filters visible cards in active view) ─────────
+    const doSearch=q=>{
+      q=(q||'').trim().toLowerCase();
+      const active=VIEWS.find(x=>{const s=$('view-'+x);return s&&s.style.display!=='none';});
+      const grid=active==='inicio'?gi:active==='explorar'?ge:null;
+      if(!grid)return;
+      let shown=0;
+      Array.from(grid.children).forEach(c=>{
+        const passFilter=active==='explorar'?(activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter):(active==='inicio'?((activeCat==='Todos'||c.getAttribute('data-cat')===activeCat)&&(activeCity==='Todas'||c.getAttribute('data-ciudad')===activeCity)):true);
+        const passQ=!q||(c.getAttribute('data-title')||'').includes(q);
+        const ok=passFilter&&passQ;c.style.display=ok?'inline-block':'none';if(ok)shown++;
+      });
+      if(active==='explorar')$('explorar-empty').style.display=shown?'none':'block';
+    };
+    $('ins-search').addEventListener('input',e=>doSearch(e.target.value));
+
+    setView('inicio');
+});
+function toggleMobMenu(){
+  const nav=document.getElementById('rm-nav');
+  const ov=document.getElementById('rm-mob-overlay');
+  const open=nav.classList.contains('rm-open');
+  if(open){nav.classList.remove('rm-open');ov.classList.remove('rm-open');}
+  else{nav.classList.add('rm-open');ov.classList.add('rm-open');}
+}
+</script>
+
+<!-- ── Auth modal ────────────────────────────────────────────── -->
+<div id="auth-overlay" onclick="authOverlayClick(event)" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center">
+  <div id="auth-modal" style="background:#fff;border-radius:20px;padding:36px 32px;width:min(420px,calc(100vw - 32px));position:relative;box-shadow:0 24px 64px rgba(0,0,0,.18)">
+    <button onclick="closeAuthModal()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;cursor:pointer;color:#9b958a;padding:6px;border-radius:8px;line-height:0">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="width:30px;height:30px;border-radius:50%;background:#1A1A18;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:-.02em;flex:none">re</span>
+        <span style="font-size:17px;font-weight:700;letter-spacing:.01em">realmood</span>
+      </div>
+      <h2 id="auth-title" style="margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:-.01em;color:#1A1A18">Iniciá sesión</h2>
+      <p id="auth-subtitle" style="margin:0;font-size:14px;color:#6F6A60">Accedé a tus proyectos guardados</p>
+    </div>
+    <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:700;color:#6F6A60;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Email</label>
+        <input id="auth-email" type="email" required autocomplete="email" placeholder="tu@email.com" style="width:100%;padding:13px 16px;border:1.5px solid #E4DFD5;border-radius:12px;font-size:14px;font-family:inherit;outline:none;color:#1A1A18;background:#FAFAF8;transition:border-color .15s;-webkit-appearance:none">
+      </div>
+      <div style="margin-bottom:6px">
+        <label style="display:block;font-size:11px;font-weight:700;color:#6F6A60;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Contraseña</label>
+        <input id="auth-password" type="password" required autocomplete="current-password" placeholder="mínimo 6 caracteres" style="width:100%;padding:13px 16px;border:1.5px solid #E4DFD5;border-radius:12px;font-size:14px;font-family:inherit;outline:none;color:#1A1A18;background:#FAFAF8;transition:border-color .15s;-webkit-appearance:none">
+      </div>
+      <p id="auth-error" style="display:none;margin:12px 0 0;font-size:13px;color:#C0392B;background:#FEF0EE;border-radius:10px;padding:10px 14px;line-height:1.4"></p>
+      <p id="auth-success" style="display:none;margin:12px 0 0;font-size:13px;color:#27AE60;background:#EDFBF3;border-radius:10px;padding:10px 14px;line-height:1.4"></p>
+      <button type="submit" id="auth-submit" style="width:100%;margin-top:22px;padding:15px;background:#1A1A18;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s">Ingresar</button>
+    </form>
+    <p style="margin:18px 0 0;text-align:center;font-size:13px;color:#6F6A60">
+      <span id="auth-toggle-text">¿No tenés cuenta?</span>
+      <button id="auth-toggle-btn" type="button" onclick="toggleAuthMode()" style="background:transparent;border:none;color:#1A1A18;font-weight:700;cursor:pointer;font-family:inherit;font-size:13px;padding:0 0 0 4px;text-decoration:underline">Registrate</button>
+    </p>
+  </div>
+</div>
+
+<script>
+// ── Supabase Auth ─────────────────────────────────────────────
+// CONFIGURAR: reemplazá estos dos valores con los de tu proyecto en supabase.com
+// Settings > API > Project URL y Project API Keys > anon public
+const SUPABASE_URL = 'https://xzatiewlgmoalpzsnicz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let _authMode = 'login';
+let _currentUser = null;
+
+function _onUser(user) {
+  _currentUser = user;
+  const av = document.getElementById('rm-top-avatar');
+  if (!av) return;
+  if (user) {
+    const initials = user.email.slice(0, 2).toUpperCase();
+    av.textContent = initials;
+    av.title = user.email;
+    av.style.background = '#3F5953';
+  } else {
+    av.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+    av.title = 'Iniciar sesión';
+    av.style.background = '#9b958a';
+  }
+  const emailEl = document.getElementById('auth-user-email');
+  if (emailEl) emailEl.textContent = user ? user.email : '';
+}
+
+async function _initAuth() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    _onUser(session ? session.user : null);
+    sb.auth.onAuthStateChange((_ev, session) => _onUser(session ? session.user : null));
+  } catch (e) { /* Supabase no configurado aún */ }
+}
+
+function handleAvatarClick() {
+  if (_currentUser) {
+    const menu = document.getElementById('auth-user-menu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  } else {
+    openAuthModal();
+  }
+}
+
+document.addEventListener('click', e => {
+  const menu = document.getElementById('auth-user-menu');
+  if (menu && menu.style.display === 'block') {
+    if (!e.target.closest('#auth-user-menu') && !e.target.closest('#rm-top-avatar')) {
+      menu.style.display = 'none';
+    }
+  }
+});
+
+function openAuthModal() {
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('auth-email').focus(), 50);
+}
+
+function closeAuthModal() {
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-success').style.display = 'none';
+  document.getElementById('auth-form').reset();
+}
+
+function authOverlayClick(e) {
+  if (e.target === document.getElementById('auth-overlay')) closeAuthModal();
+}
+
+function toggleAuthMode() {
+  _authMode = _authMode === 'login' ? 'signup' : 'login';
+  const login = _authMode === 'login';
+  document.getElementById('auth-title').textContent = login ? 'Iniciá sesión' : 'Crear cuenta';
+  document.getElementById('auth-subtitle').textContent = login ? 'Accedé a tus proyectos guardados' : 'Creá tu cuenta gratuita';
+  document.getElementById('auth-submit').textContent = login ? 'Ingresar' : 'Crear cuenta';
+  document.getElementById('auth-toggle-text').textContent = login ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?';
+  document.getElementById('auth-toggle-btn').textContent = login ? 'Registrate' : 'Iniciá sesión';
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-success').style.display = 'none';
+  document.getElementById('auth-password').autocomplete = login ? 'current-password' : 'new-password';
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const btn = document.getElementById('auth-submit');
+  const errEl = document.getElementById('auth-error');
+  const okEl = document.getElementById('auth-success');
+  const login = _authMode === 'login';
+
+  btn.disabled = true; btn.style.opacity = '0.55';
+  btn.textContent = 'Procesando…';
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  try {
+    const result = login
+      ? await sb.auth.signInWithPassword({ email, password })
+      : await sb.auth.signUp({ email, password });
+
+    if (result.error) throw result.error;
+
+    if (!login && result.data.user && !result.data.session) {
+      okEl.textContent = '¡Listo! Revisá tu email para confirmar la cuenta.';
+      okEl.style.display = 'block';
+    } else {
+      closeAuthModal();
+      if (typeof toast === 'function') toast('¡Bienvenido/a!');
+    }
+  } catch (err) {
+    const map = {
+      'Invalid login credentials': 'Email o contraseña incorrectos.',
+      'Email not confirmed': 'Confirmá tu email antes de ingresar.',
+      'User already registered': 'Ya existe una cuenta con ese email.',
+      'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+    };
+    errEl.textContent = map[err.message] || ('Error: ' + err.message);
+    errEl.style.display = 'block';
+  } finally {
+    btn.textContent = login ? 'Ingresar' : 'Crear cuenta';
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+}
+
+async function authSignOut() {
+  await sb.auth.signOut();
+  document.getElementById('auth-user-menu').style.display = 'none';
+  if (typeof toast === 'function') toast('Sesión cerrada');
+}
+
+document.addEventListener('DOMContentLoaded', _initAuth);
+</script>
+</body>
+</html>
