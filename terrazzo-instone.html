@@ -17,15 +17,15 @@ body{background:#fff}
 ::-webkit-scrollbar-thumb{background:#E2DDD3;border-radius:8px}
 ::-webkit-scrollbar-thumb:hover{background:#D2CCC0}
 /* ── Collapsed sidebar ───────────────────────────────── */
-#rm-nav{overflow:visible}
+#rm-nav{overflow:visible;z-index:10}
 #rm-nav .rm-logo-text{display:none}
 #rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
-#rm-nav [data-view]{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
+#rm-nav [data-view]{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav [data-view] span{display:none!important}
 #rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav [data-view]:hover::after{opacity:1}
 #rm-nav [data-view]:hover{z-index:301}
-#rm-nav .rm-cfg-btn{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible}
+#rm-nav .rm-cfg-btn{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav .rm-cfg-btn span{display:none!important}
 #rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav .rm-cfg-btn:hover::after{opacity:1}
