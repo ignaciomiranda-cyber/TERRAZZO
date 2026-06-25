@@ -70,6 +70,29 @@ body{background:#fff}
   /* Footer */
   footer{padding:14px 14px!important}
 }
+/* ── Pin detail modal ────────────────────────────────── */
+#pm-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+#pm-box{background:#fff;border-radius:24px;max-width:940px;width:100%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.22);overflow:hidden;margin:auto}
+.pm-layout{display:grid;grid-template-columns:1fr 272px}
+.pm-col-l{padding:28px 28px 28px}
+.pm-col-r{padding:28px;background:#FAFAF8;border-left:1px solid #ECE8E0;display:flex;flex-direction:column}
+.pm-close-btn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1A1A18;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.14);font-size:18px;line-height:1;transition:background .15s}
+.pm-close-btn:hover{background:#F1ECE2}
+.pm-main{border-radius:16px;overflow:hidden;margin-bottom:14px;background:#F5F3EF;display:flex;align-items:center;justify-content:center;min-height:120px}
+.pm-main img,.pm-main canvas{display:block;width:100%;height:auto;max-height:340px;object-fit:cover}
+.pm-rel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.pm-rel{border-radius:10px;overflow:hidden;cursor:zoom-in;background:#F5F3EF}
+.pm-rel img{display:block;width:100%;height:72px;object-fit:cover;transition:transform .2s}
+.pm-rel:hover img{transform:scale(1.07)}
+.pm-desc{font-size:13px;line-height:1.72;color:#6F6A60;margin:0}
+.pm-cb{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid #E4DFD5;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s,border-color .15s;width:100%;font-family:inherit;text-align:left;margin-bottom:8px;text-decoration:none;color:inherit}
+.pm-cb:last-child{margin-bottom:0}
+.pm-cb:hover{background:#1A1A18;border-color:#1A1A18}
+.pm-cb:hover .pm-cb-role,.pm-cb:hover .pm-cb-name{color:#fff!important}
+.pm-cb-dot{width:10px;height:10px;border-radius:50%;flex:none}
+.pm-cb-role{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;line-height:1;display:block}
+.pm-cb-name{font-size:13px;font-weight:600;color:#1A1A18;line-height:1.3;margin-top:2px;display:block}
+@media(max-width:680px){.pm-layout{grid-template-columns:1fr}.pm-col-r{border-left:none;border-top:1px solid #ECE8E0}#pm-overlay{padding:0;align-items:flex-start}#pm-box{border-radius:0 0 24px 24px;margin:0}}
 </style>
 </head>
 <body>
@@ -373,6 +396,20 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';save.style.opacity='1';if(inner._row)inner._row.style.opacity='1';});
       inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';save.style.opacity='0';if(inner._row)inner._row.style.opacity='0';});
+      if(opts.detail){
+        const det=opts.detail;
+        inner.addEventListener('click',e=>{
+          if(e.target.closest('button'))return;
+          let makeMain=det.makeMain;
+          if(!makeMain&&det.mainImgSrc){const s=det.mainImgSrc;makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
+          if(!makeMain){
+            const fc=inner.querySelector('canvas');const fi=inner.querySelector('img');
+            if(fc){const u=fc.toDataURL();makeMain=()=>{const im=new Image();im.src=u;im.style.cssText='display:block;width:100%';return im;};}
+            else if(fi){const s=fi.src;makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
+          }
+          openPm({...det,makeMain});
+        });
+      }
       card.appendChild(inner);
       if(title&&opts.captionBelow!==false){
         const cap=document.createElement('div');
@@ -389,12 +426,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const photoMedia=src=>{const im=document.createElement('img');im.src=src;im.loading='lazy';im.style.cssText='display:block;width:100%;height:auto';return im;};
 
     // ── Inicio feed ───────────────────────────────────────────
+    const REL_AMB=['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'];
     const inicio=[];
-    TERR.forEach(t=>inicio.push(mkCard(terrMedia(t),t.title,'Terrazzo · Instone',{search:'terrazzo',cat:'Terrazzo'})));
-    SLABS.forEach(m=>inicio.push(mkCard(slabMedia(m),m.name,m.tipo+' · De Stefano',{search:'piedra '+m.tipo,cat:'Piedras'})));
-    MEL.forEach(m=>inicio.push(mkCard(melMedia(m),m.name,'Melamina · Faplac',{search:'melamina',cat:'Melaminas'})));
-    PANTONE.forEach(p=>inicio.push(mkCard(panMedia(p),p.name,'Pantone '+p.code,{captionBelow:false,search:'pantone color',cat:'Pantone'})));
-    PHOTOS.forEach(p=>inicio.push(mkCard(photoMedia(p.img),p.title,p.tag,{search:p.tag,cat:'Ambientes'})));
+    TERR.forEach(t=>inicio.push(mkCard(terrMedia(t),t.title,'Terrazzo · Instone',{search:'terrazzo',cat:'Terrazzo',detail:{
+      title:t.title,subtitle:'Terrazzo · Instone',
+      text:'Terrazzo elaborado con base cemento, combinando '+t.stones.map(s=>s.pct+'% '+s.name).join(', ')+'. Acabado pulido de alto tránsito. Ideal para interiores y exteriores con bajo mantenimiento.',
+      makeMain:()=>{const c=document.createElement('canvas');renderTerr(c,t.base,t.stones,480,Math.round(480*t.r));return c;},
+      relatedImgs:REL_AMB
+    }})));
+    SLABS.forEach(m=>inicio.push(mkCard(slabMedia(m),m.name,m.tipo+' · De Stefano',{search:'piedra '+m.tipo,cat:'Piedras',detail:{
+      title:m.name,subtitle:m.tipo+' · De Stefano',
+      text:'Placa de '+m.tipo.toLowerCase()+' de origen premium. Disponible en diferentes terminaciones: pulido, satinado y mate. Ideal para mesadas, revestimientos y baños de alta gama.',
+      makeMain:()=>{const c=document.createElement('canvas');renderSlab(c,m,480,Math.round(480*m.r));return c;},
+      relatedImgs:['prod-brass.jpg','cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg']
+    }})));
+    MEL.forEach(m=>inicio.push(mkCard(melMedia(m),m.name,'Melamina · Faplac',{search:'melamina',cat:'Melaminas',detail:{
+      title:m.name,subtitle:'Melamina · Faplac',
+      text:'Melamina '+m.name+' de la línea Faplac. Acabado uniforme, resistente al rayado y la humedad. Ideal para alacenas, bajo mesadas y muebles a medida.',
+      makeMain:()=>{const d=melMedia(m);d.style.height='320px';return d;},
+      relatedImgs:REL_AMB
+    }})));
+    PANTONE.forEach(p=>inicio.push(mkCard(panMedia(p),p.name,'Pantone '+p.code,{captionBelow:false,search:'pantone color',cat:'Pantone',detail:{
+      title:p.name,subtitle:'Pantone '+p.code,
+      text:'Color de referencia internacional Pantone '+p.code+' · '+p.name+'. Usalo como guía para seleccionar bases de cemento, piedras y materiales complementarios.',
+      makeMain:()=>{const d=panMedia(p);d.style.cssText='display:block;width:100%;background:#fff';return d;},
+      relatedImgs:REL_AMB
+    }})));
+    PHOTOS.forEach(p=>inicio.push(mkCard(photoMedia(p.img),p.title,p.tag,{search:p.tag,cat:'Ambientes',detail:{
+      title:p.title,subtitle:p.tag,
+      text:'Ambiente de diseño interior con selección cuidada de materiales de calidad. Combinación de terrazzo Instone con piedras naturales y melaminas premium. Fotografía de obra terminada.',
+      mainImgSrc:p.img,
+      relatedImgs:PHOTOS.filter(q=>q.img!==p.img).slice(0,3).map(q=>q.img)
+    }})));
     for(let i=inicio.length-1;i>0;i--){const j=Math.floor(hash2(i*3.1,i*7.7)*(i+1));[inicio[i],inicio[j]]=[inicio[j],inicio[i]];}
     // Assign cities deterministically after shuffle
     const CIUDADES_POOL=['Córdoba','Córdoba','Córdoba','Córdoba','Buenos Aires','Buenos Aires','Buenos Aires','Rosario','Mendoza','San Luis','Tucumán','Salta','Miami','Montevideo','Madrid','São Paulo'];
@@ -427,13 +490,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const ge=$('grid-explorar');
     const projCards=[];
     PROJECTS.forEach(p=>{
-      let media;
-      if(p.img)media=photoMedia(p.img);
-      else if(p.slab)media=slabMedia({...p.slab,r:0.82});
-      else media=terrMedia({...p.terr,r:0.82});
+      let media,makeMain;
+      if(p.img){media=photoMedia(p.img);const s=p.img;makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
+      else if(p.slab){const sl={...p.slab,r:0.82};media=slabMedia(sl);makeMain=()=>{const c=document.createElement('canvas');renderSlab(c,{...p.slab,r:1},480,480);return c;};}
+      else{const tr={...p.terr,r:0.82};media=terrMedia(tr);makeMain=()=>{const c=document.createElement('canvas');renderTerr(c,p.terr.base,p.terr.stones,480,480);return c;};}
+      const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía de obra';
       const card=mkCard(media,p.name,p.barrio+' · '+p.tag,{
         filter:p.tag,search:p.barrio,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.name,
-        overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.name},{label:'Usar materiales',msg:'Cargando materiales de '+p.name}]
+        overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.name},{label:'Usar materiales',msg:'Cargando materiales de '+p.name}],
+        detail:{
+          title:p.name,subtitle:p.barrio+' · '+p.tag,
+          text:'Proyecto realizado en '+p.barrio+', Córdoba. Categoría: '+p.tag+'. Materiales: '+mat+'. Obra terminada con materiales premium de primera selección. Tomá contacto con los profesionales que participaron en este proyecto.',
+          makeMain,relatedImgs:REL_AMB
+        }
       });
       projCards.push(card);ge.appendChild(card);
     });
@@ -537,6 +606,43 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     $('ins-search').addEventListener('input',e=>doSearch(e.target.value));
 
+    // ── Pin detail modal ──────────────────────────────────
+    window.openPm=function(data){
+      const ov=document.getElementById('pm-overlay');
+      // Header
+      document.getElementById('pm-hdr').innerHTML=
+        '<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+(data.subtitle||'')+'</div>'
+        +'<h2 style="margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em;color:#1A1A18">'+(data.title||'')+'</h2>';
+      // Main image
+      const mn=document.getElementById('pm-main');mn.innerHTML='';
+      if(data.makeMain){const el=data.makeMain();mn.appendChild(el);}
+      // Related images
+      const rr=document.getElementById('pm-related');rr.innerHTML='';
+      (data.relatedImgs||[]).slice(0,3).forEach(src=>{
+        const d=document.createElement('div');d.className='pm-rel';
+        const im=new Image();im.src=src;im.loading='lazy';d.appendChild(im);rr.appendChild(d);
+      });
+      // Description
+      document.getElementById('pm-desc').textContent=data.text||'';
+      // Contacts
+      const PM_CONTACTS=[
+        {role:'Arquitecto',name:'Estudio Bertone',color:'#2E4278',wa:'5493514001234'},
+        {role:'Proyectista',name:'M. González + Asoc.',color:'#545250',wa:'5493514002345'},
+        {role:'Contratista',name:'Obras Martínez SRL',color:'#88A686',wa:'5493514003456'},
+        {role:'Proveedor · Terrazzo',name:'Instone',color:'#1A1A18',wa:'5493513001001'},
+        {role:'Proveedor · Piedras',name:'De Stefano',color:'#B45C4C',wa:'5493514004567'},
+      ];
+      const cc=document.getElementById('pm-contacts');cc.innerHTML='';
+      PM_CONTACTS.forEach(c=>{
+        const msg=encodeURIComponent('Hola '+c.name+'! Te contacto por el proyecto *'+data.title+'* que vi en realmood. ¿Podemos hablar sobre los materiales y el trabajo?');
+        const a=document.createElement('a');a.href='https://wa.me/'+c.wa+'?text='+msg;a.target='_blank';a.rel='noopener';a.className='pm-cb';
+        a.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
+          +'<svg style="margin-left:auto;flex:none;opacity:.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
+        cc.appendChild(a);
+      });
+      ov.style.display='flex';document.body.style.overflow='hidden';
+    };
+
     setView('inicio');
 });
 function toggleMobMenu(){
@@ -547,6 +653,26 @@ function toggleMobMenu(){
   else{nav.classList.add('rm-open');ov.classList.add('rm-open');}
 }
 </script>
+
+<!-- ── Pin detail modal ──────────────────────────────────────── -->
+<div id="pm-overlay" onclick="if(event.target===this){document.getElementById('pm-overlay').style.display='none';document.body.style.overflow=''}" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
+  <div id="pm-box">
+    <button class="pm-close-btn" onclick="document.getElementById('pm-overlay').style.display='none';document.body.style.overflow=''">×</button>
+    <div style="padding:24px 28px 0" id="pm-hdr"></div>
+    <div class="pm-layout">
+      <div class="pm-col-l">
+        <div class="pm-main" id="pm-main"></div>
+        <div class="pm-rel-row" id="pm-related"></div>
+        <p class="pm-desc" id="pm-desc"></p>
+      </div>
+      <div class="pm-col-r">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:14px">Contactar profesionales</div>
+        <div id="pm-contacts"></div>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+</div>
 
 <!-- ── Auth modal ────────────────────────────────────────────── -->
 <div id="auth-overlay" onclick="authOverlayClick(event)" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center">
