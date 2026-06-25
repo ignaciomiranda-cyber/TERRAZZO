@@ -93,6 +93,29 @@ body{background:#fff}
 .pm-cb-role{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;line-height:1;display:block}
 .pm-cb-name{font-size:13px;font-weight:600;color:#1A1A18;line-height:1.3;margin-top:2px;display:block}
 @media(max-width:680px){.pm-layout{grid-template-columns:1fr}.pm-col-r{border-left:none;border-top:1px solid #ECE8E0}#pm-overlay{padding:0;align-items:flex-start}#pm-box{border-radius:0 0 24px 24px;margin:0}}
+/* ── Provider profile overlay ────────────────────────── */
+#prof-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+#prof-box{background:#fff;border-radius:24px;max-width:680px;width:100%;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.28);margin:auto;overflow:hidden}
+.prof-hero{position:relative;height:200px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:0}
+.prof-avatar{width:88px;height:88px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;position:absolute;bottom:-44px;left:50%;transform:translateX(-50%);box-shadow:0 8px 24px rgba(0,0,0,.18);letter-spacing:-.02em}
+.prof-body{padding:60px 32px 32px;text-align:center}
+.prof-name{font-size:22px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 4px}
+.prof-role{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin:0 0 6px}
+.prof-loc{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#9b958a;margin-bottom:20px}
+.prof-bio{font-size:14px;line-height:1.72;color:#6F6A60;max-width:480px;margin:0 auto 24px;text-align:left}
+.prof-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:28px}
+.prof-tag{font-size:11px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:100px;background:#F1ECE2;color:#6F6A60}
+.prof-portfolio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:28px;padding:0 0}
+.prof-port-img{border-radius:12px;overflow:hidden;aspect-ratio:1;background:#F5F3EF}
+.prof-port-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .22s}
+.prof-port-img:hover img{transform:scale(1.07)}
+.prof-cta{display:flex;align-items:center;justify-content:center;gap:10px;background:#1A1A18;color:#fff;border:none;border-radius:100px;padding:15px 30px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;width:100%;transition:opacity .15s;letter-spacing:-.01em}
+.prof-cta:hover{opacity:.85}
+.prof-back{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);border:none;border-radius:100px;padding:7px 14px 7px 10px;font-family:inherit;font-size:12px;font-weight:600;color:#fff;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:background .15s;z-index:2}
+.prof-back:hover{background:rgba(255,255,255,.32)}
+.prof-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.18);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;font-size:20px;line-height:1;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:background .15s}
+.prof-close:hover{background:rgba(255,255,255,.32)}
+@media(max-width:540px){#prof-overlay{padding:0}#prof-box{border-radius:0 0 24px 24px;margin:0}.prof-portfolio{grid-template-columns:repeat(3,1fr)}.prof-body{padding:60px 20px 24px}}
 </style>
 </head>
 <body>
@@ -624,27 +647,81 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       // Description
       document.getElementById('pm-desc').textContent=data.text||'';
-      // Contacts
-      const PM_CONTACTS=[
-        {role:'Arquitecto',name:'Estudio Bertone',color:'#2E4278',wa:'5493514001234'},
-        {role:'Proyectista',name:'M. González + Asoc.',color:'#545250',wa:'5493514002345'},
-        {role:'Contratista',name:'Obras Martínez SRL',color:'#88A686',wa:'5493514003456'},
-        {role:'Proveedor · Terrazzo',name:'Instone',color:'#1A1A18',wa:'5493513001001'},
-        {role:'Proveedor · Piedras',name:'De Stefano',color:'#B45C4C',wa:'5493514004567'},
-      ];
+      // Contacts — each button opens provider profile overlay
       const cc=document.getElementById('pm-contacts');cc.innerHTML='';
-      PM_CONTACTS.forEach(c=>{
-        const msg=encodeURIComponent('Hola '+c.name+'! Te contacto por el proyecto *'+data.title+'* que vi en realmood. ¿Podemos hablar sobre los materiales y el trabajo?');
-        const a=document.createElement('a');a.href='https://wa.me/'+c.wa+'?text='+msg;a.target='_blank';a.rel='noopener';a.className='pm-cb';
-        a.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
+      window._PM_CONTACTS.forEach(c=>{
+        const btn=document.createElement('button');btn.type='button';btn.className='pm-cb';
+        btn.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
           +'<svg style="margin-left:auto;flex:none;opacity:.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
-        cc.appendChild(a);
+        btn.addEventListener('click',()=>openProfOverlay(c,data.title));
+        cc.appendChild(btn);
       });
       ov.style.display='flex';document.body.style.overflow='hidden';
     };
 
     setView('inicio');
 });
+// ── Provider data & profile overlay ──────────────────────────
+window._PM_CONTACTS=[
+  {id:'bertone',role:'Arquitecto',name:'Estudio Bertone',full:'Bertone & Vera Arquitectura',color:'#2E4278',
+   location:'Nueva Córdoba, Córdoba',
+   bio:'Estudio de arquitectura con 15 años de trayectoria en diseño residencial y comercial de alta gama. Especialistas en la integración de materiales contemporáneos como terrazzo, piedras naturales y acero corten en proyectos a medida.',
+   tags:['Residencial','Comercial','Reforma integral','Interiorismo'],
+   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','proj-2.jpg'],wa:'5493514001234'},
+  {id:'gonzalez',role:'Proyectista',name:'M. González + Asoc.',full:'María González Arquitectura',color:'#545250',
+   location:'Güemes, Córdoba',
+   bio:'Estudio de proyectismo y gestión de obras con énfasis en sustentabilidad y uso eficiente de materiales. Coordinamos proyectos llave en mano desde el anteproyecto hasta la habilitación final.',
+   tags:['Proyectismo','Dirección de obra','Sustentabilidad','Llave en mano'],
+   portfolio:['mesa-ambienteop2.jpg.jpg','proj-3.jpg','cocina-ambiente.jpg.webp'],wa:'5493514002345'},
+  {id:'martinez',role:'Contratista',name:'Obras Martínez SRL',full:'Obras Martínez SRL',color:'#88A686',
+   location:'General Paz, Córdoba',
+   bio:'Empresa constructora con especialización en terminaciones de interiores de alta calidad. Trabajamos con los mejores materiales del mercado y contamos con equipo de colocadores certificados para terrazzo y piedra natural.',
+   tags:['Construcción','Terminaciones','Pisos y revestimientos','Baños y cocinas'],
+   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','proj-2.jpg'],wa:'5493514003456'},
+  {id:'instone',role:'Proveedor · Terrazzo',name:'Instone',full:'Instone — Terrazzo Artesanal',color:'#1A1A18',
+   location:'Córdoba Capital',
+   bio:'Fabricamos terrazzo artesanal de primera calidad con piedras naturales argentinas e importadas. Cada pieza es producida a pedido, con la fórmula exacta elegida por el cliente en nuestro configurador. Entregamos en todo el país.',
+   tags:['Terrazzo','Piedras naturales','Personalizado','Entrega en todo el país'],
+   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493513001001'},
+  {id:'destefano',role:'Proveedor · Piedras & Tablas',name:'De Stefano',full:'De Stefano · Piedras & Tablas',color:'#B45C4C',
+   location:'Córdoba Capital',
+   bio:'Distribuidor exclusivo de mármoles, granitos, cuarcitas y piedras sinterizadas de primer nivel. Asesoramiento personalizado en showroom y servicio de corte y colocación con instaladores propios.',
+   tags:['Mármol','Granito','Cuarcita','Sinterizado','Colocación'],
+   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','cocina-ambiente.jpg.webp'],wa:'5493514004567'},
+];
+
+function openProfOverlay(prov,projectTitle){
+  const hero=document.getElementById('prof-hero');
+  hero.style.background='linear-gradient(145deg,'+prov.color+' 0%,'+prov.color+'cc 60%,'+prov.color+'88 100%)';
+  const av=document.getElementById('prof-avatar');
+  av.style.background=prov.color;
+  av.textContent=prov.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('prof-role').textContent=prov.role;
+  document.getElementById('prof-name').textContent=prov.full||prov.name;
+  document.getElementById('prof-loc-txt').textContent=prov.location||'Córdoba, Argentina';
+  document.getElementById('prof-bio').textContent=prov.bio||'';
+  // Tags
+  const tg=document.getElementById('prof-tags');tg.innerHTML='';
+  (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.className='prof-tag';s.textContent=t;tg.appendChild(s);});
+  // Portfolio
+  const po=document.getElementById('prof-portfolio');po.innerHTML='';
+  (prov.portfolio||[]).forEach(src=>{
+    const d=document.createElement('div');d.className='prof-port-img';
+    const im=new Image();im.src=src;im.loading='lazy';im.alt='';d.appendChild(im);po.appendChild(d);
+  });
+  // CTA → WhatsApp with pre-written message
+  const msg=encodeURIComponent('Hola '+prov.name+'! Te contacto por el proyecto *'+(projectTitle||'que vi en realmood')+'*. ¿Podemos hablar sobre los materiales y el trabajo?');
+  document.getElementById('prof-cta').href='https://wa.me/'+prov.wa+'?text='+msg;
+  const ov=document.getElementById('prof-overlay');
+  ov.style.display='flex';
+  ov.scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+function closeProfOverlay(){
+  document.getElementById('prof-overlay').style.display='none';
+  // Don't restore overflow — pin modal might still be open
+}
+
 function toggleMobMenu(){
   const nav=document.getElementById('rm-nav');
   const ov=document.getElementById('rm-mob-overlay');
@@ -653,6 +730,35 @@ function toggleMobMenu(){
   else{nav.classList.add('rm-open');ov.classList.add('rm-open');}
 }
 </script>
+
+<!-- ── Provider profile overlay ──────────────────────────────── -->
+<div id="prof-overlay" onclick="if(event.target===this)closeProfOverlay()" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
+  <div id="prof-box">
+    <div class="prof-hero" id="prof-hero">
+      <button class="prof-back" id="prof-back-btn" onclick="closeProfOverlay()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Volver
+      </button>
+      <button class="prof-close" onclick="closeProfOverlay()">×</button>
+      <div class="prof-avatar" id="prof-avatar"></div>
+    </div>
+    <div class="prof-body">
+      <p class="prof-role" id="prof-role"></p>
+      <h2 class="prof-name" id="prof-name"></h2>
+      <div class="prof-loc" id="prof-loc">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>
+        <span id="prof-loc-txt"></span>
+      </div>
+      <p class="prof-bio" id="prof-bio"></p>
+      <div class="prof-tags" id="prof-tags"></div>
+      <div class="prof-portfolio" id="prof-portfolio"></div>
+      <a class="prof-cta" id="prof-cta" href="#" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg>
+        Escribir mensaje
+      </a>
+    </div>
+  </div>
+</div>
 
 <!-- ── Pin detail modal ──────────────────────────────────────── -->
 <div id="pm-overlay" onclick="if(event.target===this){document.getElementById('pm-overlay').style.display='none';document.body.style.overflow=''}" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
