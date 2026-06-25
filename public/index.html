@@ -660,6 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── Pin detail modal ──────────────────────────────────
     window.openPm=function(data){
+      window._lastPmData=data;
       const ov=document.getElementById('pm-overlay');
       // Header
       document.getElementById('pm-hdr').innerHTML=
@@ -733,8 +734,7 @@ function openProfOverlay(prov,projectTitle){
   av.style.background=prov.color;
   av.textContent=(prov.full||prov.name).split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
   // Back button label
-  const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
-  document.getElementById('vp-back-label').textContent='Volver a '+(labels[window._provPrevView]||'la vista anterior');
+  document.getElementById('vp-back-label').textContent='Volver a la foto';
   // Content
   document.getElementById('vp-role').textContent=prov.role;
   document.getElementById('vp-name').textContent=prov.full||prov.name;
@@ -757,7 +757,10 @@ function openProfOverlay(prov,projectTitle){
   window._setViewPerfil();
 }
 function closeProfOverlay(){backFromProfile();}
-function backFromProfile(){window._setViewPerfil(window._provPrevView||'inicio');}
+function backFromProfile(){
+  window._setViewPerfil(window._provPrevView||'inicio');
+  if(window._lastPmData)setTimeout(()=>window.openPm(window._lastPmData),50);
+}
 
 function toggleMobMenu(){
   const nav=document.getElementById('rm-nav');
