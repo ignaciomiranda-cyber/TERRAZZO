@@ -209,6 +209,33 @@ body{background:#fff}
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
 
+      <!-- Provider profile page (full view, not modal) -->
+      <section id="view-perfil" style="display:none;animation:vIn .35s ease">
+        <div id="vp-hero" style="margin:-24px -26px 0;position:relative;min-height:220px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:0">
+          <button id="vp-back" onclick="backFromProfile()" style="position:absolute;top:18px;left:22px;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);border:none;border-radius:100px;padding:8px 16px 8px 12px;font-family:inherit;font-size:13px;font-weight:600;color:#fff;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2;transition:background .15s">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            <span id="vp-back-label">Volver</span>
+          </button>
+          <div id="vp-avatar" style="width:96px;height:96px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;position:absolute;bottom:-48px;left:50%;transform:translateX(-50%);box-shadow:0 8px 28px rgba(0,0,0,.20);letter-spacing:-.02em"></div>
+        </div>
+        <div style="max-width:680px;margin:0 auto;padding:66px 0 48px;text-align:center">
+          <p id="vp-role" style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin:0 0 5px"></p>
+          <h1 id="vp-name" style="font-size:26px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 6px"></h1>
+          <div id="vp-loc" style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#9b958a;margin-bottom:22px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>
+            <span id="vp-loc-txt"></span>
+          </div>
+          <p id="vp-bio" style="font-size:14px;line-height:1.75;color:#6F6A60;text-align:left;margin:0 0 22px;background:#FAFAF8;border-radius:16px;padding:18px 22px;border:1px solid #ECE8E0"></p>
+          <div id="vp-tags" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:28px"></div>
+          <h2 style="font-size:14px;font-weight:700;color:#1A1A18;text-align:left;margin:0 0 12px;letter-spacing:-.01em">Portfolio</h2>
+          <div id="vp-portfolio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px;text-align:left"></div>
+          <a id="vp-cta" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#1A1A18;color:#fff;border:none;border-radius:100px;padding:16px 30px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .15s;letter-spacing:-.01em">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg>
+            Escribir mensaje
+          </a>
+        </div>
+      </section>
+
     </div>
     <footer style="padding:22px 26px;border-top:1px solid #ECE8E0;text-align:center">
       <p style="margin:0;font-size:11px;color:#9b958a;letter-spacing:.02em">realmood es una marca registrada de mildesing sas. Todos los derechos reservados.</p>
@@ -594,7 +621,8 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','crear','mood','saved','mensajes'];
+    const VIEWS=['inicio','explorar','crear','mood','saved','mensajes','perfil'];
+    window._provPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
     const setView=v=>{
       VIEWS.forEach(x=>{const s=$('view-'+x);if(s)s.style.display=x===v?'':'none';});
@@ -606,6 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
       if(mNav)mNav.classList.remove('rm-open');if(mOv)mOv.classList.remove('rm-open');
     };
+    window._setViewPerfil=(v)=>setView(v||'perfil');
     navBtns.forEach(b=>{
       b.addEventListener('click',()=>setView(b.getAttribute('data-view')));
       b.addEventListener('mouseenter',()=>{if(!b._active)b.style.background='#F3F0EA';});
@@ -691,36 +720,44 @@ window._PM_CONTACTS=[
 ];
 
 function openProfOverlay(prov,projectTitle){
-  const hero=document.getElementById('prof-hero');
-  hero.style.background='linear-gradient(145deg,'+prov.color+' 0%,'+prov.color+'cc 60%,'+prov.color+'88 100%)';
-  const av=document.getElementById('prof-avatar');
+  // Close pin modal first
+  const pmOv=document.getElementById('pm-overlay');
+  if(pmOv){pmOv.style.display='none';document.body.style.overflow='';}
+  // Track which view to return to
+  const VIEWS_BASE=['inicio','explorar','crear','mood','saved','mensajes'];
+  window._provPrevView=VIEWS_BASE.find(x=>{const s=document.getElementById('view-'+x);return s&&s.style.display!=='none';})||'inicio';
+  // Hero background
+  document.getElementById('vp-hero').style.background='linear-gradient(145deg,'+prov.color+' 0%,'+prov.color+'cc 60%,'+prov.color+'88 100%)';
+  // Avatar initials
+  const av=document.getElementById('vp-avatar');
   av.style.background=prov.color;
-  av.textContent=prov.name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  document.getElementById('prof-role').textContent=prov.role;
-  document.getElementById('prof-name').textContent=prov.full||prov.name;
-  document.getElementById('prof-loc-txt').textContent=prov.location||'Córdoba, Argentina';
-  document.getElementById('prof-bio').textContent=prov.bio||'';
+  av.textContent=(prov.full||prov.name).split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  // Back button label
+  const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
+  document.getElementById('vp-back-label').textContent='Volver a '+(labels[window._provPrevView]||'la vista anterior');
+  // Content
+  document.getElementById('vp-role').textContent=prov.role;
+  document.getElementById('vp-name').textContent=prov.full||prov.name;
+  document.getElementById('vp-loc-txt').textContent=prov.location||'Córdoba, Argentina';
+  document.getElementById('vp-bio').textContent=prov.bio||'';
   // Tags
-  const tg=document.getElementById('prof-tags');tg.innerHTML='';
-  (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.className='prof-tag';s.textContent=t;tg.appendChild(s);});
+  const tg=document.getElementById('vp-tags');tg.innerHTML='';
+  (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.style.cssText='font-size:11px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:100px;background:#F1ECE2;color:#6F6A60';s.textContent=t;tg.appendChild(s);});
   // Portfolio
-  const po=document.getElementById('prof-portfolio');po.innerHTML='';
+  const po=document.getElementById('vp-portfolio');po.innerHTML='';
   (prov.portfolio||[]).forEach(src=>{
-    const d=document.createElement('div');d.className='prof-port-img';
-    const im=new Image();im.src=src;im.loading='lazy';im.alt='';d.appendChild(im);po.appendChild(d);
+    const d=document.createElement('div');d.style.cssText='border-radius:12px;overflow:hidden;aspect-ratio:1;background:#F5F3EF';
+    const im=new Image();im.src=src;im.loading='lazy';im.alt='';im.style.cssText='display:block;width:100%;height:100%;object-fit:cover;transition:transform .22s';d.appendChild(im);po.appendChild(d);
+    d.addEventListener('mouseenter',()=>im.style.transform='scale(1.07)');d.addEventListener('mouseleave',()=>im.style.transform='');
   });
   // CTA → WhatsApp with pre-written message
   const msg=encodeURIComponent('Hola '+prov.name+'! Te contacto por el proyecto *'+(projectTitle||'que vi en realmood')+'*. ¿Podemos hablar sobre los materiales y el trabajo?');
-  document.getElementById('prof-cta').href='https://wa.me/'+prov.wa+'?text='+msg;
-  const ov=document.getElementById('prof-overlay');
-  ov.style.display='flex';
-  ov.scrollTop=0;
-  document.body.style.overflow='hidden';
+  document.getElementById('vp-cta').href='https://wa.me/'+prov.wa+'?text='+msg;
+  // Navigate to perfil view (uses setView from DOMContentLoaded closure via window)
+  window._setViewPerfil();
 }
-function closeProfOverlay(){
-  document.getElementById('prof-overlay').style.display='none';
-  // Don't restore overflow — pin modal might still be open
-}
+function closeProfOverlay(){backFromProfile();}
+function backFromProfile(){window._setViewPerfil(window._provPrevView||'inicio');}
 
 function toggleMobMenu(){
   const nav=document.getElementById('rm-nav');
@@ -732,34 +769,6 @@ function toggleMobMenu(){
 </script>
 
 <!-- ── Provider profile overlay ──────────────────────────────── -->
-<div id="prof-overlay" onclick="if(event.target===this)closeProfOverlay()" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
-  <div id="prof-box">
-    <div class="prof-hero" id="prof-hero">
-      <button class="prof-back" id="prof-back-btn" onclick="closeProfOverlay()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Volver
-      </button>
-      <button class="prof-close" onclick="closeProfOverlay()">×</button>
-      <div class="prof-avatar" id="prof-avatar"></div>
-    </div>
-    <div class="prof-body">
-      <p class="prof-role" id="prof-role"></p>
-      <h2 class="prof-name" id="prof-name"></h2>
-      <div class="prof-loc" id="prof-loc">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>
-        <span id="prof-loc-txt"></span>
-      </div>
-      <p class="prof-bio" id="prof-bio"></p>
-      <div class="prof-tags" id="prof-tags"></div>
-      <div class="prof-portfolio" id="prof-portfolio"></div>
-      <a class="prof-cta" id="prof-cta" href="#" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg>
-        Escribir mensaje
-      </a>
-    </div>
-  </div>
-</div>
-
 <!-- ── Pin detail modal ──────────────────────────────────────── -->
 <div id="pm-overlay" onclick="if(event.target===this){document.getElementById('pm-overlay').style.display='none';document.body.style.overflow=''}" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
   <div id="pm-box">
