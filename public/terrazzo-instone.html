@@ -223,6 +223,7 @@ body{background:#fff}
             <div class="pm-col-r">
               <button type="button" class="pm-save-btn" id="pm-save-btn"></button>
               <div id="pm-hdr"></div>
+              <div id="pm-detail-imgs" style="display:none;flex-direction:row;gap:7px;margin-bottom:18px"></div>
               <p class="pm-desc" id="pm-desc"></p>
               <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:12px;flex-shrink:0">Contactar profesionales</div>
               <div id="pm-contacts"></div>
@@ -700,6 +701,21 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('pm-hdr').innerHTML=
         '<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:5px">'+(data.subtitle||'')+'</div>'
         +'<h2 style="margin:0 0 14px;font-size:21px;font-weight:800;letter-spacing:-.02em;color:#1A1A18">'+(data.title||'')+'</h2>';
+      // Detail thumbnails — crops from main image
+      const dtEl=document.getElementById('pm-detail-imgs');dtEl.innerHTML='';
+      let detailSrc=data.mainImgSrc||null;
+      if(!detailSrc){const cv=mn.querySelector('canvas');const im2=mn.querySelector('img');
+        if(cv){try{detailSrc=cv.toDataURL('image/jpeg',.82);}catch(e){}}
+        else if(im2){detailSrc=im2.src;}}
+      if(detailSrc){
+        [['8% 12%'],['50% 55%'],['88% 82%']].forEach(([pos])=>{
+          const d=document.createElement('div');
+          d.style.cssText='border-radius:10px;overflow:hidden;aspect-ratio:1;background:#F5F3EF;flex:1;min-width:0';
+          const im3=new Image();im3.src=detailSrc;
+          im3.style.cssText='display:block;width:100%;height:100%;object-fit:cover;object-position:'+pos;
+          d.appendChild(im3);dtEl.appendChild(d);});
+        dtEl.style.display='flex';
+      }else{dtEl.style.display='none';}
       // Description
       document.getElementById('pm-desc').textContent=data.text||'';
       // Contacts
