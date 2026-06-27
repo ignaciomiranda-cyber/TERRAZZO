@@ -120,6 +120,55 @@ body{background:#fff}
 </head>
 <body>
 
+<!-- ── Pantalla de acceso ─────────────────────────────── -->
+<div id="rm-gate" style="position:fixed;inset:0;z-index:9999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:'Inter',-apple-system,sans-serif">
+  <img src="/Realmood-Hibrida-Isotipo.png" alt="Instone" style="width:90px;height:90px;object-fit:contain;margin-bottom:28px">
+  <p style="font-size:13px;font-weight:500;letter-spacing:.18em;color:#9a9690;text-transform:uppercase;margin:0 0 40px">diseño y realidad</p>
+  <div id="rm-gate-form" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:220px">
+    <input id="rm-gate-pwd" type="password" placeholder="Contraseña" autocomplete="current-password"
+      style="width:100%;padding:12px 16px;border:1.5px solid #e5e2dc;border-radius:10px;font-size:15px;font-family:inherit;color:#1A1A18;outline:none;text-align:center;letter-spacing:.1em;transition:border-color .2s"
+      onfocus="this.style.borderColor='#1A1A18'" onblur="this.style.borderColor='#e5e2dc'">
+    <p id="rm-gate-err" style="color:#E8352C;font-size:12px;font-weight:500;margin:0;opacity:0;transition:opacity .2s">Contraseña incorrecta</p>
+    <button onclick="rmGateSubmit()" style="width:100%;padding:12px;background:#1A1A18;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:.02em;transition:opacity .15s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Ingresar</button>
+  </div>
+</div>
+
+<style>
+@keyframes rmShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.rm-shake{animation:rmShake .35s ease}
+</style>
+
+<script>
+(function(){
+  if(sessionStorage.getItem('rm-auth')==='1'){
+    document.getElementById('rm-gate').style.display='none';
+  }
+  document.getElementById('rm-gate-pwd').addEventListener('keydown',function(e){
+    if(e.key==='Enter') rmGateSubmit();
+  });
+})();
+
+function rmGateSubmit(){
+  var v=document.getElementById('rm-gate-pwd').value;
+  var err=document.getElementById('rm-gate-err');
+  var form=document.getElementById('rm-gate-form');
+  if(v==='987'){
+    sessionStorage.setItem('rm-auth','1');
+    var gate=document.getElementById('rm-gate');
+    gate.style.transition='opacity .4s';
+    gate.style.opacity='0';
+    setTimeout(function(){gate.style.display='none';},400);
+  } else {
+    err.style.opacity='1';
+    form.classList.remove('rm-shake');
+    void form.offsetWidth;
+    form.classList.add('rm-shake');
+    document.getElementById('rm-gate-pwd').value='';
+    setTimeout(function(){err.style.opacity='0';},2000);
+  }
+}
+</script>
+
 <div class="rm-wrap" style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
 
   <aside id="rm-nav" style="width:62px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
