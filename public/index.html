@@ -576,8 +576,16 @@ document.addEventListener('DOMContentLoaded', function() {
         inner.appendChild(row);
         inner._row=row;
       }
-      inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';save.style.opacity='1';if(inner._row)inner._row.style.opacity='1';});
-      inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';save.style.opacity='0';if(inner._row)inner._row.style.opacity='0';});
+      // Título como overlay en hover (reemplaza la caption debajo)
+      if(title){
+        const titleOv=document.createElement('div');
+        titleOv.style.cssText='position:absolute;bottom:0;left:0;right:0;padding:32px 12px 12px;background:linear-gradient(0deg,rgba(26,26,24,.72) 0%,transparent 100%);opacity:0;transition:opacity .18s;pointer-events:none';
+        titleOv.innerHTML='<div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,.4)">'+title+'</div>'+(tag?'<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">'+tag+'</div>':'');
+        inner.appendChild(titleOv);
+        inner._titleOv=titleOv;
+      }
+      inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';save.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';});
+      inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';save.style.opacity='0';if(inner._row)inner._row.style.opacity='0';if(inner._titleOv)inner._titleOv.style.opacity='0';});
       if(opts.detail){
         const det=opts.detail;
         inner.addEventListener('click',e=>{
@@ -593,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
       card.appendChild(inner);
-      if(title&&opts.captionBelow!==false){
+      if(title&&opts.captionBelow===true){
         const cap=document.createElement('div');
         cap.style.cssText='padding:9px 6px 2px';
         cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18">'+title+'</div>'+(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+tag+'</div>':'');
@@ -832,6 +840,13 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click',()=>openProfOverlay(c,data.title));
         cc.appendChild(btn);
       });
+      // CTA proveedor
+      const pcta=document.createElement('div');
+      pcta.style.cssText='margin-top:14px;padding:14px 16px;border-radius:12px;background:#F5F3EF;border:1px dashed #D4CFC5';
+      pcta.innerHTML='<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9b958a;margin:0 0 5px">¿Sos proveedor?</p>'
+        +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 12px;line-height:1.4">¿Participaste o sos proveedor de este proyecto?</p>'
+        +'<button type="button" onclick="toast(\'¡Gracias! Nos comunicaremos con vos pronto.\')" style="font-family:inherit;font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">Sí, participé →</button>';
+      cc.appendChild(pcta);
       // Inspiration grid
       const ri=data.relatedImgs||[];
       const rr=document.getElementById('pm-related');rr.innerHTML='';
