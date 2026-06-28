@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── toast ─────────────────────────────────────────────────
     let tT;
-    const toast=msg=>{const t=$('ins-toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';clearTimeout(tT);tT=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2400);};
+    const toast=window.toast=msg=>{const t=$('ins-toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';clearTimeout(tT);tT=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2400);};
 
     // ── pin builder ───────────────────────────────────────────
     const mkCard=(media,title,tag,opts)=>{
