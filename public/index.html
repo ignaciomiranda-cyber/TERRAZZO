@@ -56,6 +56,7 @@ body{background:#fff}
   #rm-topbar input{padding:10px 14px 10px 40px!important;font-size:13px!important}
   #rm-topbar input::placeholder{font-size:12px}
   .rm-top-chat,.rm-top-notif,.rm-top-avatar{display:none!important}
+  .rm-gate-panel{display:none!important}
   /* Main content: tight padding */
   #rm-content{padding:16px 14px 48px!important}
   /* Novedades / Explorar headings */
@@ -121,28 +122,15 @@ body{background:#fff}
 </head>
 <body>
 
-<!-- ── Pantalla de acceso — diseño Realmood-Acceso ───────── -->
-<div id="rm-gate" style="position:fixed;inset:0;z-index:9999;background:#16140F;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Space Grotesk',sans-serif">
+<!-- ── Pantalla de acceso — responsive ───────────────────── -->
+<div id="rm-gate" style="position:fixed;inset:0;z-index:9999;background:#F4F1EB;display:flex;align-items:stretch;overflow:hidden;font-family:'Space Grotesk',sans-serif">
 
-  <div id="rmGateStage" style="width:1440px;height:900px;transform-origin:center center;position:relative;background:#F4F1EB;overflow:hidden;flex:none">
+  <!-- Columna izquierda: contenido -->
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:clamp(32px,7vh,100px) clamp(24px,8vw,120px) clamp(24px,5vh,50px);overflow-y:auto">
 
-    <!-- panel grafito derecho con isotipo -->
-    <div style="position:absolute;top:0;right:0;width:608px;height:900px;background:#16140F;overflow:hidden">
-      <svg width="300" height="277" viewBox="0 0 130 120" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-6deg)">
-        <rect x="38" y="32" width="62" height="62" rx="13" fill="#2A2A2E" stroke="#16140F" stroke-width="3" transform="rotate(16 69 63)"/>
-        <rect x="34" y="30" width="62" height="62" rx="13" fill="#2A2A2E" stroke="#16140F" stroke-width="3"/>
-        <g transform="rotate(-16 61 59)">
-          <clipPath id="heroClip"><rect x="30" y="28" width="62" height="62" rx="13"/></clipPath>
-          <rect x="30" y="28" width="62" height="62" rx="13" fill="#4A4A52" stroke="#16140F" stroke-width="3"/>
-          <g clip-path="url(#heroClip)"><text x="57" y="63" font-family="'Space Grotesk',sans-serif" font-size="104" font-weight="600" fill="#16140F" text-anchor="middle" dominant-baseline="central">R</text></g>
-        </g>
-      </svg>
-      <div style="position:absolute;left:0;top:0;width:1px;height:900px;background:rgba(186,150,92,.30)"></div>
-    </div>
-
-    <!-- marca superior izquierda -->
-    <div style="position:absolute;left:120px;top:100px;display:flex;align-items:center;gap:18px">
-      <svg width="60" height="55" viewBox="0 0 130 120">
+    <!-- Marca -->
+    <div style="display:flex;align-items:center;gap:18px;flex:none">
+      <svg width="52" height="48" viewBox="0 0 130 120">
         <rect x="38" y="32" width="62" height="62" rx="13" fill="#16140F" stroke="#F4F1EB" stroke-width="3" transform="rotate(16 69 63)"/>
         <rect x="34" y="30" width="62" height="62" rx="13" fill="#16140F" stroke="#F4F1EB" stroke-width="3"/>
         <g transform="rotate(-16 61 59)">
@@ -154,32 +142,50 @@ body{background:#fff}
       <div style="font-size:20px;font-weight:500;letter-spacing:-0.01em;color:#16140F">realmoodboard</div>
     </div>
 
-    <!-- tagline editorial -->
-    <div style="position:absolute;left:120px;top:312px;width:600px">
-      <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#A8895A;margin-bottom:34px">Acceso privado</div>
-      <div style="font-family:'Fraunces',serif;font-weight:300;font-size:54px;line-height:1.08;letter-spacing:-0.012em;color:#16140F;max-width:560px">El momento en que una idea toca la <span style="font-style:italic;font-weight:400">materia</span>.</div>
+    <!-- Tagline -->
+    <div style="padding:clamp(36px,8vh,100px) 0 clamp(28px,4vh,52px);flex:none">
+      <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#A8895A;margin-bottom:clamp(14px,3vh,34px)">Acceso privado</div>
+      <div style="font-family:'Fraunces',serif;font-weight:300;font-size:clamp(26px,5vw,54px);line-height:1.08;letter-spacing:-0.012em;color:#16140F;max-width:560px">El momento en que una idea toca la <span style="font-style:italic;font-weight:400">materia</span>.</div>
     </div>
 
-    <!-- formulario de contraseña -->
-    <form id="rm-gate-form" style="position:absolute;left:120px;top:610px;width:430px;display:flex;flex-direction:column;gap:22px;margin:0" onsubmit="rmGateSubmit();return false">
+    <!-- Formulario de contraseña -->
+    <form id="rm-gate-form" style="display:flex;flex-direction:column;gap:22px;margin:0;flex:none;max-width:430px" onsubmit="rmGateSubmit();return false">
       <div style="display:flex;flex-direction:column;gap:16px">
         <span style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#9a948a">Contraseña</span>
         <div style="display:flex;align-items:center;gap:16px;border-bottom:1.5px solid #16140F;padding-bottom:14px">
           <input id="rm-gate-pwd" type="password" placeholder="••••••••••" autocomplete="current-password"
             style="flex:1;border:none;background:transparent;outline:none;font-family:'Space Grotesk',sans-serif;font-size:19px;letter-spacing:.12em;color:#16140F">
-          <button type="submit" style="display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#A8895A;padding:0">Entrar <span style="font-size:16px">→</span></button>
+          <button type="submit" style="display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#A8895A;padding:0;white-space:nowrap">Entrar <span style="font-size:16px">→</span></button>
         </div>
         <p id="rm-gate-err" style="color:#C04030;font-size:12px;font-weight:500;margin:0;opacity:0;transition:opacity .2s;letter-spacing:.04em">Contraseña incorrecta</p>
       </div>
     </form>
 
-    <!-- pie -->
-    <div style="position:absolute;left:120px;bottom:50px;width:700px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(22,20,15,.12);padding-top:18px">
+    <!-- Espaciador -->
+    <div style="flex:1;min-height:24px"></div>
+
+    <!-- Pie -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(22,20,15,.12);padding-top:18px;flex:none">
       <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#b3ada2">Realmood Estudio</div>
       <div style="font-size:11px;letter-spacing:.04em;color:#b3ada2">© 2026 Mildesign SAS · Todos los derechos reservados</div>
     </div>
 
-  </div><!-- /rmGateStage -->
+  </div>
+
+  <!-- Panel derecho grafito: solo desktop -->
+  <div class="rm-gate-panel" style="width:42%;max-width:608px;background:#16140F;flex:none;position:relative;overflow:hidden">
+    <svg width="300" height="277" viewBox="0 0 130 120" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-6deg)">
+      <rect x="38" y="32" width="62" height="62" rx="13" fill="#2A2A2E" stroke="#16140F" stroke-width="3" transform="rotate(16 69 63)"/>
+      <rect x="34" y="30" width="62" height="62" rx="13" fill="#2A2A2E" stroke="#16140F" stroke-width="3"/>
+      <g transform="rotate(-16 61 59)">
+        <clipPath id="heroClip"><rect x="30" y="28" width="62" height="62" rx="13"/></clipPath>
+        <rect x="30" y="28" width="62" height="62" rx="13" fill="#4A4A52" stroke="#16140F" stroke-width="3"/>
+        <g clip-path="url(#heroClip)"><text x="57" y="63" font-family="'Space Grotesk',sans-serif" font-size="104" font-weight="600" fill="#16140F" text-anchor="middle" dominant-baseline="central">R</text></g>
+      </g>
+    </svg>
+    <div style="position:absolute;left:0;top:0;width:1px;height:100%;background:rgba(186,150,92,.30)"></div>
+  </div>
+
 </div>
 
 <style>
@@ -189,19 +195,9 @@ body{background:#fff}
 
 <script>
 (function(){
-  // Escalar el stage al tamaño de la ventana
-  var st=document.getElementById('rmGateStage');
-  if(st){
-    function fitGate(){st.style.transform='scale('+Math.min(window.innerWidth/1440,window.innerHeight/900,1)+')';}
-    fitGate();
-    window.addEventListener('resize',fitGate);
-  }
   if(sessionStorage.getItem('rm-auth')==='1'){
     document.getElementById('rm-gate').style.display='none';
   }
-  document.getElementById('rm-gate-pwd').addEventListener('keydown',function(e){
-    if(e.key==='Enter') rmGateSubmit();
-  });
 })();
 
 function rmGateSubmit(){
