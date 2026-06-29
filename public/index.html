@@ -329,6 +329,7 @@ function rmGateSubmit(){
               <p class="pm-desc" id="pm-desc"></p>
               <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:12px;flex-shrink:0">Contactar profesionales</div>
               <div id="pm-contacts"></div>
+              <div id="pm-ai-chat" style="margin-top:18px;padding-top:18px;border-top:1px solid #ECE8E0;flex-shrink:0"></div>
             </div>
           </div>
           <div class="pm-inspire" id="pm-inspire" style="display:none">
@@ -844,6 +845,34 @@ document.addEventListener('DOMContentLoaded', function() {
         +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 12px;line-height:1.4">¿Participaste o sos proveedor de este proyecto?</p>'
         +'<button type="button" onclick="toast(\'¡Gracias! Nos comunicaremos con vos pronto.\')" style="font-family:inherit;font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">Sí, participé →</button>';
       cc.appendChild(pcta);
+      // AI Chat
+      const aiBox=document.getElementById('pm-ai-chat');
+      if(aiBox){
+        aiBox.innerHTML=
+          '<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:10px;display:flex;align-items:center;gap:6px">'
+          +'<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>'
+          +'Preguntale a la IA</div>'
+          +'<div id="pm-ai-msgs" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:220px;overflow-y:auto"></div>'
+          +'<div style="display:flex;gap:8px;align-items:center">'
+          +'<input id="pm-ai-input" type="text" placeholder="¿Qué querés saber de este proyecto?" '
+          +'style="flex:1;border:1px solid #E4DFD5;border-radius:100px;padding:9px 14px;font-family:inherit;font-size:13px;outline:none;background:#FAFAF8;color:#1A1A18" '
+          +'onkeydown="if(event.key===\'Enter\')rmAiSend()">'
+          +'<button type="button" onclick="rmAiSend()" style="width:36px;height:36px;border-radius:50%;border:none;background:#1A1A18;color:#fff;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;flex:none">→</button>'
+          +'</div>'
+          +'<div id="pm-ai-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>';
+        // Suggested chips
+        const chips=['¿Qué materiales se usaron?','¿Hay proveedores de herrería?','¿Cómo contacto al arquitecto?'];
+        const chipBox=aiBox.querySelector('#pm-ai-chips');
+        chips.forEach(q=>{
+          const b=document.createElement('button');b.type='button';
+          b.style.cssText='font-family:inherit;font-size:11px;padding:5px 11px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer;transition:all .15s';
+          b.textContent=q;
+          b.onmouseenter=()=>{b.style.background='#1A1A18';b.style.color='#fff';b.style.borderColor='#1A1A18';};
+          b.onmouseleave=()=>{b.style.background='transparent';b.style.color='#6F6A60';b.style.borderColor='#D7D1C6';};
+          b.addEventListener('click',()=>{document.getElementById('pm-ai-input').value=q;rmAiSend();});
+          chipBox.appendChild(b);
+        });
+      }
       // Inspiration grid
       const ri=data.relatedImgs||[];
       const rr=document.getElementById('pm-related');rr.innerHTML='';
@@ -956,6 +985,73 @@ function toggleMobMenu(){
   const open=nav.classList.contains('rm-open');
   if(open){nav.classList.remove('rm-open');ov.classList.remove('rm-open');}
   else{nav.classList.add('rm-open');ov.classList.add('rm-open');}
+}
+
+// ── IA Chat en detalle de pin ─────────────────────────────────
+async function rmAiSend(){
+  const input=document.getElementById('pm-ai-input');
+  const msgs=document.getElementById('pm-ai-msgs');
+  if(!input||!msgs)return;
+  const q=(input.value||'').trim();if(!q)return;
+
+  // API key — guardada en localStorage, pedida la primera vez
+  let key=localStorage.getItem('rm-anthropic-key');
+  if(!key){
+    key=prompt('🔑 Ingresá tu Anthropic API key para activar el asistente IA:\n(Se guarda localmente, solo en tu dispositivo)');
+    if(!key)return;
+    localStorage.setItem('rm-anthropic-key',key.trim());
+    key=key.trim();
+  }
+
+  // Mensaje del usuario
+  input.value='';
+  const uEl=document.createElement('div');
+  uEl.style.cssText='align-self:flex-end;background:#1A1A18;color:#fff;border-radius:14px 14px 3px 14px;padding:8px 13px;font-size:13px;max-width:85%;line-height:1.45';
+  uEl.textContent=q;msgs.appendChild(uEl);
+
+  // Indicador "pensando"
+  const thEl=document.createElement('div');
+  thEl.style.cssText='align-self:flex-start;background:#F5F3EF;color:#9b958a;border-radius:14px 14px 14px 3px;padding:8px 13px;font-size:13px;max-width:85%;line-height:1.45';
+  thEl.textContent='Pensando…';msgs.appendChild(thEl);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  // Contexto del pin actual
+  const pin=window._lastPmData||{};
+  const provList=(window._PM_CONTACTS||[]).map(c=>'• '+c.name+' ('+c.role+')'+(c.tags?': '+c.tags.join(', '):'')).join('\n');
+  const system='Sos el asistente de Realmoodboard, plataforma de diseño de interiores y materiales de Córdoba, Argentina.\n'
+    +'Proyecto/material que está viendo el usuario: "'+pin.title+'" ('+( pin.subtitle||'')+').\n'
+    +'Descripción: "'+( pin.text||'')+'".\n'
+    +'Proveedores disponibles en la plataforma:\n'+provList+'\n'
+    +'Respondé en español, de forma concisa (2-4 oraciones), ayudando al usuario a conectar con materiales y proveedores del proyecto.';
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:512,
+        system,
+        messages:[{role:'user',content:q}]
+      })
+    });
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    thEl.style.color='#1A1A18';thEl.textContent=data.content[0].text;
+  }catch(e){
+    thEl.style.background='#FEF2F2';thEl.style.color='#C0392B';
+    thEl.textContent='Error: '+(e.message||'No se pudo conectar');
+    if(e.message&&(e.message.includes('auth')||e.message.includes('401')||e.message.includes('key'))){
+      localStorage.removeItem('rm-anthropic-key');
+      thEl.textContent+=' (Clave inválida — ingresala de nuevo)';
+    }
+  }
+  msgs.scrollTop=msgs.scrollHeight;
 }
 </script>
 
