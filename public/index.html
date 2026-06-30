@@ -843,7 +843,10 @@ document.addEventListener('DOMContentLoaded', function() {
       pcta.style.cssText='margin-top:14px;padding:14px 16px;border-radius:12px;background:#F5F3EF;border:1px dashed #D4CFC5';
       pcta.innerHTML='<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9b958a;margin:0 0 5px">¿Sos proveedor?</p>'
         +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 12px;line-height:1.4">¿Participaste o sos proveedor de este proyecto?</p>'
-        +'<button type="button" onclick="toast(\'¡Gracias! Nos comunicaremos con vos pronto.\')" style="font-family:inherit;font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">Sí, participé →</button>';
+        +'<div style="display:flex;flex-direction:column;gap:8px">'
+        +'<button type="button" onclick="toast(\'¡Gracias! Nos comunicaremos con vos pronto.\')" style="font-family:inherit;font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s;align-self:flex-start" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">Sí, participé →</button>'
+        +'<button type="button" onclick="toast(\'¡Gracias! Te tendremos en cuenta para proyectos similares.\')" style="font-family:inherit;font-size:12px;font-weight:600;padding:9px 18px;border-radius:100px;border:1.5px solid #C8C3B8;background:transparent;color:#6F6A60;cursor:pointer;transition:all .15s;align-self:flex-start" onmouseover="this.style.borderColor=\'#1A1A18\';this.style.color=\'#1A1A18\'" onmouseout="this.style.borderColor=\'#C8C3B8\';this.style.color=\'#6F6A60\'">No participé, pero podría participar →</button>'
+        +'</div>';
       cc.appendChild(pcta);
       // AI Chat
       const aiBox=document.getElementById('pm-ai-chat');
