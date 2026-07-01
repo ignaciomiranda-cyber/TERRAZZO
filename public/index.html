@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -69,6 +71,8 @@ body{background:#fff}
   #inicio-ciudades,#inicio-cats,#explorar-filters{gap:6px!important;margin-bottom:14px!important}
   /* Mood list cards */
   #view-mood>div{padding:20px 0!important}
+  /* Crear: ocultar panel de muestras en mobile */
+  #crear-samples{display:none!important}
   /* Footer */
   footer{padding:14px 14px!important}
 }
@@ -296,12 +300,19 @@ function rmGateSubmit(){
       </section>
 
       <section id="view-explorar" style="display:none;animation:vIn .35s ease">
-        <div style="margin-bottom:6px">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:7px">Córdoba · Capital</div>
-          <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Explorar proyectos y sus materiales</h1>
-          <p style="font-size:13px;color:#9b958a;margin:0">Obras realizadas con terrazzo Instone en Córdoba</p>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:7px">Córdoba · Capital</div>
+            <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Explorar proyectos y sus materiales</h1>
+            <p style="font-size:13px;color:#9b958a;margin:0">Obras realizadas con terrazzo Instone en Córdoba</p>
+          </div>
+          <div style="display:flex;gap:6px;flex:none">
+            <button id="exp-grid-btn" type="button" onclick="setExplorarMode('grid')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #1A1A18;background:#1A1A18;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Galería</button>
+            <button id="exp-map-btn" type="button" onclick="setExplorarMode('map')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#3a3733;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>Mapa</button>
+          </div>
         </div>
         <div id="explorar-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px"></div>
+        <div id="explorar-map" style="display:none;height:460px;border-radius:16px;overflow:hidden;margin-bottom:24px;border:1px solid #E4DFD5"></div>
         <div id="grid-explorar" style="column-width:230px;column-gap:16px"></div>
         <div id="explorar-empty" style="display:none;text-align:center;padding:48px 0;color:#9b958a;font-size:14px">No hay proyectos que coincidan con tu búsqueda.</div>
       </section>
@@ -675,6 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
       {name:'Mesada antracita',barrio:'Nueva Córdoba',tag:'Cocina',terr:TERR[7]},
       {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4]}
     ];
+    window._PROJECTS=PROJECTS;
     const ge=$('grid-explorar');
     const projCards=[];
     PROJECTS.forEach(p=>{
@@ -700,9 +712,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const fbtns={};
     TAGS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeFilter;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeFilter=t;Object.entries(fbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});applyFilter();});fbtns[t]=b;fwrap.appendChild(b);});
 
+    // ── Explorar: toggle galería / mapa ──────────────────────
+    window.setExplorarMode=function(mode){
+      const gridEl=$('grid-explorar'),mapEl=$('explorar-map'),emptyEl=$('explorar-empty');
+      const gBtn=$('exp-grid-btn'),mBtn=$('exp-map-btn');
+      if(mode==='map'){
+        gridEl.style.display='none';mapEl.style.display='block';emptyEl.style.display='none';
+        gBtn.style.background='transparent';gBtn.style.color='#3a3733';gBtn.style.borderColor='#D7D1C6';
+        mBtn.style.background='#1A1A18';mBtn.style.color='#fff';mBtn.style.borderColor='#1A1A18';
+        initExplorarMap();
+        setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();},200);
+      }else{
+        gridEl.style.display='';mapEl.style.display='none';
+        gBtn.style.background='#1A1A18';gBtn.style.color='#fff';gBtn.style.borderColor='#1A1A18';
+        mBtn.style.background='transparent';mBtn.style.color='#3a3733';mBtn.style.borderColor='#D7D1C6';
+      }
+    };
+    function initExplorarMap(){
+      if(window._explorarMapRef||typeof L==='undefined')return;
+      const BC={'Nueva Córdoba':[-31.4285,-64.1843],'Centro':[-31.4135,-64.1894],'General Paz':[-31.4040,-64.2024],'Cerro de las Rosas':[-31.3808,-64.2065],'Cofico':[-31.3960,-64.1856],'Güemes':[-31.4216,-64.1843],'Villa Belgrano':[-31.3702,-64.2180],'Alberdi':[-31.4064,-64.1973]};
+      const map=L.map('explorar-map').setView([-31.412,-64.193],13);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',subdomains:'abcd',maxZoom:20}).addTo(map);
+      const ico=L.divIcon({className:'',html:'<div style="width:14px;height:14px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+      PROJECTS.forEach((p,i)=>{
+        const c=BC[p.barrio];if(!c)return;
+        const off=[0.0006*((i%5)-2),0.0006*((i%3)-1)];
+        L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
+          .bindPopup('<div style="font-family:Inter,sans-serif;min-width:150px;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+p.name+'</strong><br><span style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</span></div>');
+      });
+      window._explorarMapRef=map;
+    }
+
     // ── placeholder views ─────────────────────────────────────
     const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
-    $('view-crear').innerHTML='<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px;margin:-24px -26px -64px;width:calc(100% + 52px)"></iframe>';
+    $('view-crear').innerHTML=
+      '<div style="display:flex;gap:0;align-items:flex-start;margin:-24px -26px -64px">'
+      +'<div style="flex:1;min-width:0;overflow:hidden">'
+      +'<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px"></iframe>'
+      +'</div>'
+      +'<div id="crear-samples" style="width:256px;flex:none;border-left:1px solid #ECE8E0;background:#FAFAF9;padding:22px 18px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
+      +'</div>';
+    // Populate samples panel
+    (function(){
+      const sp=$('crear-samples');if(!sp)return;
+      const secHdr=t=>'<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin:18px 0 10px">'+(t)+'</div>';
+      const chip=(color,name,sub)=>'<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F1EDE5;cursor:pointer" onmouseenter="this.style.opacity=\'.7\'" onmouseleave="this.style.opacity=\'1\'">'
+        +'<div style="width:32px;height:32px;border-radius:8px;background:'+color+';flex:none;border:1px solid rgba(0,0,0,.07)"></div>'
+        +'<div><div style="font-size:12px;font-weight:600;color:#1A1A18;line-height:1.2">'+name+'</div>'+(sub?'<div style="font-size:10px;color:#9b958a">'+sub+'</div>':'')+'</div></div>';
+      let html='<div style="font-size:13px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px">Muestras</div>'
+        +'<div style="font-size:11px;color:#9b958a">Materiales disponibles en Instone</div>';
+      html+=secHdr('Terrazzo Instone');
+      TERR.forEach(t=>{html+=chip(t.base,t.title,'Terrazzo');});
+      html+=secHdr('Piedras naturales');
+      SLABS.forEach(m=>{html+=chip(m.bg,m.name,m.tipo);});
+      html+=secHdr('Melaminas Faplac');
+      MEL.forEach(m=>{html+=chip(m.bg,m.name,'Melamina');});
+      sp.innerHTML=html;
+    })();
     const cf=$('crear-frame');
     if(cf)cf.addEventListener('load',()=>{try{const d=cf.contentDocument;const fo=d.querySelector('footer');if(fo)fo.style.display='none';const ap=d.querySelector('.app');if(ap){ap.style.paddingTop='6px';ap.style.maxWidth='1040px';}const fit=()=>{cf.style.height=Math.max(1000,d.documentElement.scrollHeight+12)+'px';};fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(d.body);}d.addEventListener('click',()=>setTimeout(fit,300));setTimeout(fit,400);}catch(e){}});
     window.addEventListener('message',e=>{
@@ -731,8 +797,9 @@ document.addEventListener('DOMContentLoaded', function() {
           +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rm.name+'</div>'
           +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">'+tags+'</div>'
           +'<div style="font-size:10px;color:#B3AD9F;margin-bottom:14px">Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>'
-          +'<div style="display:flex;gap:8px">'
-          +'<button type="button" class="rm-load-btn" style="flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Cargar</button>'
+          +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+          +'<button type="button" class="rm-view-btn" style="flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Ver tablero →</button>'
+          +'<button type="button" class="rm-load-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Cargar</button>'
           +'<button type="button" class="rm-del-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Borrar</button>'
           +'</div></div></div>';
       });
@@ -740,6 +807,8 @@ document.addEventListener('DOMContentLoaded', function() {
       vm.innerHTML=html;
       vm.querySelectorAll('[data-rm-id]').forEach(card=>{
         const id=card.getAttribute('data-rm-id');
+        const rmObj=list.find(r=>r.id===id);
+        card.querySelector('.rm-view-btn').addEventListener('click',()=>openMoodBoard(rmObj));
         card.querySelector('.rm-load-btn').addEventListener('click',()=>{
           setView('crear');
           setTimeout(()=>{const f=$('crear-frame');if(f)f.contentWindow.postMessage({loadRmId:id},'*');},400);
@@ -755,6 +824,49 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     loadMoodList();
+    window._loadMoodList=loadMoodList;
+
+    function openMoodBoard(rm){
+      if(!rm)return;
+      const vm=$('view-mood');if(!vm)return;
+      let pins;try{pins=JSON.parse(localStorage.getItem('ins_pinned')||'[]');}catch(e){pins=[];}
+      const projs=(window._PROJECTS||[]).slice(0,4);
+      const st=rm.state||{};
+      const tags=[st.terrazzo?'Terrazzo':'',...(st.faplacs||[]).slice(0,1).map(()=>'Melamina'),...(st.stones||[]).slice(0,1).map(()=>'Piedra')].filter(Boolean).join(' · ')||'Sin materiales';
+      let html='<button id="board-back" style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:none;padding:0 0 20px;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer">'
+        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Tus realmood</button>'
+        +'<div style="height:6px;border-radius:4px;background:linear-gradient(90deg,#1A1A18,#6f6a60);margin-bottom:18px;border-radius:8px"></div>'
+        +'<h1 style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 6px">'+rm.name+'</h1>'
+        +'<div style="font-size:12px;color:#9b958a;margin-bottom:24px">'+tags+' · Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>';
+      if(pins.length){
+        html+='<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:14px;letter-spacing:-.01em">Proyectos guardados</div>'
+          +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:36px">';
+        pins.forEach(p=>{
+          html+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:14px;padding:14px 16px;cursor:pointer" onclick="toast(\'Abriendo \'+\''+p.title.replace(/'/g,"\\'")+'\''+'\')">'
+            +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.title+'</div>'
+            +'<div style="font-size:11px;color:#9b958a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+( p.subtitle||'')+'</div>'
+            +'<div style="font-size:10px;color:#C8C3B8;margin-top:8px">Guardado '+fmtDate(p.savedAt)+'</div>'
+            +'</div>';
+        });
+        html+='</div>';
+      }else{
+        html+='<div style="padding:28px;border:1.5px dashed #D7D1C6;border-radius:14px;text-align:center;color:#9b958a;font-size:13px;margin-bottom:36px">Aún no guardaste proyectos. Guardá desde Novedades o Explorar.</div>';
+      }
+      html+='<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:14px;letter-spacing:-.01em">Proyectos relacionados</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">';
+      projs.forEach(p=>{
+        const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía';
+        const bg=p.terr?p.terr.base:p.slab?p.slab.bg:'#E8E4DC';
+        html+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:14px;overflow:hidden;cursor:pointer" onclick="toast(\''+p.name.replace(/'/g,"\\'")+'\''+')">'
+          +'<div style="height:72px;background:'+bg+'"></div>'
+          +'<div style="padding:12px 14px"><div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:2px">'+p.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</div></div></div>';
+      });
+      html+='</div>';
+      vm.innerHTML=html;
+      vm.querySelector('#board-back').addEventListener('click',loadMoodList);
+    }
+
     $('view-saved').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Tus proyectos guardados','Los proyectos que guardes desde Explorar quedarán acá para volver a verlos y reutilizar sus materiales.',{label:'Ver proyectos de Córdoba',go:'explorar'});
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
