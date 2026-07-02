@@ -243,6 +243,10 @@ function rmGateSubmit(){
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
       <span>Explorar</span>
     </button>
+    <button type="button" data-view="mis-proyectos" data-label="Mis proyectos" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+      <span>Mis proyectos</span>
+    </button>
     <button type="button" data-view="crear" data-label="Crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
       <span>Crear</span>
@@ -326,6 +330,7 @@ function rmGateSubmit(){
         <div id="explorar-empty" style="display:none;text-align:center;padding:48px 0;color:#9b958a;font-size:14px">No hay proyectos que coincidan con tu búsqueda.</div>
       </section>
 
+      <section id="view-mis-proyectos" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-crear" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mood" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
@@ -394,6 +399,24 @@ function rmGateSubmit(){
 </div>
 
 <div id="rm-mob-overlay" onclick="toggleMobMenu()"></div>
+
+<!-- ── Upload project modal ───────────────────────────────── -->
+<div id="rm-upload-overlay" onclick="uploadOverlayClick(event)" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:28px 16px;overflow-y:auto">
+  <div onclick="event.stopPropagation()" style="background:#fff;border-radius:24px;max-width:600px;width:100%;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.25);overflow:hidden;font-family:'Inter',-apple-system,sans-serif;margin:auto">
+    <div style="padding:24px 28px 0;border-bottom:1px solid #ECE8E0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700;color:#1A1A18;letter-spacing:-.01em">Cargar proyecto</div>
+        <button onclick="closeUploadModal()" style="background:transparent;border:none;cursor:pointer;color:#9b958a;padding:4px;border-radius:8px;line-height:0;font-size:20px">×</button>
+      </div>
+      <div id="upload-step-dots" style="display:flex;gap:4px;padding-bottom:20px;flex-wrap:wrap"></div>
+    </div>
+    <div id="upload-step-content" style="padding:28px;min-height:300px"></div>
+    <div style="padding:0 28px 24px;display:flex;justify-content:space-between;gap:12px;border-top:1px solid #F5F3EF">
+      <button id="upload-btn-back" onclick="uploadPrev()" style="font-family:inherit;font-size:13px;font-weight:600;padding:11px 20px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">Cancelar</button>
+      <button id="upload-btn-next" onclick="uploadNext()" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Siguiente →</button>
+    </div>
+  </div>
+</div>
 
 <div id="ins-toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A18;color:#fff;padding:11px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap">—</div>
 
@@ -696,6 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
       {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4]}
     ];
     window._PROJECTS=PROJECTS;
+    window._TERR=TERR;window._SLABS=SLABS;window._MEL=MEL;
     const ge=$('grid-explorar');
     const projCards=[];
     PROJECTS.forEach(p=>{
@@ -945,7 +969,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','crear','mood','saved','mensajes','perfil','pin'];
+    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','perfil','pin'];
     window._provPrevView='inicio';
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
@@ -955,6 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
       if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
       if(v==='mood')loadMoodList();
+      if(v==='mis-proyectos')loadMisProyectos();
       if(v==='explorar'){setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
       const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
@@ -1101,7 +1126,175 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     setView('inicio');
+
+    // ── Mis proyectos — sección y wizard de carga ────────────
+    function loadMisProyectos(){
+      const vm=$('view-mis-proyectos');if(!vm)return;
+      let list;try{list=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){list=[];}
+      const header='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">'
+        +'<div><h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Mis proyectos</h1>'
+        +'<p style="font-size:13px;color:#9b958a;margin:0">'+list.length+' proyecto'+(list.length!==1?'s':'')+' cargado'+(list.length!==1?'s':'')+'</p></div>'
+        +'<button onclick="openUploadModal()" style="display:flex;align-items:center;gap:8px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">'
+        +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+        +'Cargar proyecto</button></div>';
+      if(!list.length){
+        vm.innerHTML=header+'<div style="max-width:480px;margin:20px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px">'
+          +'<div style="width:64px;height:64px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:18px">'
+          +'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>'
+          +'<h2 style="font-size:18px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">Aún no cargaste proyectos</h2>'
+          +'<p style="font-size:13px;color:#9b958a;line-height:1.65;margin:0 0 20px">Subí tus obras para aparecer en el mapa, la galería y que otros estudios y clientes te descubran.</p>'
+          +'<button onclick="openUploadModal()" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Cargar primer proyecto</button>'
+          +'</div>';return;
+      }
+      let grid='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">';
+      list.slice().reverse().forEach(p=>{
+        const cover=p.photos&&p.photos[0]?'<img src="'+p.photos[0]+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC"></div>';
+        const matLine=p.materials&&p.materials.length?p.materials.slice(0,2).join(', ')+(p.materials.length>2?' +'+( p.materials.length-2):''):'Sin materiales';
+        grid+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">'
+          +'<div style="height:140px;overflow:hidden;background:#F5F3EF">'+cover+'</div>'
+          +'<div style="padding:14px 16px">'
+          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+(p.studio?p.studio.name:'')+'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.barrio+' · '+p.tag+'</div>'
+          +'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+matLine+'</div>'
+          +'<button onclick="deleteMyProject(\''+p.id+'\')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
+          +'</div></div>';
+      });
+      vm.innerHTML=header+grid+'</div>';
+    }
+    window._loadMisProyectos=loadMisProyectos;
+    loadMisProyectos();
 });
+
+// ── Upload wizard (global — outside DOMContentLoaded) ─────────
+var _uploadStep=1,_uploadTotalSteps=5;
+var _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{name:'',role:'',contact:''}]};
+var _STEP_LABELS=['Estudio','Proyecto','Fotos','Materiales','Publicar'];
+
+function openUploadModal(){
+  _uploadStep=1;
+  _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{name:'',role:'',contact:''}]};
+  var ov=document.getElementById('rm-upload-overlay');ov.style.display='flex';
+  _renderUpload();
+}
+function closeUploadModal(){document.getElementById('rm-upload-overlay').style.display='none';}
+function uploadOverlayClick(e){if(e.target===document.getElementById('rm-upload-overlay'))closeUploadModal();}
+
+function _uploadInputStyle(){return 'font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid #E4DFD5;border-radius:10px;color:#1A1A18;background:#fff;outline:none;width:100%;box-sizing:border-box';}
+function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
+function _uploadSelectField(lbl,id,opts,sel){return '<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><select id="'+id+'" style="'+_uploadInputStyle().replace('font-size:13px','font-size:14px')+'">'+opts.map(o=>'<option'+(o===sel?' selected':'')+'>'+o+'</option>').join('')+'</select></div>';}
+function _uploadPhotoPreviews(){
+  if(!_uploadData.photos.length)return '';
+  return _uploadData.photos.map((ph,i)=>'<div style="position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1"><img src="'+ph.url+'" style="width:100%;height:100%;object-fit:cover;display:block"><button type="button" onclick="removeUploadPhoto('+i+')" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(26,26,24,.75);border:none;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1">×</button></div>').join('');
+}
+
+function _renderUpload(){
+  var dots=document.getElementById('upload-step-dots');
+  if(dots)dots.innerHTML=_STEP_LABELS.map(function(l,i){var active=i+1===_uploadStep,done=i+1<_uploadStep;return '<div style="display:flex;align-items:center;gap:5px">'+'<div style="width:22px;height:22px;border-radius:50%;background:'+(active?'#1A1A18':done?'#6F6A60':'#EFEBE3')+';color:'+(active||done?'#fff':'#9b958a')+';font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">'+(done?'✓':(i+1))+'</div>'+'<span style="font-size:11px;font-weight:'+(active?'700':'500')+';color:'+(active?'#1A1A18':'#9b958a')+'">'+l+'</span>'+(i<_STEP_LABELS.length-1?'<span style="color:#E4DFD5;margin:0 1px">·</span>':'')+'</div>';}).join('');
+  var bb=document.getElementById('upload-btn-back'),nb=document.getElementById('upload-btn-next');
+  if(bb)bb.textContent=_uploadStep===1?'Cancelar':'← Atrás';
+  if(nb)nb.textContent=_uploadStep===_uploadTotalSteps?'Publicar ✓':'Siguiente →';
+  var c=document.getElementById('upload-step-content');if(!c)return;
+  if(_uploadStep===1){
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Tu estudio</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Contanos quién carga el proyecto</p>'
+      +_uploadInputField('Nombre del estudio *','up-studio-name',_uploadData.studio.name,'Ej: Estudio Bertone')
+      +_uploadSelectField('Rol','up-studio-role',['Arquitecto/a','Interiorista','Constructor/a','Decorador/a','Fotógrafo/a','Proveedor/a'],_uploadData.studio.role)
+      +'<div style="margin-top:16px">'+_uploadInputField('Descripción breve (opcional)','up-studio-desc',_uploadData.studio.desc,'Ej: Especialistas en diseño residencial')+'</div>';
+  } else if(_uploadStep===2){
+    var barrios=['Nueva Córdoba','Centro','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Otro'];
+    var tags=['Cocina','Baño','Local','Comedor','Piso','Exterior','Residencial','Hospitalidad','Oficina'];
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">El proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Datos principales de la obra</p>'
+      +_uploadInputField('Nombre del proyecto *','up-proj-name',_uploadData.project.name,'Ej: Residencia en Nueva Córdoba')
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Barrio','up-proj-barrio',barrios,_uploadData.project.barrio)+_uploadSelectField('Categoría','up-proj-tag',tags,_uploadData.project.tag)+'</div>'
+      +'<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">Descripción</label><textarea id="up-proj-desc" placeholder="Describí el proyecto, el espacio, materiales destacados..." style="'+_uploadInputStyle()+';resize:vertical;min-height:90px">'+(_uploadData.project.description||'')+'</textarea></div>';
+  } else if(_uploadStep===3){
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Fotos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Hasta 5 imágenes — se comprimen automáticamente</p>'
+      +'<div id="up-photo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'+_uploadPhotoPreviews()+'</div>'
+      +'<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px dashed #D7D1C6;border-radius:12px;cursor:pointer;color:#6F6A60;font-size:13px;font-weight:600" onmouseenter="this.style.borderColor=\'#1A1A18\';this.style.color=\'#1A1A18\'" onmouseleave="this.style.borderColor=\'#D7D1C6\';this.style.color=\'#6F6A60\'">'
+      +'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Subir fotos'
+      +'<input id="up-photo-input" type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)"></label>';
+  } else if(_uploadStep===4){
+    var secs=[{t:'Terrazzo Instone',items:(window._TERR||[]),getColor:function(x){return x.base;}},{t:'Piedras naturales',items:(window._SLABS||[]),getColor:function(x){return x.bg;}},{t:'Melaminas Faplac',items:(window._MEL||[]),getColor:function(x){return x.bg;}}];
+    var html='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Materiales usados</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Seleccioná los que usaste en este proyecto</p>';
+    secs.forEach(function(sec){
+      html+='<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:8px">'+sec.t+'</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
+      sec.items.forEach(function(m){var nm=m.title||m.name;var sel=_uploadData.materials.indexOf(nm)>=0;html+='<button type="button" onclick="toggleUploadMat(\''+nm.replace(/'/g,"\\'")+'\')" style="display:flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:100px;border:1.5px solid '+(sel?'#1A1A18':'#E4DFD5')+';background:'+(sel?'#1A1A18':'#fff')+';cursor:pointer"><div style="width:14px;height:14px;border-radius:50%;background:'+sec.getColor(m)+';border:1px solid rgba(0,0,0,.1);flex:none"></div><span style="font-size:11px;font-weight:600;color:'+(sel?'#fff':'#3a3733')+'">'+nm+'</span></button>';});
+      html+='</div></div>';
+    });
+    c.innerHTML=html;
+  } else if(_uploadStep===5){
+    var html5='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Proveedores</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">¿Quiénes participaron? (opcional)</p>';
+    _uploadData.providers.forEach(function(pv,i){
+      html5+='<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:12px;padding:14px 16px;margin-bottom:10px">'
+        +'<div style="font-size:10px;font-weight:700;color:#9b958a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Proveedor '+(i+1)+'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+        +'<input placeholder="Nombre" value="'+(pv.name||'')+'" oninput="_uploadData.providers['+i+'].name=this.value" style="'+_uploadInputStyle()+'">'
+        +'<input placeholder="Rol (Arquitecto, Herrería...)" value="'+(pv.role||'')+'" oninput="_uploadData.providers['+i+'].role=this.value" style="'+_uploadInputStyle()+'">'
+        +'</div><input placeholder="Contacto (WhatsApp, email, web...)" value="'+(pv.contact||'')+'" oninput="_uploadData.providers['+i+'].contact=this.value" style="'+_uploadInputStyle()+'"></div>';
+    });
+    if(_uploadData.providers.length<4)html5+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
+    c.innerHTML=html5;
+  }
+}
+
+function _saveUploadStepData(){
+  var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
+  if(_uploadStep===1){_uploadData.studio.name=g('up-studio-name');_uploadData.studio.role=g('up-studio-role');_uploadData.studio.desc=g('up-studio-desc');}
+  else if(_uploadStep===2){_uploadData.project.name=g('up-proj-name');_uploadData.project.barrio=g('up-proj-barrio');_uploadData.project.tag=g('up-proj-tag');_uploadData.project.description=g('up-proj-desc');}
+}
+
+function uploadNext(){
+  _saveUploadStepData();
+  if(_uploadStep===1&&!_uploadData.studio.name.trim()){window.toast&&toast('Ingresá el nombre del estudio');return;}
+  if(_uploadStep===2&&!_uploadData.project.name.trim()){window.toast&&toast('Ingresá el nombre del proyecto');return;}
+  if(_uploadStep===_uploadTotalSteps){_submitUploadProject();return;}
+  _uploadStep++;_renderUpload();
+}
+function uploadPrev(){
+  _saveUploadStepData();
+  if(_uploadStep>1){_uploadStep--;_renderUpload();}else{closeUploadModal();}
+}
+
+function handlePhotoUpload(input){
+  var files=Array.from(input.files).slice(0,5-_uploadData.photos.length);
+  files.forEach(function(file){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var MAX=900,w=img.width,h=img.height;
+        if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+        var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        _uploadData.photos.push({url:cv.toDataURL('image/jpeg',.78),name:file.name});
+        var pg=document.getElementById('up-photo-grid');if(pg)pg.innerHTML=_uploadPhotoPreviews();
+      };img.src=e.target.result;
+    };reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+function removeUploadPhoto(i){_uploadData.photos.splice(i,1);var pg=document.getElementById('up-photo-grid');if(pg)pg.innerHTML=_uploadPhotoPreviews();}
+function toggleUploadMat(n){var idx=_uploadData.materials.indexOf(n);if(idx>=0)_uploadData.materials.splice(idx,1);else _uploadData.materials.push(n);_renderUpload();}
+function addUploadProvider(){_uploadData.providers.push({name:'',role:'',contact:''});_renderUpload();}
+function deleteMyProject(id){
+  if(!confirm('¿Eliminar este proyecto?'))return;
+  var lst;try{lst=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){lst=[];}
+  lst=lst.filter(function(p){return p.id!==id;});
+  try{localStorage.setItem('ins_my_projects',JSON.stringify(lst));}catch(e){}
+  if(window._loadMisProyectos)window._loadMisProyectos();
+  window.toast&&toast('Proyecto eliminado');
+}
+function _submitUploadProject(){
+  _saveUploadStepData();
+  var id='p-'+Date.now();
+  var proj={id:id,createdAt:new Date().toISOString(),studio:Object.assign({},_uploadData.studio),name:_uploadData.project.name||'Sin nombre',barrio:_uploadData.project.barrio,tag:_uploadData.project.tag,description:_uploadData.project.description,photos:_uploadData.photos.map(function(p){return p.url;}),materials:[].concat(_uploadData.materials),providers:_uploadData.providers.filter(function(p){return p.name.trim();})};
+  var lst;try{lst=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){lst=[];}
+  lst.push(proj);
+  try{localStorage.setItem('ins_my_projects',JSON.stringify(lst));}catch(e){window.toast&&toast('Error: las fotos son demasiado grandes. Intentá con menos imágenes.');return;}
+  closeUploadModal();
+  window.toast&&toast('¡Proyecto publicado! Revisalo en Mis proyectos →');
+  if(window._loadMisProyectos)window._loadMisProyectos();
+}
 // ── Provider data & profile overlay ──────────────────────────
 window._PM_CONTACTS=[
   {id:'bertone',role:'Arquitecto · Proyectista',name:'Estudio Bertone',full:'Bertone & Vera Arquitectura',color:'#2E4278',
