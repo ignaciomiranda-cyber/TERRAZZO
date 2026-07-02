@@ -36,6 +36,8 @@ body{background:#fff}
 /* ── Mobile nav ─────────────────────────────────────── */
 #rm-mob-btn{display:none;background:transparent;border:none;cursor:pointer;padding:6px;color:#1A1A18;align-items:center;justify-content:center;border-radius:8px;flex:none}
 #rm-mob-overlay{display:none;position:fixed;inset:0;z-index:198;background:rgba(0,0,0,.3)}
+.rm-map-tip{background:#fff!important;border:1px solid #E4DFD5!important;border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.14)!important;padding:0!important}
+.rm-map-tip::before{display:none!important}
 @media(max-width:768px){
   /* Sidebar drawer — must use !important to override inline display:flex */
   #rm-nav{display:none!important;position:fixed;top:0;left:0;bottom:0;z-index:200;width:240px!important;flex:none!important;height:100%!important;min-width:0!important;box-shadow:4px 0 24px rgba(0,0,0,.14);padding:18px 12px!important}
@@ -300,20 +302,27 @@ function rmGateSubmit(){
       </section>
 
       <section id="view-explorar" style="display:none;animation:vIn .35s ease">
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
           <div>
             <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:7px">Córdoba · Capital</div>
             <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Explorar proyectos y sus materiales</h1>
             <p style="font-size:13px;color:#9b958a;margin:0">Obras realizadas con terrazzo Instone en Córdoba</p>
           </div>
           <div style="display:flex;gap:6px;flex:none">
-            <button id="exp-grid-btn" type="button" onclick="setExplorarMode('grid')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #1A1A18;background:#1A1A18;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Galería</button>
-            <button id="exp-map-btn" type="button" onclick="setExplorarMode('map')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#3a3733;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>Mapa</button>
+            <button id="exp-grid-btn" type="button" onclick="setExplorarMode('grid')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#3a3733;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Galería</button>
+            <button id="exp-map-btn" type="button" onclick="setExplorarMode('map')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #1A1A18;background:#1A1A18;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>Mapa</button>
           </div>
         </div>
-        <div id="explorar-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px"></div>
-        <div id="explorar-map" style="display:none;height:460px;border-radius:16px;overflow:hidden;margin-bottom:24px;border:1px solid #E4DFD5"></div>
-        <div id="grid-explorar" style="column-width:230px;column-gap:16px"></div>
+        <div id="explorar-map-search-wrap" style="display:flex;gap:8px;margin-bottom:14px">
+          <div style="position:relative;flex:1;max-width:420px">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"/><path d="m21 21-4.3-4.3"/></svg></span>
+            <input id="explorar-map-search" type="text" placeholder="Buscar por estudio, barrio o tipo…" style="width:100%;padding:10px 14px 10px 38px;border:1px solid #E4DFD5;border-radius:100px;font-family:inherit;font-size:13px;background:#FAFAF8;color:#1A1A18;outline:none">
+          </div>
+        </div>
+        <div id="explorar-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px"></div>
+        <div id="explorar-map" style="height:460px;border-radius:16px;overflow:hidden;margin-bottom:20px;border:1px solid #E4DFD5"></div>
+        <div id="explorar-map-below" style="margin-bottom:24px"></div>
+        <div id="grid-explorar" style="display:none;column-width:230px;column-gap:16px"></div>
         <div id="explorar-empty" style="display:none;text-align:center;padding:48px 0;color:#9b958a;font-size:14px">No hay proyectos que coincidan con tu búsqueda.</div>
       </section>
 
@@ -715,33 +724,89 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Explorar: toggle galería / mapa ──────────────────────
     window.setExplorarMode=function(mode){
       const gridEl=$('grid-explorar'),mapEl=$('explorar-map'),emptyEl=$('explorar-empty');
+      const belowEl=$('explorar-map-below'),swEl=$('explorar-map-search-wrap');
       const gBtn=$('exp-grid-btn'),mBtn=$('exp-map-btn');
       if(mode==='map'){
-        gridEl.style.display='none';mapEl.style.display='block';emptyEl.style.display='none';
+        gridEl.style.display='none';mapEl.style.display='';emptyEl.style.display='none';
+        if(belowEl)belowEl.style.display='';if(swEl)swEl.style.display='flex';
         gBtn.style.background='transparent';gBtn.style.color='#3a3733';gBtn.style.borderColor='#D7D1C6';
         mBtn.style.background='#1A1A18';mBtn.style.color='#fff';mBtn.style.borderColor='#1A1A18';
         initExplorarMap();
-        setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();},200);
+        setTimeout(()=>{if(window._explorarMapRef){window._explorarMapRef.invalidateSize();updateMapBelow();}},250);
       }else{
         gridEl.style.display='';mapEl.style.display='none';
+        if(belowEl)belowEl.style.display='none';if(swEl)swEl.style.display='none';
+        emptyEl.style.display='none';
         gBtn.style.background='#1A1A18';gBtn.style.color='#fff';gBtn.style.borderColor='#1A1A18';
         mBtn.style.background='transparent';mBtn.style.color='#3a3733';mBtn.style.borderColor='#D7D1C6';
+        applyFilter();
       }
     };
+
+    function updateMapBelow(){
+      const el=$('explorar-map-below');
+      if(!el||!window._explorarMapRef||!window._explorarMarkerData)return;
+      const bounds=window._explorarMapRef.getBounds();
+      const vis=window._explorarMarkerData.filter(({marker})=>window._explorarMapRef.hasLayer(marker)&&bounds.contains(marker.getLatLng()));
+      if(!vis.length){el.innerHTML='<div style="font-size:12px;color:#9b958a;padding:12px 0">No hay proyectos en esta área.</div>';return;}
+      let html='<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:12px">'+vis.length+' proyecto'+(vis.length!==1?'s':'')+' en vista</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">';
+      vis.forEach(({proj})=>{
+        const bg=proj.terr?proj.terr.base:proj.slab?proj.slab.bg:'#E8E4DC';
+        html+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:12px;overflow:hidden;cursor:pointer" onclick="toast(\''+proj.name.replace(/'/g,"\\'")+'\')">'
+          +'<div style="height:52px;background:'+bg+'"></div>'
+          +'<div style="padding:10px 12px"><div style="font-size:12px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+proj.name+'</div>'
+          +'<div style="font-size:10px;color:#9b958a;margin-top:2px">'+proj.barrio+' · '+proj.tag+'</div></div></div>';
+      });
+      html+='</div>';
+      el.innerHTML=html;
+    }
+
+    function filterMapMarkers(q){
+      if(!window._explorarMapRef||!window._explorarMarkerData)return;
+      q=(q||'').toLowerCase().trim();
+      window._explorarMarkerData.forEach(({marker,proj})=>{
+        const match=!q||proj.name.toLowerCase().includes(q)||proj.barrio.toLowerCase().includes(q)||proj.tag.toLowerCase().includes(q);
+        if(match){if(!window._explorarMapRef.hasLayer(marker))marker.addTo(window._explorarMapRef);}
+        else{window._explorarMapRef.removeLayer(marker);}
+      });
+      updateMapBelow();
+    }
+
     function initExplorarMap(){
       if(window._explorarMapRef||typeof L==='undefined')return;
       const BC={'Nueva Córdoba':[-31.4285,-64.1843],'Centro':[-31.4135,-64.1894],'General Paz':[-31.4040,-64.2024],'Cerro de las Rosas':[-31.3808,-64.2065],'Cofico':[-31.3960,-64.1856],'Güemes':[-31.4216,-64.1843],'Villa Belgrano':[-31.3702,-64.2180],'Alberdi':[-31.4064,-64.1973]};
       const map=L.map('explorar-map').setView([-31.412,-64.193],13);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',subdomains:'abcd',maxZoom:20}).addTo(map);
-      const ico=L.divIcon({className:'',html:'<div style="width:14px;height:14px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+      const markerData=[];
       PROJECTS.forEach((p,i)=>{
         const c=BC[p.barrio];if(!c)return;
         const off=[0.0006*((i%5)-2),0.0006*((i%3)-1)];
-        L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
-          .bindPopup('<div style="font-family:Inter,sans-serif;min-width:150px;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+p.name+'</strong><br><span style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</span></div>');
+        const bg=p.terr?p.terr.base:p.slab?p.slab.bg:'#E8E4DC';
+        const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .15s" onmouseenter="this.style.transform=\'scale(1.5)\'" onmouseleave="this.style.transform=\'scale(1)\'"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+        const tipHtml='<div style="font-family:Inter,sans-serif;width:180px;padding:0">'
+          +'<div style="height:80px;background:'+bg+';border-radius:8px 8px 0 0"></div>'
+          +'<div style="padding:10px 12px 12px">'
+          +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px">'+p.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</div>'
+          +'</div></div>';
+        const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
+          .bindTooltip(tipHtml,{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]})
+          .bindPopup('<div style="font-family:Inter,sans-serif;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+p.name+'</strong><br><span style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</span></div>');
+        markerData.push({marker,proj:p});
       });
       window._explorarMapRef=map;
+      window._explorarMarkerData=markerData;
+      map.on('moveend zoomend',updateMapBelow);
+      // Wire search input
+      const si=$('explorar-map-search');
+      if(si)si.addEventListener('input',e=>filterMapMarkers(e.target.value));
+      setTimeout(updateMapBelow,400);
     }
+
+    // Abrir en modo mapa por defecto al entrar a Explorar
+    setExplorarMode('map');
+    setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();},600);
 
     // ── placeholder views ─────────────────────────────────────
     const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
@@ -752,21 +817,30 @@ document.addEventListener('DOMContentLoaded', function() {
       +'</div>'
       +'<div id="crear-samples" style="width:256px;flex:none;border-left:1px solid #ECE8E0;background:#FAFAF9;padding:22px 18px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
       +'</div>';
-    // Populate samples panel
+    // Populate samples panel — 2 columns + accordions
     (function(){
       const sp=$('crear-samples');if(!sp)return;
-      const secHdr=t=>'<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin:18px 0 10px">'+(t)+'</div>';
-      const chip=(color,name,sub)=>'<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F1EDE5;cursor:pointer" onmouseenter="this.style.opacity=\'.7\'" onmouseleave="this.style.opacity=\'1\'">'
-        +'<div style="width:32px;height:32px;border-radius:8px;background:'+color+';flex:none;border:1px solid rgba(0,0,0,.07)"></div>'
-        +'<div><div style="font-size:12px;font-weight:600;color:#1A1A18;line-height:1.2">'+name+'</div>'+(sub?'<div style="font-size:10px;color:#9b958a">'+sub+'</div>':'')+'</div></div>';
-      let html='<div style="font-size:13px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px">Muestras</div>'
-        +'<div style="font-size:11px;color:#9b958a">Materiales disponibles en Instone</div>';
-      html+=secHdr('Terrazzo Instone');
-      TERR.forEach(t=>{html+=chip(t.base,t.title,'Terrazzo');});
-      html+=secHdr('Piedras naturales');
-      SLABS.forEach(m=>{html+=chip(m.bg,m.name,m.tipo);});
-      html+=secHdr('Melaminas Faplac');
-      MEL.forEach(m=>{html+=chip(m.bg,m.name,'Melamina');});
+      let _idxAcc=0;
+      const acc=(title,count,innerHtml)=>{
+        const id='acc-'+(++_idxAcc);
+        return '<div style="border-bottom:1px solid #ECEAE5">'
+          +'<button type="button" onclick="(function(b,c){const open=c.style.display!==\'none\';c.style.display=open?\'none\':\'\';b.querySelector(\'span\').style.transform=open?\'rotate(0)\':\' rotate(180deg)\';})(this,document.getElementById(\''+id+'\'))" style="font-family:inherit;width:100%;text-align:left;border:none;background:transparent;padding:10px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px">'
+          +'<span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6F6A60">'+title+'</span>'
+          +'<div style="display:flex;align-items:center;gap:6px"><span style="font-size:10px;color:#9b958a">'+count+'</span><span style="color:#9b958a;transition:transform .2s;display:block"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span></div>'
+          +'</button>'
+          +'<div id="'+id+'" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-bottom:12px">'
+          +innerHtml
+          +'</div></div>';
+      };
+      const chip=(bg,name)=>'<div style="border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.07);cursor:pointer;background:#fff;transition:box-shadow .15s" onmouseenter="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,.12)\'" onmouseleave="this.style.boxShadow=\'none\'">'
+        +'<div style="height:36px;background:'+bg+'"></div>'
+        +'<div style="padding:5px 7px;font-size:10px;font-weight:600;color:#1A1A18;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</div>'
+        +'</div>';
+      let html='<div style="font-size:13px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:2px">Muestras</div>'
+        +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">Instone · Faplac</div>';
+      html+=acc('Terrazzo Instone',TERR.length+'',TERR.map(t=>chip(t.base,t.title)).join(''));
+      html+=acc('Piedras naturales',SLABS.length+'',SLABS.map(m=>chip(m.bg,m.name)).join(''));
+      html+=acc('Melaminas Faplac',MEL.length+'',MEL.map(m=>chip(m.bg,m.name)).join(''));
       sp.innerHTML=html;
     })();
     const cf=$('crear-frame');
@@ -881,6 +955,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
       if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
       if(v==='mood')loadMoodList();
+      if(v==='explorar'){setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
       const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
       if(mNav)mNav.classList.remove('rm-open');if(mOv)mOv.classList.remove('rm-open');
