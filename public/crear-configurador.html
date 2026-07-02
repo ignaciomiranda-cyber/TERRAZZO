@@ -1770,7 +1770,8 @@ function loadRealmood(){
   applyRmState(rm.state,rm.name);
 }
 window.addEventListener('message',e=>{
-  if(e&&e.data&&e.data.loadRmId){
+  if(!e||!e.data)return;
+  if(e.data.loadRmId){
     const list=getRmList();const rm=list.find(x=>x.id===e.data.loadRmId);
     if(!rm)return;
     rmActiveId=rm.id;
@@ -1778,6 +1779,9 @@ window.addEventListener('message',e=>{
     applyRmState(rm.state,rm.name);
     showToast('Cargando "'+rm.name+'"…');
   }
+  if(e.data.addTerr){const d=e.data.addTerr;setMbTerrazzo(d.baseHex,d.stones,d.label);showToast('Terrazzo '+d.label+' agregado');}
+  if(e.data.addSlab){selectSlab(e.data.addSlab);showToast('Piedra agregada al moodboard');}
+  if(e.data.addFaplac){selectFaplac(e.data.addFaplac);showToast('Melamina agregada al moodboard');}
 });
 function mbExport(){
   const stage=document.getElementById('mb-stage');
