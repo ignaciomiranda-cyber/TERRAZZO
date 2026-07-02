@@ -567,10 +567,10 @@ document.addEventListener('DOMContentLoaded', function() {
       {name:'Seda Azzurra',slug:'baltico',bg:'#0D2A34'}
     ];
     const PANTONE=[
-      {code:'19-1541',name:'Roasted Russet',hex:'#7E3A33'},
-      {code:'16-0945',name:'Tinsel',hex:'#C99A4E'},
-      {code:'14-6007',name:'Sea Foam',hex:'#AEC4B2'},
-      {code:'19-3926',name:'Crown Blue',hex:'#474C6A'}
+      {code:'19-1541',slug:'roasted-russet',name:'Roasted Russet',hex:'#7E3A33'},
+      {code:'16-0945',slug:'tinsel',name:'Tinsel',hex:'#C99A4E'},
+      {code:'14-6007',slug:'sea-foam',name:'Sea Foam',hex:'#AEC4B2'},
+      {code:'19-3926',slug:'crown-blue',name:'Crown Blue',hex:'#474C6A'}
     ];
     const PHOTOS=[
       {img:'prod-eco.jpg',title:'Instalación ECO-005',tag:'Inspiración'},
@@ -836,10 +836,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
     $('view-crear').innerHTML=
       '<div style="display:flex;gap:0;align-items:flex-start;margin:-24px -26px -64px">'
+      +'<div id="crear-samples" style="width:296px;flex:none;border-right:1px solid #ECE8E0;background:#FAFAF9;padding:20px 16px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
       +'<div style="flex:1;min-width:0;overflow:hidden">'
       +'<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px"></iframe>'
       +'</div>'
-      +'<div id="crear-samples" style="width:296px;flex:none;border-left:1px solid #ECE8E0;background:#FAFAF9;padding:20px 16px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
       +'</div>';
     // Global helper — chips call this to send a material to the moodboard iframe
     window.crearAdd=function(type,data){
@@ -875,6 +875,17 @@ document.addEventListener('DOMContentLoaded', function() {
       html+=acc('Terrazzo Instone',TERR.length+'',terrChips,true);
       html+=acc('Piedras naturales',SLABS.length+'',slabChips,true);
       html+=acc('Melaminas Faplac',MEL.length+'',melChips,true);
+      const CORT_D=[{slug:'gasa-camille-blanco',name:'Gasa Camille Blanco',bg:'#F1ECE3'},{slug:'gasa-portobello-natural',name:'Gasa Portobello Natural',bg:'#E9E0CF'},{slug:'gasa-portobello-arena',name:'Gasa Portobello Arena',bg:'#DDCDAF'},{slug:'gasa-portobello-lino',name:'Gasa Portobello Lino',bg:'#C7B492'}];
+      const TEL_D=[{slug:'tusor-cemento',name:'Tusor Cemento',bg:'#6E726B'},{slug:'tusor-khaki',name:'Tusor Khaki',bg:'#B4986F'},{slug:'tusor-grafito',name:'Tusor Grafito',bg:'#2C3A37'},{slug:'tusor-arena',name:'Tusor Arena',bg:'#D3BC95'}];
+      const PIS_D=[{slug:'winter-grey-oak',name:'Winter Grey Oak',bg:'#D6CBB7'},{slug:'natural-oak',name:'Natural Oak',bg:'#D9B488'},{slug:'honey-oak',name:'Honey Oak',bg:'#BE8147'},{slug:'grey-oak',name:'Grey Oak',bg:'#BCB2A5'}];
+      const cortChips=CORT_D.map(c=>chip(c.bg,c.name,'crearAdd(\'Cort\',\''+c.slug+'\')')).join('');
+      const telaChips=TEL_D.map(t=>chip(t.bg,t.name,'crearAdd(\'Tela\',\''+t.slug+'\')')).join('');
+      const pisoChips=PIS_D.map(p=>chip(p.bg,p.name,'crearAdd(\'Piso\',\''+p.slug+'\')')).join('');
+      const panChips=PANTONE.map(p=>chip(p.hex,p.name+' '+p.code,'crearAdd(\'Pantone\',\''+p.slug+'\')')).join('');
+      html+=acc('Cortinas',CORT_D.length+'',cortChips,false);
+      html+=acc('Tapizados',TEL_D.length+'',telaChips,false);
+      html+=acc('Pisos · Símil madera',PIS_D.length+'',pisoChips,false);
+      html+=acc('Pantone',PANTONE.length+'',panChips,false);
       // Related projects section
       const rp=(window._PROJECTS||[]).slice(0,4);
       if(rp.length){

@@ -1782,6 +1782,10 @@ window.addEventListener('message',e=>{
   if(e.data.addTerr){const d=e.data.addTerr;setMbTerrazzo(d.baseHex,d.stones,d.label);showToast('Terrazzo '+d.label+' agregado');}
   if(e.data.addSlab){selectSlab(e.data.addSlab);showToast('Piedra agregada al moodboard');}
   if(e.data.addFaplac){selectFaplac(e.data.addFaplac);showToast('Melamina agregada al moodboard');}
+  if(e.data.addCort){selectCortina(e.data.addCort);showToast('Cortina agregada al moodboard');}
+  if(e.data.addTela){selectTela(e.data.addTela);showToast('Tapizado agregado al moodboard');}
+  if(e.data.addPiso){selectPiso(e.data.addPiso);showToast('Piso agregado al moodboard');}
+  if(e.data.addPantone){selectPantone(e.data.addPantone);showToast('Pantone agregado al moodboard');}
 });
 function mbExport(){
   const stage=document.getElementById('mb-stage');
