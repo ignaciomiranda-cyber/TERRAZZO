@@ -79,11 +79,11 @@ body{background:#fff}
 .pm-save-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#E8352C;color:#fff;border:none;border-radius:100px;padding:13px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:22px;width:100%;flex-shrink:0}
 .pm-save-btn:hover{opacity:.88}
 .pm-save-btn.saved{background:#1A1A18}
-.pm-inspire{padding:0 0 28px}
-.pm-inspire-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:12px}
-.pm-inspire-img{border-radius:10px;overflow:hidden;aspect-ratio:1;background:#F5F3EF;cursor:zoom-in}
-.pm-inspire-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .22s}
-.pm-inspire-img:hover img{transform:scale(1.07)}
+.pm-inspire{padding:0 0 0}
+.pm-inspire-grid{column-width:180px;column-gap:10px;margin-top:14px}
+.pm-seguir-fade{position:relative;margin-top:-90px;height:130px;background:linear-gradient(to bottom,transparent,#FAFAF8 68%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:28px;pointer-events:none}
+.pm-seguir-btn{pointer-events:auto;font-family:inherit;font-size:13px;font-weight:700;padding:12px 32px;border-radius:100px;border:1px solid #1A1A18;background:#fff;color:#1A1A18;cursor:pointer;letter-spacing:-.01em;transition:background .15s,color .15s;box-shadow:0 4px 16px rgba(0,0,0,.10)}
+.pm-seguir-btn:hover{background:#1A1A18;color:#fff}
 .pm-desc{font-size:13px;line-height:1.75;color:#6F6A60;margin:0 0 20px;flex-shrink:0}
 .pm-cb{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid #E4DFD5;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s,border-color .15s;width:100%;font-family:inherit;text-align:left;margin-bottom:8px;text-decoration:none;color:inherit;flex-shrink:0}
 .pm-cb:last-child{margin-bottom:0}
@@ -230,8 +230,11 @@ body{background:#fff}
             </div>
           </div>
           <div class="pm-inspire" id="pm-inspire" style="display:none">
-            <div style="font-size:14px;font-weight:700;color:#1A1A18;letter-spacing:-.01em">Más inspiración</div>
+            <div style="font-size:14px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px">Proyectos relacionados</div>
             <div class="pm-inspire-grid" id="pm-related"></div>
+            <div class="pm-seguir-fade">
+              <button type="button" class="pm-seguir-btn" data-goto="explorar">Seguir explorando →</button>
+            </div>
           </div>
         </div>
       </section>
@@ -727,14 +730,24 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click',()=>openProfOverlay(c,data.title));
         cc.appendChild(btn);
       });
-      // Inspiration grid
-      const ri=data.relatedImgs||[];
+      // Related projects grid (masonry, like explorar)
       const rr=document.getElementById('pm-related');rr.innerHTML='';
       const inspSec=document.getElementById('pm-inspire');
-      if(ri.length>0){
-        ri.slice(0,9).forEach(src=>{
-          const d=document.createElement('div');d.className='pm-inspire-img';
-          const im=new Image();im.src=src;im.loading='lazy';im.alt='';d.appendChild(im);rr.appendChild(d);
+      const curTitle=data.title||'';
+      const relPjs=PROJECTS.filter(p=>p.name!==curTitle).slice(0,6);
+      if(relPjs.length>0){
+        relPjs.forEach(p=>{
+          let media,makeMain;
+          if(p.img){const s=p.img;media=photoMedia(s);makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
+          else if(p.slab){media=slabMedia({...p.slab,r:0.82});makeMain=()=>{const c=document.createElement('canvas');renderSlab(c,{...p.slab,r:1},480,480);return c;};}
+          else{media=terrMedia({...p.terr,r:0.82});makeMain=()=>{const c=document.createElement('canvas');renderTerr(c,p.terr.base,p.terr.stones,480,480);return c;};}
+          const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía de obra';
+          const card=mkCard(media,p.name,p.barrio+' · '+p.tag,{filter:p.tag,search:p.barrio,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.name,
+            overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.name},{label:'Usar materiales',msg:'Cargando materiales de '+p.name}],
+            detail:{title:p.name,subtitle:p.barrio+' · '+p.tag,text:'Proyecto realizado en '+p.barrio+', Córdoba. Categoría: '+p.tag+'. Materiales: '+mat+'. Obra terminada con materiales premium de primera selección.',makeMain,relatedImgs:REL_AMB}
+          });
+          card.style.display='inline-block';
+          rr.appendChild(card);
         });
         inspSec.style.display='';
       }else{inspSec.style.display='none';}
