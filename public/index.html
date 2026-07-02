@@ -835,11 +835,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── placeholder views ─────────────────────────────────────
     const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
     $('view-crear').innerHTML=
-      '<div style="display:flex;gap:0;align-items:flex-start;margin:-24px -26px -64px">'
-      +'<div id="crear-samples" style="width:296px;flex:none;border-right:1px solid #ECE8E0;background:#FAFAF9;padding:20px 16px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
+      '<div style="display:flex;gap:0;align-items:flex-start;margin:-24px -26px 0">'
       +'<div style="flex:1;min-width:0;overflow:hidden">'
       +'<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px"></iframe>'
       +'</div>'
+      +'<div id="crear-samples" style="width:296px;flex:none;border-left:1px solid #ECE8E0;background:#FAFAF9;padding:20px 16px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
+      +'</div>'
+      +'<div style="margin:0 -26px;padding:48px 26px 64px;border-top:1px solid #ECE8E0">'
+      +'<div style="font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:20px">Proyectos e ideas para inspirarte</div>'
+      +'<div id="grid-crear-inspira" style="column-width:220px;column-gap:16px"></div>'
       +'</div>';
     // Global helper — chips call this to send a material to the moodboard iframe
     window.crearAdd=function(type,data){
@@ -886,21 +890,24 @@ document.addEventListener('DOMContentLoaded', function() {
       html+=acc('Tapizados',TEL_D.length+'',telaChips,false);
       html+=acc('Pisos · Símil madera',PIS_D.length+'',pisoChips,false);
       html+=acc('Pantone',PANTONE.length+'',panChips,false);
-      // Related projects section
-      const rp=(window._PROJECTS||[]).slice(0,4);
-      if(rp.length){
-        html+='<div style="margin-top:20px">'
-          +'<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:10px">Proyectos relacionados</div>';
-        rp.forEach(p=>{
-          const bg=p.terr?p.terr.base:p.slab?p.slab.bg:'#E8E4DC';
-          html+='<div style="display:flex;gap:9px;align-items:center;padding:8px 0;border-bottom:1px solid #ECEAE5;cursor:pointer" onclick="toast(\''+p.name.replace(/'/g,"\\'")+'\')">'
-            +'<div style="width:34px;height:34px;border-radius:7px;background:'+bg+';flex:none;border:1px solid rgba(0,0,0,.07)"></div>'
-            +'<div style="min-width:0"><div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</div>'
-            +'<div style="font-size:10px;color:#9b958a">'+p.barrio+' · '+p.tag+'</div></div></div>';
-        });
-        html+='</div>';
-      }
       sp.innerHTML=html;
+      // Populate inspiration grid below the creator
+      const ig=$('grid-crear-inspira');
+      if(ig){
+        const addCard=el=>{if(el)ig.appendChild(el);};
+        // Project cards first
+        (PROJECTS||[]).forEach(p=>{
+          let media,makeMain;
+          if(p.img){media=photoMedia(p.img);const s=p.img;makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
+          else if(p.slab){const sl={...p.slab,r:16/9};media=slabMedia(sl);makeMain=()=>{const c=document.createElement('canvas');renderSlab(c,{...p.slab,r:1},480,480);return c;};}
+          else{const tr={...p.terr,r:16/9};media=terrMedia(tr);makeMain=()=>{const c=document.createElement('canvas');renderTerr(c,p.terr.base,p.terr.stones,480,480);return c;};}
+          const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía de obra';
+          addCard(mkCard(media,p.name,p.barrio+' · '+p.tag,{search:p.barrio,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.name,detail:{title:p.name,subtitle:p.barrio+' · '+p.tag,text:'Proyecto realizado en '+p.barrio+', Córdoba. Materiales: '+mat+'.',makeMain,relatedImgs:REL_AMB}}));
+        });
+        // Interleave some terrazzo and slab cards
+        TERR.slice(0,6).forEach(t=>{addCard(mkCard(terrMedia({...t,r:4/3}),t.title,'Terrazzo · Instone',{search:'terrazzo',saveMsg:'Guardado: '+t.title}));});
+        SLABS.slice(0,4).forEach(m=>{addCard(mkCard(slabMedia({...m,r:4/3}),m.name,m.tipo+' · De Stefano',{search:'piedra',saveMsg:'Guardado: '+m.name}));});
+      }
     })();
     const cf=$('crear-frame');
     if(cf)cf.addEventListener('load',()=>{try{const d=cf.contentDocument;const fo=d.querySelector('footer');if(fo)fo.style.display='none';const ap=d.querySelector('.app');if(ap){ap.style.paddingTop='6px';ap.style.maxWidth='1040px';}const fit=()=>{cf.style.height=Math.max(1000,d.documentElement.scrollHeight+12)+'px';};fit();if(window.ResizeObserver){new ResizeObserver(fit).observe(d.body);}d.addEventListener('click',()=>setTimeout(fit,300));setTimeout(fit,400);}catch(e){}});

@@ -155,7 +155,7 @@ button.abtn:hover{background:#EFEBE3}
 .mb-stage.mb-grid-on{background-image:linear-gradient(rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px);background-size:40px 40px}
 .mb-backing{display:none}
 .mb-zone{position:absolute;top:0;bottom:0;pointer-events:none;z-index:0}
-.mb-zone-dep{right:0;width:33.333%;background:transparent;border-left:1px solid #E4DFD5}
+.mb-zone-dep{top:auto;left:0;right:0;width:auto;height:50%;background:transparent;border-top:1px solid #E4DFD5}
 .mb-zone-div{display:none}
 .mb-caps-hidden .mb-cap{display:none}
 .mb-caps-hidden .mb-sample:not(.is-empty):hover .mb-cap{display:flex!important}
@@ -166,6 +166,7 @@ button.abtn:hover{background:#EFEBE3}
 .mb-zone-label{position:absolute;top:11px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#A99F8B;pointer-events:none;z-index:1}
 .mb-zone-label.l{left:15px}
 .mb-zone-label.r{right:15px;text-align:right}
+.mb-zone-label.dep-lbl{top:calc(50% + 11px);left:15px;right:auto;text-align:left}
 .mb-zone-label small{display:block;font-size:8px;font-weight:600;letter-spacing:.08em;color:#BEB6A6;margin-top:2px;text-transform:none}
 .mb-sample{position:absolute;left:0;top:0;overflow:hidden;border-radius:4px;box-shadow:0 22px 42px -14px rgba(60,44,28,.40),0 6px 14px -7px rgba(60,44,28,.28);transition:box-shadow .3s,opacity .25s;display:flex;align-items:center;justify-content:center;flex:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 .mb-sample-terr{width:224px;height:224px}
@@ -344,7 +345,7 @@ button.abtn:hover{background:#EFEBE3}
         <div class="mb-zone mb-zone-dep"></div>
         <div class="mb-zone-div"></div>
         <div class="mb-zone-label l">Moodboard<small>Arrastrá acá lo que combina</small></div>
-        <div class="mb-zone-label r">Depósito<small>Tus muestras elegidas</small></div>
+        <div class="mb-zone-label dep-lbl">Depósito<small>Tus muestras elegidas</small></div>
         <div class="mb-backing"></div>
           <div class="mb-sample mb-sample-terr is-empty" id="mb-sample-terr">
             <canvas id="mb-terr-canvas" width="440" height="440"></canvas>
@@ -1526,7 +1527,7 @@ function renderMoodboard(){
     if(telaNames.length)parts.push('Tapizado '+telaNames.join(' · '));
     if(pisoNames.length)parts.push('Piso '+pisoNames.join(' · '));
     if(panNames.length)parts.push('Pantone '+panNames.join(' · '));
-    leg.textContent=parts.length?parts.join('   ×   '):'Elegí muestras: van al depósito (derecha) y las arrastrás al moodboard para combinarlas.';
+    leg.textContent=parts.length?parts.join('   ×   '):'Elegí muestras: van al depósito (abajo) y las arrastrás al moodboard para combinarlas.';
   }
   if(typeof renderKitchen==='function')renderKitchen();
   scheduleAutoSave();
@@ -1633,7 +1634,7 @@ function ksView(v){
 }
 
 function mbKey(el){ if(el.id==='mb-sample-terr')return 'terr'; const s=el.getAttribute('data-slot'); if(s!=null)return 'm'+s; const t=el.getAttribute('data-stone'); if(t!=null)return 's'+t; const c=el.getAttribute('data-cort'); if(c!=null)return 'c'+c; const w=el.getAttribute('data-tela'); if(w!=null)return 'w'+w; const f=el.getAttribute('data-piso'); if(f!=null)return 'f'+f; const pn=el.getAttribute('data-pan'); if(pn!=null)return 'p'+pn; return null; }
-const MB_DEFAULTS={terr:{fx:.82,fy:.30,rot:-2},m0:{fx:.79,fy:.34,rot:2},m1:{fx:.88,fy:.33,rot:-2},m2:{fx:.82,fy:.42,rot:3},c0:{fx:.84,fy:.41,rot:-2},s0:{fx:.79,fy:.55,rot:-3},s1:{fx:.88,fy:.56,rot:2},w0:{fx:.80,fy:.63,rot:3},f0:{fx:.88,fy:.59,rot:-2},p0:{fx:.78,fy:.73,rot:2},p1:{fx:.84,fy:.74,rot:-2},p2:{fx:.90,fy:.72,rot:3}};
+const MB_DEFAULTS={terr:{fx:.10,fy:.65,rot:-2},m0:{fx:.23,fy:.62,rot:2},m1:{fx:.36,fy:.67,rot:-2},m2:{fx:.50,fy:.63,rot:3},c0:{fx:.63,fy:.65,rot:-2},s0:{fx:.76,fy:.63,rot:-3},s1:{fx:.90,fy:.66,rot:2},w0:{fx:.17,fy:.80,rot:3},f0:{fx:.32,fy:.78,rot:-2},p0:{fx:.47,fy:.80,rot:2},p1:{fx:.63,fy:.79,rot:-2},p2:{fx:.80,fy:.82,rot:3}};
 let mbPos={}, mbZ=20, mbReady=false, mbStraight=false, mbCapsOn=true, mbGridOn=false;
 function mbDeposit(el){ if(!mbReady)return; const k=mbKey(el); if(!k)return; delete mbPos[k]; saveMbPos(); mbApply(el); }
 function toggleMbStraight(btn){mbStraight=!mbStraight;btn.classList.toggle('active',mbStraight);btn.textContent=mbStraight?'Rectas':'Cruzadas';mbApplyAll();}
@@ -1770,8 +1771,7 @@ function loadRealmood(){
   applyRmState(rm.state,rm.name);
 }
 window.addEventListener('message',e=>{
-  if(!e||!e.data)return;
-  if(e.data.loadRmId){
+  if(e&&e.data&&e.data.loadRmId){
     const list=getRmList();const rm=list.find(x=>x.id===e.data.loadRmId);
     if(!rm)return;
     rmActiveId=rm.id;
@@ -1779,13 +1779,6 @@ window.addEventListener('message',e=>{
     applyRmState(rm.state,rm.name);
     showToast('Cargando "'+rm.name+'"…');
   }
-  if(e.data.addTerr){const d=e.data.addTerr;setMbTerrazzo(d.baseHex,d.stones,d.label);showToast('Terrazzo '+d.label+' agregado');}
-  if(e.data.addSlab){selectSlab(e.data.addSlab);showToast('Piedra agregada al moodboard');}
-  if(e.data.addFaplac){selectFaplac(e.data.addFaplac);showToast('Melamina agregada al moodboard');}
-  if(e.data.addCort){selectCortina(e.data.addCort);showToast('Cortina agregada al moodboard');}
-  if(e.data.addTela){selectTela(e.data.addTela);showToast('Tapizado agregado al moodboard');}
-  if(e.data.addPiso){selectPiso(e.data.addPiso);showToast('Piso agregado al moodboard');}
-  if(e.data.addPantone){selectPantone(e.data.addPantone);showToast('Pantone agregado al moodboard');}
 });
 function mbExport(){
   const stage=document.getElementById('mb-stage');
@@ -1798,8 +1791,9 @@ function mbExport(){
     closeBtns.forEach(b=>{b.style.display='';});
     if(btn){btn.innerHTML='&#8681; Exportar';btn.disabled=false;}
     const SCALE=2;
-    const cropW=Math.floor(captured.width*(2/3));
-    const cropH=captured.height;
+    const DEP=Math.round(captured.height*0.5);
+    const cropW=captured.width;
+    const cropH=captured.height-DEP;
     const HDR=Math.round(56*SCALE);
     const out=document.createElement('canvas');
     out.width=cropW; out.height=HDR+cropH;
