@@ -835,36 +835,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── placeholder views ─────────────────────────────────────
     const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
     $('view-crear').innerHTML=
-      '<div style="display:flex;gap:0;align-items:flex-start;margin:-24px -26px -64px">'
+      '<div style="display:flex;flex-direction:column;gap:0;margin:-24px -26px -64px">'
+      +'<div id="crear-samples" style="background:#FAFAF9;border-bottom:2px solid #ECE8E0;padding:14px 26px 10px;font-family:inherit;overflow-x:auto;flex:none"></div>'
       +'<div style="flex:1;min-width:0;overflow:hidden">'
       +'<iframe id="crear-frame" src="crear-configurador.html" title="Configurador de terrazzo" style="width:100%;border:none;display:block;background:transparent;min-height:1200px"></iframe>'
       +'</div>'
-      +'<div id="crear-samples" style="width:256px;flex:none;border-left:1px solid #ECE8E0;background:#FAFAF9;padding:22px 18px;position:sticky;top:0;max-height:100vh;overflow-y:auto;font-family:inherit"></div>'
       +'</div>';
-    // Populate samples panel — 2 columns + accordions
+    // Populate samples panel — horizontal scrollable strip
     (function(){
       const sp=$('crear-samples');if(!sp)return;
-      let _idxAcc=0;
-      const acc=(title,count,innerHtml)=>{
-        const id='acc-'+(++_idxAcc);
-        return '<div style="border-bottom:1px solid #ECEAE5">'
-          +'<button type="button" onclick="(function(b,c){const open=c.style.display!==\'none\';c.style.display=open?\'none\':\'\';b.querySelector(\'span\').style.transform=open?\'rotate(0)\':\' rotate(180deg)\';})(this,document.getElementById(\''+id+'\'))" style="font-family:inherit;width:100%;text-align:left;border:none;background:transparent;padding:10px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px">'
-          +'<span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6F6A60">'+title+'</span>'
-          +'<div style="display:flex;align-items:center;gap:6px"><span style="font-size:10px;color:#9b958a">'+count+'</span><span style="color:#9b958a;transition:transform .2s;display:block"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span></div>'
-          +'</button>'
-          +'<div id="'+id+'" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-bottom:12px">'
-          +innerHtml
-          +'</div></div>';
-      };
-      const chip=(bg,name)=>'<div style="border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.07);cursor:pointer;background:#fff;transition:box-shadow .15s" onmouseenter="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,.12)\'" onmouseleave="this.style.boxShadow=\'none\'">'
-        +'<div style="height:36px;background:'+bg+'"></div>'
-        +'<div style="padding:5px 7px;font-size:10px;font-weight:600;color:#1A1A18;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</div>'
+      const chip=(bg,name)=>'<div style="flex:none;width:54px;cursor:pointer" onmouseenter="this.firstChild.style.boxShadow=\'0 4px 12px rgba(0,0,0,.18)\'" onmouseleave="this.firstChild.style.boxShadow=\'none\'">'
+        +'<div style="height:40px;border-radius:8px;background:'+bg+';border:1px solid rgba(0,0,0,.07);transition:box-shadow .15s"></div>'
+        +'<div style="font-size:8.5px;font-weight:600;color:#6F6A60;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">'+name+'</div>'
         +'</div>';
-      let html='<div style="font-size:13px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:2px">Muestras</div>'
-        +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">Instone · Faplac</div>';
-      html+=acc('Terrazzo Instone',TERR.length+'',TERR.map(t=>chip(t.base,t.title)).join(''));
-      html+=acc('Piedras naturales',SLABS.length+'',SLABS.map(m=>chip(m.bg,m.name)).join(''));
-      html+=acc('Melaminas Faplac',MEL.length+'',MEL.map(m=>chip(m.bg,m.name)).join(''));
+      const cat=(title,items)=>'<div style="flex:none;display:flex;flex-direction:column;gap:0">'
+        +'<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:7px;white-space:nowrap">'+title+'</div>'
+        +'<div style="display:flex;gap:6px">'+items+'</div>'
+        +'</div>';
+      const sep='<div style="flex:none;width:1px;background:#ECEAE5;margin:0 16px;align-self:stretch"></div>';
+      const terrHtml=TERR.map(t=>chip(t.base,t.title)).join('');
+      const slabHtml=SLABS.map(m=>chip(m.bg,m.name)).join('');
+      const melHtml=MEL.map(m=>chip(m.bg,m.name)).join('');
+      let html='<div style="display:flex;align-items:center;gap:0;min-width:0">'
+        +'<div style="font-size:12px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-right:18px;white-space:nowrap;flex:none">Muestras</div>'
+        +cat('Terrazzo Instone',terrHtml)+sep
+        +cat('Piedras',slabHtml)+sep
+        +cat('Melaminas Faplac',melHtml)
+        +'</div>';
       sp.innerHTML=html;
     })();
     const cf=$('crear-frame');
