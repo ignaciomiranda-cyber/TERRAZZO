@@ -70,7 +70,7 @@ body{background:#fff}
   #grid-inicio{column-width:160px!important;column-gap:12px!important}
   #grid-explorar{column-width:170px!important;column-gap:12px!important}
   /* Category / city filter pills */
-  #inicio-ciudades,#inicio-cats,#explorar-filters{gap:6px!important;margin-bottom:14px!important}
+  #inicio-cats,#explorar-filters{gap:6px!important;margin-bottom:14px!important}
   /* Mood list cards */
   #view-mood>div{padding:20px 0!important}
   /* Crear: ocultar panel de muestras en mobile */
@@ -324,7 +324,6 @@ function rmGateSubmit(){
           <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Novedades</h1>
           <span style="font-size:13px;color:#9b958a">Terrazzo, materiales y obras que combinan</span>
         </div>
-        <div id="inicio-ciudades" style="display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
         <div id="inicio-cats" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
         <div id="grid-inicio" style="column-width:210px;column-gap:16px"></div>
       </section>
@@ -714,15 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
       relatedImgs:PHOTOS.filter(q=>q.img!==p.img).slice(0,9).map(q=>q.img)
     }})));
     for(let i=inicio.length-1;i>0;i--){const j=Math.floor(hash2(i*3.1,i*7.7)*(i+1));[inicio[i],inicio[j]]=[inicio[j],inicio[i]];}
-    // Assign cities deterministically after shuffle
-    const CIUDADES_POOL=['Córdoba','Córdoba','Córdoba','Córdoba','Buenos Aires','Buenos Aires','Buenos Aires','Rosario','Mendoza','San Luis','Tucumán','Salta','Miami','Montevideo','Madrid','São Paulo'];
-    inicio.forEach((c,i)=>{c.setAttribute('data-ciudad',CIUDADES_POOL[Math.floor(hash2(i*2.3,i*4.7)*CIUDADES_POOL.length)]);});
     const gi=$('grid-inicio');inicio.forEach(c=>gi.appendChild(c));
-    // Ciudad filter
-    const CIUDADES=['Todas','Córdoba','Buenos Aires','Rosario','Mendoza','San Luis','Tucumán','Salta','Miami','Montevideo','Madrid','São Paulo'];
-    const cwrapC=$('inicio-ciudades');let activeCity='Todas';const cityBtns={};
-    const cityStyle=(t,active)=>'font-family:inherit;font-size:12px;font-weight:'+(active?'600':'500')+';padding:6px 14px;border-radius:100px;cursor:pointer;border:1px solid '+(active?'#1A1A18':'#D7D1C6')+';background:'+(active?'#1A1A18':'transparent')+';color:'+(active?'#fff':'#6f6a60')+';white-space:nowrap;transition:all .15s;flex:none';
-    CIUDADES.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.style.cssText=cityStyle(t,t===activeCity);b.addEventListener('click',()=>{activeCity=t;Object.entries(cityBtns).forEach(([k,el])=>{el.style.cssText=cityStyle(k,k===t);});doSearch($('ins-search').value);});cityBtns[t]=b;cwrapC.appendChild(b);});
     const ICATS=['Todos','Terrazzo','Piedras','Melaminas','Pantone','Ambientes'];
     const cwrap=$('inicio-cats');let activeCat='Todos';const cbtns={};
     ICATS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeCat;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeCat=t;Object.entries(cbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});doSearch($('ins-search').value);});cbtns[t]=b;cwrap.appendChild(b);});
@@ -1080,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!grid)return;
       let shown=0;
       Array.from(grid.children).forEach(c=>{
-        const passFilter=active==='explorar'?(activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter):(active==='inicio'?((activeCat==='Todos'||c.getAttribute('data-cat')===activeCat)&&(activeCity==='Todas'||c.getAttribute('data-ciudad')===activeCity)):true);
+        const passFilter=active==='explorar'?(activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter):(active==='inicio'?(activeCat==='Todos'||c.getAttribute('data-cat')===activeCat):true);
         const passQ=!q||(c.getAttribute('data-title')||'').includes(q);
         const ok=passFilter&&passQ;c.style.display=ok?'inline-block':'none';if(ok)shown++;
       });
