@@ -891,8 +891,9 @@ const SLABS=[
   {slug:'arabescato-cervaiole', name:'Arabescato Cervaiole', tipo:'Purastone', bg:'#E6E5E2', style:'marble', veins:['#7E7C78','#56544F','#9C9A95'], veinW:3.5, veinA:.55, seed:33},
   {slug:'antarctica',           name:'Antarctica',           tipo:'Corian', bg:'#EFEAE0', style:'terrazzo', chips:['#D8D0C0','#C2BBA8','#E8E2D6'], density:60, chipR:6, seed:6},
   {slug:'arabescato-bianco',    name:'Arabescato Bianco',    tipo:'Terrazzo', bg:'#E5DECF', style:'terrazzo', chips:['#CFE0DE','#E8E2D2','#BFC8C0','#D8C4B0','#A9B4AE'], density:80, chipR:11, seed:8},
+  {slug:'blanca-rodada-n5',     name:'Blanca Rodada',        tipo:'Piedra Natural', bg:'#EEEDE8', style:'granite', specks:['#D8D6D0','#C8C6C0','#E4E2DC','#DEDAD4'], density:900, seed:77, rounded:true, label:'N°5 – 30mm'},
 ];
-const SLAB_TIPOS=['Mármol','Granito','Cuarcita','Neolith','Sinterizado','Terrazzo','Corian','Purastone'];
+const SLAB_TIPOS=['Mármol','Granito','Cuarcita','Neolith','Sinterizado','Terrazzo','Corian','Purastone','Piedra Natural'];
 let selStones=[];
 
 function renderSlab(canvas,m,px){
@@ -965,10 +966,11 @@ function buildSlabs(){
       const badge=document.createElement('div');badge.className='faplac-badge';
       const cnv=document.createElement('canvas');cnv.className='slab-canvas';
       const meta=document.createElement('div');meta.className='slab-meta';
-      meta.innerHTML=`<span class="slab-name">${m.name}</span>`;
+      meta.innerHTML=`<span class="slab-name">${m.name}</span>${m.label?`<span style="font-size:9px;color:#9b958a;display:block;margin-top:1px;letter-spacing:.02em">${m.label}</span>`:''}`;
       card.appendChild(badge);card.appendChild(cnv);card.appendChild(meta);
       card.onclick=()=>selectSlab(m.slug);
       row.appendChild(card);renderSlab(cnv,m,150);
+      if(m.rounded)cnv.style.borderRadius='50%';
     });
     grp.appendChild(lab);grp.appendChild(row);wrap.appendChild(grp);
   });
