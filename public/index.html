@@ -203,6 +203,7 @@ body{background:#fff}
 (function(){
   if(sessionStorage.getItem('rm-auth')==='1'){
     document.getElementById('rm-gate').style.display='none';
+    document.getElementById('rm-discover').style.display='block';
   }
 })();
 
@@ -215,7 +216,7 @@ function rmGateSubmit(){
     var gate=document.getElementById('rm-gate');
     gate.style.transition='opacity .4s';
     gate.style.opacity='0';
-    setTimeout(function(){gate.style.display='none';},400);
+    setTimeout(function(){gate.style.display='none';document.getElementById('rm-discover').style.display='block';},400);
   } else {
     err.style.opacity='1';
     form.classList.remove('rm-shake');
@@ -226,6 +227,23 @@ function rmGateSubmit(){
   }
 }
 </script>
+
+<!-- ── Discovery landing (post-gate, pre-auth) ────────────────── -->
+<div id="rm-discover" style="position:fixed;inset:0;z-index:998;background:#FAFAF8;overflow-y:auto;display:none;font-family:'Inter',-apple-system,sans-serif">
+  <div id="rm-discover-grid" style="column-width:200px;column-gap:14px;padding:24px 20px 360px;max-width:1400px;margin:0 auto"></div>
+  <div onclick="openAuthModal()" style="position:fixed;inset:0;cursor:pointer;z-index:1"></div>
+  <div style="position:fixed;bottom:0;left:0;right:0;z-index:2;pointer-events:none;text-align:center">
+    <div style="height:220px;background:linear-gradient(to bottom,transparent,rgba(250,250,248,.97) 55%)"></div>
+    <div style="background:#FAFAF8;padding:4px 24px 44px">
+      <p style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#A8895A;margin:0 0 10px">realmood · instone</p>
+      <h2 style="font-size:clamp(18px,3.5vw,32px);font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 22px;line-height:1.15">SUBE TU PROYECTO<br>Y MOSTRÁ DE LO QUE SOS CAPAZ</h2>
+      <div style="display:flex;gap:12px;justify-content:center;pointer-events:auto;flex-wrap:wrap">
+        <button type="button" onclick="openAuthModal();event.stopPropagation()" style="padding:13px 30px;background:#1A1A18;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em">Ingresar</button>
+        <button type="button" onclick="if(typeof toggleAuthMode==='function'&&_authMode==='login')toggleAuthMode();openAuthModal();event.stopPropagation()" style="padding:13px 30px;background:transparent;color:#1A1A18;border:1.5px solid #C8C0B4;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em">Crear cuenta gratis</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="rm-wrap" style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
 
@@ -720,6 +738,18 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     window._PROJECTS=PROJECTS;
     window._TERR=TERR;window._SLABS=SLABS;window._MEL=MEL;
+    // Populate discover landing grid
+    (function(){
+      const dg=$('rm-discover-grid');if(!dg)return;
+      const tile=(media,title,tag)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 11px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+tag+'</div>':'');d.appendChild(cap);}return d;};
+      const items=[];
+      PROJECTS.forEach(p=>{let m;if(p.img)m=photoMedia(p.img);else if(p.slab)m=slabMedia({...p.slab,r:16/9});else m=terrMedia({...p.terr,r:16/9});items.push(tile(m,p.name,p.barrio+' · '+p.tag));});
+      TERR.forEach(t=>items.push(tile(terrMedia({...t,r:4/3}),t.title,'Terrazzo · Instone')));
+      SLABS.slice(0,8).forEach(m=>items.push(tile(slabMedia({...m,r:4/3}),m.name,m.tipo+' · De Stefano')));
+      // Shuffle for variety
+      for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}
+      items.forEach(el=>dg.appendChild(el));
+    })();
     const ge=$('grid-explorar');
     const projCards=[];
     PROJECTS.forEach(p=>{
@@ -1555,11 +1585,24 @@ function _onUser(user) {
   if (emailEl) emailEl.textContent = user ? user.email : '';
 }
 
+function _hideDiscover() {
+  const disc = document.getElementById('rm-discover');
+  if (disc && disc.style.display !== 'none') {
+    disc.style.transition = 'opacity .35s';
+    disc.style.opacity = '0';
+    setTimeout(() => { disc.style.display = 'none'; disc.style.opacity = ''; }, 380);
+  }
+}
+
 async function _initAuth() {
   try {
     const { data: { session } } = await sb.auth.getSession();
+    if (session && session.user) _hideDiscover();
     _onUser(session ? session.user : null);
-    sb.auth.onAuthStateChange((_ev, session) => _onUser(session ? session.user : null));
+    sb.auth.onAuthStateChange((_ev, session) => {
+      if (session && session.user) _hideDiscover();
+      _onUser(session ? session.user : null);
+    });
   } catch (e) { /* Supabase no configurado aún */ }
 }
 
