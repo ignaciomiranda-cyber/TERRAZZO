@@ -237,15 +237,15 @@ function rmGateSubmit(){
     </div>
   </div>
   <div id="rm-discover-grid" style="column-width:200px;column-gap:14px;padding:20px 20px 360px;max-width:1400px;margin:0 auto"></div>
-  <div onclick="openAuthModal()" style="position:fixed;inset:0;cursor:pointer;z-index:1"></div>
+  <div onclick="_hideDiscover()" style="position:fixed;inset:0;cursor:pointer;z-index:1"></div>
   <div style="position:fixed;bottom:0;left:0;right:0;z-index:2;pointer-events:none;text-align:center">
     <div style="height:220px;background:linear-gradient(to bottom,transparent,rgba(250,250,248,.97) 55%)"></div>
     <div style="background:#FAFAF8;padding:4px 24px 44px">
       <p style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#A8895A;margin:0 0 10px">realmood · instone</p>
       <h2 style="font-size:clamp(18px,3.5vw,32px);font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 22px;line-height:1.15">SUBE TU PROYECTO<br>Y MOSTRÁ DE LO QUE SOS CAPAZ</h2>
       <div style="display:flex;gap:12px;justify-content:center;pointer-events:auto;flex-wrap:wrap">
-        <button type="button" onclick="openAuthModal();event.stopPropagation()" style="padding:13px 30px;background:#1A1A18;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em">Ingresar</button>
-        <button type="button" onclick="if(typeof toggleAuthMode==='function'&&_authMode==='login')toggleAuthMode();openAuthModal();event.stopPropagation()" style="padding:13px 30px;background:transparent;color:#1A1A18;border:1.5px solid #C8C0B4;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em">Crear cuenta gratis</button>
+        <button type="button" onclick="_hideDiscover();event.stopPropagation()" style="padding:13px 30px;background:#1A1A18;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em">Ingresar</button>
+        <button type="button" onclick="_hideDiscover();event.stopPropagation()" style="padding:13px 30px;background:transparent;color:#1A1A18;border:1.5px solid #C8C0B4;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em">Crear cuenta gratis</button>
       </div>
     </div>
   </div>
