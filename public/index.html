@@ -230,7 +230,13 @@ function rmGateSubmit(){
 
 <!-- ── Discovery landing (post-gate, pre-auth) ────────────────── -->
 <div id="rm-discover" style="position:fixed;inset:0;z-index:998;background:#FAFAF8;overflow-y:auto;display:none;font-family:'Inter',-apple-system,sans-serif">
-  <div id="rm-discover-grid" style="column-width:200px;column-gap:14px;padding:24px 20px 360px;max-width:1400px;margin:0 auto"></div>
+  <div style="position:sticky;top:0;z-index:3;padding:10px 16px;background:rgba(250,250,248,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(200,192,180,.25)">
+    <div style="max-width:520px;margin:0 auto;position:relative">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9b958a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="22" y2="22"></line></svg>
+      <input type="text" placeholder="Encuentra proveedores" style="width:100%;padding:10px 16px 10px 36px;border:1.5px solid #E4DFD5;border-radius:100px;font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#fff;color:#1A1A18;outline:none;box-sizing:border-box;transition:border-color .15s" onfocus="this.style.borderColor='#A8895A'" onblur="this.style.borderColor='#E4DFD5'">
+    </div>
+  </div>
+  <div id="rm-discover-grid" style="column-width:200px;column-gap:14px;padding:20px 20px 360px;max-width:1400px;margin:0 auto"></div>
   <div onclick="openAuthModal()" style="position:fixed;inset:0;cursor:pointer;z-index:1"></div>
   <div style="position:fixed;bottom:0;left:0;right:0;z-index:2;pointer-events:none;text-align:center">
     <div style="height:220px;background:linear-gradient(to bottom,transparent,rgba(250,250,248,.97) 55%)"></div>
@@ -723,29 +729,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── Explorar · Córdoba projects ───────────────────────────
     const PROJECTS=[
-      {name:'Copa Tomada',barrio:'Nueva Córdoba',tag:'Local',img:'proj-1.jpg'},
-      {name:'Estructura roja',barrio:'Centro',tag:'Local',img:'proj-4.jpg'},
-      {name:'Cielorraso modular',barrio:'General Paz',tag:'Comedor',img:'proj-3.jpg'},
-      {name:'Cocina Cerro',barrio:'Cerro de las Rosas',tag:'Cocina',terr:TERR[0]},
-      {name:'Baño en blanco',barrio:'Nueva Córdoba',tag:'Baño',terr:TERR[5]},
-      {name:'Mesada granito',barrio:'General Paz',tag:'Cocina',slab:SLABS[4]},
-      {name:'Piso Cofico',barrio:'Cofico',tag:'Piso',terr:TERR[6]},
-      {name:'Local Güemes',barrio:'Güemes',tag:'Local',terr:TERR[2]},
-      {name:'Patio Villa Belgrano',barrio:'Villa Belgrano',tag:'Exterior',terr:TERR[3]},
-      {name:'Obra atelier',barrio:'Alberdi',tag:'Comedor',img:'proj-2.jpg'},
-      {name:'Mesada antracita',barrio:'Nueva Córdoba',tag:'Cocina',terr:TERR[7]},
-      {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4]}
+      {name:'Copa Tomada',barrio:'Nueva Córdoba',tag:'Local',img:'proj-1.jpg',autor:'Estudio Sierras'},
+      {name:'Estructura roja',barrio:'Centro',tag:'Local',img:'proj-4.jpg',autor:'Arq. Marcos Pérez'},
+      {name:'Cielorraso modular',barrio:'General Paz',tag:'Comedor',img:'proj-3.jpg',autor:'Studio Claro'},
+      {name:'Cocina Cerro',barrio:'Cerro de las Rosas',tag:'Cocina',terr:TERR[0],autor:'Equipo Realmood'},
+      {name:'Baño en blanco',barrio:'Nueva Córdoba',tag:'Baño',terr:TERR[5],autor:'Arq. Laura Vega'},
+      {name:'Mesada granito',barrio:'General Paz',tag:'Cocina',slab:SLABS[4],autor:'Estudio 33'},
+      {name:'Piso Cofico',barrio:'Cofico',tag:'Piso',terr:TERR[6],autor:'Arq. Bruno Salas'},
+      {name:'Local Güemes',barrio:'Güemes',tag:'Local',terr:TERR[2],autor:'Studio Norte'},
+      {name:'Patio Villa Belgrano',barrio:'Villa Belgrano',tag:'Exterior',terr:TERR[3],autor:'Estudio Verdemar'},
+      {name:'Obra atelier',barrio:'Alberdi',tag:'Comedor',img:'proj-2.jpg',autor:'Arq. D. Suárez'},
+      {name:'Mesada antracita',barrio:'Nueva Córdoba',tag:'Cocina',terr:TERR[7],autor:'Estudio Novo'},
+      {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4],autor:'Arq. C. Del Valle'}
     ];
     window._PROJECTS=PROJECTS;
     window._TERR=TERR;window._SLABS=SLABS;window._MEL=MEL;
     // Populate discover landing grid
     (function(){
       const dg=$('rm-discover-grid');if(!dg)return;
-      const tile=(media,title,tag)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 11px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+tag+'</div>':'');d.appendChild(cap);}return d;};
+      const tile=(media,title,tag,autor)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 7px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+tag+'</div>':'');d.appendChild(cap);}if(autor){const ini=autor.replace(/^(Arq\.|Studio|Estudio|Equipo)\s*/,'').charAt(0).toUpperCase();const att=document.createElement('div');att.style.cssText='padding:5px 11px 10px;display:flex;align-items:center;gap:7px;border-top:1px solid #f0ece4';att.innerHTML='<div style="width:20px;height:20px;border-radius:50%;background:#E8E3DA;display:flex;align-items:center;justify-content:center;flex:none;font-size:9px;font-weight:800;color:#7a7468;line-height:1">'+ini+'</div><span style="font-size:10px;color:#7a7468;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+autor+'</span>';d.appendChild(att);}return d;};
       const items=[];
-      PROJECTS.forEach(p=>{let m;if(p.img)m=photoMedia(p.img);else if(p.slab)m=slabMedia({...p.slab,r:16/9});else m=terrMedia({...p.terr,r:16/9});items.push(tile(m,p.name,p.barrio+' · '+p.tag));});
-      TERR.forEach(t=>items.push(tile(terrMedia({...t,r:4/3}),t.title,'Terrazzo · Instone')));
-      SLABS.slice(0,8).forEach(m=>items.push(tile(slabMedia({...m,r:4/3}),m.name,m.tipo+' · De Stefano')));
+      PROJECTS.forEach(p=>{let m;if(p.img)m=photoMedia(p.img);else if(p.slab)m=slabMedia({...p.slab,r:16/9});else m=terrMedia({...p.terr,r:16/9});items.push(tile(m,p.name,p.barrio+' · '+p.tag,p.autor));});
+      TERR.forEach(t=>items.push(tile(terrMedia({...t,r:4/3}),t.title,'Terrazzo · Instone','Instone')));
+      SLABS.slice(0,8).forEach(m=>items.push(tile(slabMedia({...m,r:4/3}),m.name,m.tipo+' · De Stefano','De Stefano')));
       // Shuffle for variety
       for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}
       items.forEach(el=>dg.appendChild(el));
