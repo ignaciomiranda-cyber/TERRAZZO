@@ -666,10 +666,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
       card.appendChild(inner);
-      if(title&&opts.captionBelow===true){
+      if(title&&opts.captionBelow!==false){
+        const views=Math.round(800+hash2(title.length*7.3+(title.charCodeAt(0)||0)*2.1,(tag||'').length*3.7)*28000);
+        const vStr=views>=1000?(views/1000).toFixed(1).replace('.0','')+'k':views;
         const cap=document.createElement('div');
-        cap.style.cssText='padding:9px 6px 2px';
-        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18">'+title+'</div>'+(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+tag+'</div>':'');
+        cap.style.cssText='padding:9px 8px 4px';
+        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'
+          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+tag+'</div>':'')
+          +'<div style="display:flex;align-items:center;gap:4px;margin-top:5px">'
+          +'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b0aaa0" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+          +'<span style="font-size:10px;color:#b0aaa0;font-weight:500">'+vStr+' visualizaciones</span>'
+          +'</div>';
         card.appendChild(cap);
       }
       return card;
