@@ -326,20 +326,21 @@ button.abtn:hover{background:#EFEBE3}
 </head>
 <body>
 <div class="app">
-  <div style="display:flex;align-items:center;gap:9px;margin-bottom:22px">
-    <img src="Realmood-Hibrida-Isotipo.png" alt="realmood" style="width:30px;height:30px;object-fit:contain;flex:none;display:block">
-    <span style="font-size:15px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmoodboard</span>
-  </div>
-
   <div class="rm-header">
     <input id="rm-name" type="text" class="rm-name-input" placeholder="Nombre del proyecto…" oninput="scheduleAutoSave()">
     <span class="rm-save-badge" id="rm-save-badge">Sin guardar</span>
     <button type="button" class="mb-export" onclick="newRealmood()" title="Crear nuevo realmood vacío" style="flex:none">+ Nuevo</button>
   </div>
   <div class="moodboard-section" style="margin-top:4px;border-top:none;padding-top:0">
-    <div class="mb-viewtoggle">
-      <button type="button" class="ks-tab active" data-view="board" onclick="ksView('board')">Tablero</button>
-      <button type="button" class="ks-tab" data-view="scene" onclick="ksView('scene')">Escena · Cocina</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="Realmood-Hibrida-Isotipo.png" alt="realmood" style="width:26px;height:26px;object-fit:contain;flex:none;display:block">
+        <span style="font-size:14px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmoodboard</span>
+      </div>
+      <div class="mb-viewtoggle" style="margin-bottom:0">
+        <button type="button" class="ks-tab active" data-view="board" onclick="ksView('board')">Tablero</button>
+        <button type="button" class="ks-tab" data-view="scene" onclick="ksView('scene')">Escena · Cocina</button>
+      </div>
     </div>
     <div class="mb-body" id="mb-body">
       <div class="mb-stage" id="mb-stage">
