@@ -132,13 +132,13 @@ export default function Home() {
         {mode === 'hire' ? (
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="/buscar"
+              href="/app.html#explorar"
               className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-colors"
             >
               Buscar profesionales
             </a>
             <a
-              href="/proveedores"
+              href="/app.html#inicio"
               className="inline-flex items-center gap-2 border border-zinc-300 text-zinc-800 px-6 py-3 rounded-full text-sm font-semibold hover:border-zinc-500 transition-colors"
             >
               Ver proveedores
@@ -147,13 +147,13 @@ export default function Home() {
         ) : (
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="/registro"
+              href="/app.html#mis-proyectos"
               className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-colors"
             >
               Publicar mi perfil
             </a>
             <a
-              href="/proyectos"
+              href="/app.html#explorar"
               className="inline-flex items-center gap-2 border border-zinc-300 text-zinc-800 px-6 py-3 rounded-full text-sm font-semibold hover:border-zinc-500 transition-colors"
             >
               Ver proyectos disponibles

@@ -1058,6 +1058,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='mis-proyectos')loadMisProyectos();
       if(v==='explorar'){setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
+      if(history.replaceState)history.replaceState(null,'','#'+v);
       const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
       if(mNav)mNav.classList.remove('rm-open');if(mOv)mOv.classList.remove('rm-open');
     };
@@ -1207,7 +1208,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const rc=document.getElementById('rm-content');if(rc)rc.scrollTop=0;
     };
 
-    setView('inicio');
+    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes'];
+    const _hashView=window.location.hash.replace('#','');
+    setView(_validViews.includes(_hashView)?_hashView:'inicio');
 
     // ── Mis proyectos — sección y wizard de carga ────────────
     function loadMisProyectos(){

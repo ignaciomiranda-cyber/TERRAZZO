@@ -38,6 +38,7 @@ jobs:
           cp public/Realmood-Hibrida-Isotipo.png out/Realmood-Hibrida-Isotipo.png
           cp public/Realmood-Hibrida-Grafito.png out/Realmood-Hibrida-Grafito.png
           cp "public/Realmood-IG-blanco-y-negro-fondo-blanco.jpg" "out/Realmood-IG-blanco-y-negro-fondo-blanco.jpg"
+          cp public/index.html out/app.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
