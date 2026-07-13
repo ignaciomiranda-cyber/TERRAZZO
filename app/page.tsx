@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-100">
-        <span className="text-xl font-bold tracking-tight text-zinc-900">instone</span>
+        <img src="/Realmood-Hibrida-Grafito.png" alt="Realmoodboard" className="h-8 w-auto" />
         <nav className="flex items-center gap-6 text-sm text-zinc-500">
           <a href="#about" className="hover:text-zinc-900 transition-colors">Nosotros</a>
           <a href="#contact" className="hover:text-zinc-900 transition-colors">Contacto</a>
