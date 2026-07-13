@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 const HIRE_WORDS = [
   'revestimientos',
@@ -59,7 +59,94 @@ const OFFER_CARDS: PinCard[] = [
   { id: 'o8', img: '/life-1.jpg',                 title: 'Rincón de trabajo',         tag: 'Ambiente',    aspectRatio: '3/4' },
 ]
 
-function PinCard({ card, visible, delay }: { card: PinCard; visible: boolean; delay: number }) {
+function LightboxModal({ img, title, onClose }: { img: string; title: string; onClose: () => void }) {
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        background: 'rgba(0,0,0,0.82)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          maxWidth: 'min(90vw, 900px)',
+          maxHeight: '88vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Cerrar imagen"
+          style={{
+            position: 'absolute',
+            top: '-14px',
+            right: '-14px',
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            background: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+            zIndex: 1,
+            color: '#1A1A18',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+        <img
+          src={img}
+          alt={title}
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: 'calc(88vh - 48px)',
+            objectFit: 'contain',
+            borderRadius: '12px',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+          }}
+        />
+        {title && (
+          <div style={{
+            marginTop: '12px',
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: '14px',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}>
+            {title}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: boolean; delay: number; onExpand: (img: string, title: string) => void }) {
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -99,7 +186,7 @@ function PinCard({ card, visible, delay }: { card: PinCard; visible: boolean; de
             style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
-        {/* Hover overlay with title */}
+        {/* Hover overlay with title + expand button */}
         <div
           style={{
             position: 'absolute',
@@ -110,7 +197,6 @@ function PinCard({ card, visible, delay }: { card: PinCard; visible: boolean; de
             background: 'linear-gradient(0deg, rgba(26,26,24,.75) 0%, transparent 100%)',
             opacity: hovered ? 1 : 0,
             transition: 'opacity 0.18s ease',
-            pointerEvents: 'none',
           }}
         >
           <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff', lineHeight: 1.3, textShadow: '0 1px 4px rgba(0,0,0,.4)' }}>
@@ -120,6 +206,34 @@ function PinCard({ card, visible, delay }: { card: PinCard; visible: boolean; de
             {card.tag}
           </div>
         </div>
+        {/* Expand button – top-right, shown on hover */}
+        <button
+          aria-label="Ampliar imagen"
+          onClick={(e) => { e.stopPropagation(); onExpand(card.img, card.title) }}
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.92)',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
+            opacity: hovered ? 1 : 0,
+            transform: hovered ? 'scale(1)' : 'scale(0.8)',
+            transition: 'opacity 0.18s ease, transform 0.18s ease',
+            color: '#1A1A18',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M8.5 1H13v4.5M13 1L8 6M5.5 13H1V8.5M1 13l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       {/* Caption below */}
       <div style={{ padding: '7px 4px 2px' }}>
@@ -132,7 +246,7 @@ function PinCard({ card, visible, delay }: { card: PinCard; visible: boolean; de
   )
 }
 
-function PinterestGrid({ cards, visible }: { cards: PinCard[]; visible: boolean }) {
+function PinterestGrid({ cards, visible, onExpand }: { cards: PinCard[]; visible: boolean; onExpand: (img: string, title: string) => void }) {
   return (
     <div
       style={{
@@ -145,7 +259,7 @@ function PinterestGrid({ cards, visible }: { cards: PinCard[]; visible: boolean 
       }}
     >
       {cards.map((card, i) => (
-        <PinCard key={card.id} card={card} visible={visible} delay={i * 50} />
+        <PinCard key={card.id} card={card} visible={visible} delay={i * 50} onExpand={onExpand} />
       ))}
     </div>
   )
@@ -158,6 +272,9 @@ export default function Home() {
   const [gridVisible, setGridVisible] = useState(true)
   const [displayedCards, setDisplayedCards] = useState<PinCard[]>(HIRE_CARDS)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const [lightbox, setLightbox] = useState<{ img: string; title: string } | null>(null)
+  const openLightbox = useCallback((img: string, title: string) => setLightbox({ img, title }), [])
+  const closeLightbox = useCallback(() => setLightbox(null), [])
 
   useEffect(() => {
     setWordIdx(0)
@@ -196,6 +313,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      {lightbox && <LightboxModal img={lightbox.img} title={lightbox.title} onClose={closeLightbox} />}
       <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-100 flex-shrink-0">
         <img src="/Realmood-Hibrida-Grafito.png" alt="Realmoodboard" className="h-8 w-auto" />
         <nav className="flex items-center gap-6 text-sm text-zinc-500">
@@ -284,7 +402,7 @@ export default function Home() {
             className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(90deg, #f7f4f0 0%, transparent 100%)' }}
           />
-          <PinterestGrid cards={displayedCards} visible={gridVisible} />
+          <PinterestGrid cards={displayedCards} visible={gridVisible} onExpand={openLightbox} />
         </div>
       </main>
 
