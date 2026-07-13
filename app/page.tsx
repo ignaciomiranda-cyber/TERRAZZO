@@ -29,110 +29,124 @@ const OFFER_BULLETS = [
   'Mostrá tu portfolio a miles de potenciales clientes',
 ]
 
-type MapPin = {
+type PinCard = {
   id: string
-  x: number
-  y: number
-  type: 'project' | 'material'
-  label: string
+  img: string
+  title: string
+  tag: string
+  aspectRatio: string
 }
 
-const HIRE_PINS: MapPin[] = [
-  { id: 'h1', x: 18, y: 26, type: 'project', label: 'Mármol · Palermo' },
-  { id: 'h2', x: 56, y: 52, type: 'project', label: 'Terrazo · Belgrano' },
-  { id: 'h3', x: 72, y: 16, type: 'project', label: 'Piedra · San Isidro' },
-  { id: 'h4', x: 36, y: 70, type: 'project', label: 'Interiores · Almagro' },
-  { id: 'h5', x: 80, y: 62, type: 'project', label: 'Terrazo · Tigre' },
+const HIRE_CARDS: PinCard[] = [
+  { id: 'h1', img: '/proj-2.jpg',            title: 'Obra en Córdoba',         tag: 'Proyecto',     aspectRatio: '3/4' },
+  { id: 'h2', img: '/cocina-ambiente.jpg',   title: 'Cocina en terracota',     tag: 'Ambiente',     aspectRatio: '4/5' },
+  { id: 'h3', img: '/prod-eco.jpg',          title: 'Instalación ECO-005',     tag: 'Inspiración',  aspectRatio: '2/3' },
+  { id: 'h4', img: '/mesa-ambiente.jpg',     title: 'Mesa de comedor',         tag: 'Ambiente',     aspectRatio: '4/3' },
+  { id: 'h5', img: '/life-1.jpg',            title: 'Rincón de trabajo',       tag: 'Ambiente',     aspectRatio: '3/4' },
+  { id: 'h6', img: '/proj-3.jpg',            title: 'Detalle de obra',         tag: 'Proyecto',     aspectRatio: '1/1' },
+  { id: 'h7', img: '/prod-brass.jpg',        title: 'Mesa de vidrio y latón',  tag: 'Detalle',      aspectRatio: '4/5' },
+  { id: 'h8', img: '/proj-4.jpg',            title: 'Proyecto terminado',      tag: 'Proyecto',     aspectRatio: '3/4' },
 ]
 
-const OFFER_PINS: MapPin[] = [
-  { id: 'o1', x: 26, y: 32, type: 'material', label: 'Piedra blanca rodada' },
-  { id: 'o2', x: 62, y: 47, type: 'material', label: 'Terrazo gris perla' },
-  { id: 'o3', x: 18, y: 64, type: 'material', label: 'Cuarcita azul' },
-  { id: 'o4', x: 74, y: 24, type: 'project', label: 'Proyecto · Recoleta' },
-  { id: 'o5', x: 50, y: 74, type: 'project', label: 'Cocina · Núñez' },
+const OFFER_CARDS: PinCard[] = [
+  { id: 'o1', img: '/pasted-1781733750827-0.png', title: 'Combinación de materiales', tag: 'Inspiración', aspectRatio: '4/5' },
+  { id: 'o2', img: '/prod-brass.jpg',             title: 'Mesa de vidrio y latón',    tag: 'Detalle',     aspectRatio: '3/4' },
+  { id: 'o3', img: '/pasted-1781733758235-0.png', title: 'Paleta natural',            tag: 'Inspiración', aspectRatio: '2/3' },
+  { id: 'o4', img: '/prod-bangkok.jpg',           title: 'Sillas Bangkok',            tag: 'Mobiliario',  aspectRatio: '4/3' },
+  { id: 'o5', img: '/pasted-1781734716790-0.png', title: 'Moodboard cálido',          tag: 'Inspiración', aspectRatio: '3/4' },
+  { id: 'o6', img: '/mesa-ambienteop2.jpg',       title: 'Detalle de mesa',           tag: 'Detalle',     aspectRatio: '4/5' },
+  { id: 'o7', img: '/cocina-ambiente.jpg',        title: 'Cocina en terracota',        tag: 'Ambiente',    aspectRatio: '1/1' },
+  { id: 'o8', img: '/life-1.jpg',                 title: 'Rincón de trabajo',         tag: 'Ambiente',    aspectRatio: '3/4' },
 ]
 
-function MapBackground() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="absolute inset-0 w-full h-full"
-      viewBox="0 0 480 440"
-      preserveAspectRatio="xMidYMid slice"
-    >
-      <rect width="480" height="440" fill="#f0e8dc" />
-      {/* Major horizontal streets */}
-      <rect x="0" y="110" width="480" height="14" fill="#e3d8cc" />
-      <rect x="0" y="248" width="480" height="14" fill="#e3d8cc" />
-      <rect x="0" y="372" width="480" height="10" fill="#e3d8cc" />
-      {/* Major vertical streets */}
-      <rect x="106" y="0" width="14" height="440" fill="#e3d8cc" />
-      <rect x="256" y="0" width="14" height="440" fill="#e3d8cc" />
-      <rect x="394" y="0" width="10" height="440" fill="#e3d8cc" />
-      {/* Minor horizontal streets */}
-      <rect x="0" y="56" width="480" height="5" fill="#ebe3d8" />
-      <rect x="0" y="182" width="480" height="4" fill="#ebe3d8" />
-      <rect x="0" y="310" width="480" height="4" fill="#ebe3d8" />
-      <rect x="0" y="415" width="480" height="4" fill="#ebe3d8" />
-      {/* Minor vertical streets */}
-      <rect x="52" y="0" width="4" height="440" fill="#ebe3d8" />
-      <rect x="182" y="0" width="4" height="440" fill="#ebe3d8" />
-      <rect x="330" y="0" width="4" height="440" fill="#ebe3d8" />
-      <rect x="458" y="0" width="4" height="440" fill="#ebe3d8" />
-      {/* Parks */}
-      <rect x="120" y="124" width="58" height="54" fill="#c5d4a0" rx="4" />
-      <rect x="270" y="262" width="56" height="44" fill="#c5d4a0" rx="4" />
-      <rect x="56" y="60" width="42" height="42" fill="#c5d4a0" rx="4" />
-      <rect x="404" y="124" width="44" height="36" fill="#c5d4a0" rx="4" />
-      {/* Water feature right edge */}
-      <path
-        d="M414 0 Q448 110 428 220 Q408 330 438 440 L480 440 L480 0 Z"
-        fill="#d8e8f0"
-        opacity="0.55"
-      />
-    </svg>
-  )
-}
+function PinCard({ card, visible, delay }: { card: PinCard; visible: boolean; delay: number }) {
+  const [hovered, setHovered] = useState(false)
 
-function PinMarker({
-  pin,
-  visible,
-  delay,
-}: {
-  pin: MapPin
-  visible: boolean
-  delay: number
-}) {
-  const isProject = pin.type === 'project'
   return (
     <div
       style={{
-        position: 'absolute',
-        left: `${pin.x}%`,
-        top: `${pin.y}%`,
-        transform: 'translate(-50%, -50%)',
+        breakInside: 'avoid',
+        marginBottom: '12px',
+        display: 'inline-block',
+        width: '100%',
         opacity: visible ? 1 : 0,
-        transition: `opacity 0.25s ease ${delay}ms`,
-        zIndex: 10,
-        pointerEvents: 'none',
+        transform: visible ? 'translateY(0)' : 'translateY(12px)',
+        transition: `opacity 0.3s ease ${delay}ms, transform 0.3s ease ${delay}ms`,
       }}
     >
       <div
         style={{
-          padding: '5px 11px',
-          borderRadius: '20px',
-          fontSize: '11px',
-          fontWeight: 600,
-          whiteSpace: 'nowrap',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-          background: isProject ? '#18181b' : '#b45309',
-          color: 'white',
-          userSelect: 'none',
+          position: 'relative',
+          borderRadius: '14px',
+          overflow: 'hidden',
+          background: '#f0ebe3',
+          boxShadow: hovered
+            ? '0 12px 32px rgba(0,0,0,0.18)'
+            : '0 1px 4px rgba(0,0,0,0.08)',
+          transform: hovered ? 'translateY(-3px)' : 'none',
+          transition: 'box-shadow 0.22s ease, transform 0.22s ease',
+          cursor: 'pointer',
         }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        {pin.label}
+        {/* Image */}
+        <div style={{ aspectRatio: card.aspectRatio, overflow: 'hidden' }}>
+          <img
+            src={card.img}
+            alt={card.title}
+            loading="lazy"
+            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+        {/* Hover overlay with title */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: '28px 12px 12px',
+            background: 'linear-gradient(0deg, rgba(26,26,24,.75) 0%, transparent 100%)',
+            opacity: hovered ? 1 : 0,
+            transition: 'opacity 0.18s ease',
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff', lineHeight: 1.3, textShadow: '0 1px 4px rgba(0,0,0,.4)' }}>
+            {card.title}
+          </div>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,.75)', marginTop: '2px' }}>
+            {card.tag}
+          </div>
+        </div>
       </div>
+      {/* Caption below */}
+      <div style={{ padding: '7px 4px 2px' }}>
+        <div style={{ fontSize: '12px', fontWeight: 600, color: '#1A1A18', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {card.title}
+        </div>
+        <div style={{ fontSize: '11px', color: '#9b958a', marginTop: '1px' }}>{card.tag}</div>
+      </div>
+    </div>
+  )
+}
+
+function PinterestGrid({ cards, visible }: { cards: PinCard[]; visible: boolean }) {
+  return (
+    <div
+      style={{
+        columns: '160px',
+        columnGap: '12px',
+        padding: '20px 16px',
+        height: '100%',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+      }}
+    >
+      {cards.map((card, i) => (
+        <PinCard key={card.id} card={card} visible={visible} delay={i * 50} />
+      ))}
     </div>
   )
 }
@@ -141,17 +155,17 @@ export default function Home() {
   const [mode, setMode] = useState<'hire' | 'offer'>('hire')
   const [wordIdx, setWordIdx] = useState(0)
   const [fading, setFading] = useState(false)
-  const [pinsVisible, setPinsVisible] = useState(true)
-  const [displayedPins, setDisplayedPins] = useState<MapPin[]>(HIRE_PINS)
+  const [gridVisible, setGridVisible] = useState(true)
+  const [displayedCards, setDisplayedCards] = useState<PinCard[]>(HIRE_CARDS)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     setWordIdx(0)
     setFading(false)
-    setPinsVisible(false)
+    setGridVisible(false)
     const t = setTimeout(() => {
-      setDisplayedPins(mode === 'hire' ? HIRE_PINS : OFFER_PINS)
-      setPinsVisible(true)
+      setDisplayedCards(mode === 'hire' ? HIRE_CARDS : OFFER_CARDS)
+      setGridVisible(true)
     }, 260)
     return () => clearTimeout(t)
   }, [mode])
@@ -286,12 +300,14 @@ export default function Home() {
           )}
         </div>
 
-        {/* Right: map preview with pins */}
-        <div className="flex-1 relative overflow-hidden" style={{ minHeight: '300px' }}>
-          <MapBackground />
-          {displayedPins.map((pin, i) => (
-            <PinMarker key={pin.id} pin={pin} visible={pinsVisible} delay={i * 55} />
-          ))}
+        {/* Right: Pinterest-style project grid */}
+        <div className="flex-1 relative overflow-hidden bg-[#f7f4f0]" style={{ minHeight: '300px' }}>
+          {/* Gradient fade on left edge to blend with white content */}
+          <div
+            className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
+            style={{ background: 'linear-gradient(90deg, #f7f4f0 0%, transparent 100%)' }}
+          />
+          <PinterestGrid cards={displayedCards} visible={gridVisible} />
         </div>
       </main>
 
