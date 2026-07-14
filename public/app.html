@@ -124,6 +124,27 @@ body{background:#fff}
 .prof-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.18);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;font-size:20px;line-height:1;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:background .15s}
 .prof-close:hover{background:rgba(255,255,255,.32)}
 @media(max-width:540px){#prof-overlay{padding:0}#prof-box{border-radius:0 0 24px 24px;margin:0}.prof-portfolio{grid-template-columns:repeat(3,1fr)}.prof-body{padding:60px 20px 24px}}
+/* ── Board selector modal ── */
+#board-sel-overlay{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px 16px}
+#board-sel-box{background:#fff;border-radius:24px;max-width:420px;width:100%;box-shadow:0 40px 100px rgba(0,0,0,.28);overflow:hidden;max-height:82vh;display:flex;flex-direction:column}
+.brd-header{padding:20px 24px 16px;border-bottom:1px solid #ECE8E0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brd-title{font-size:16px;font-weight:700;color:#1A1A18;letter-spacing:-.01em}
+.brd-list{flex:1;overflow-y:auto;padding:8px 12px}
+.brd-item{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:14px;cursor:pointer;transition:background .15s;border:none;width:100%;font-family:inherit;text-align:left;background:transparent}
+.brd-item:hover{background:#F5F3EF}
+.brd-cover{width:56px;height:56px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#E8E4DC}
+.brd-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.brd-item-info .brd-name{font-size:14px;font-weight:700;color:#1A1A18;line-height:1.3}
+.brd-item-info .brd-count{font-size:11px;color:#9b958a;margin-top:2px}
+.brd-footer{padding:10px 12px 16px;border-top:1px solid #ECE8E0;flex-shrink:0}
+.brd-new-btn{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;cursor:pointer;width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;font-weight:600;color:#1A1A18;transition:background .15s}
+.brd-new-btn:hover{background:#F5F3EF}
+.brd-create-input{width:100%;padding:11px 14px;border:1.5px solid #D7D1C6;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;outline:none;box-sizing:border-box;transition:border-color .15s}
+.brd-create-input:focus{border-color:#1A1A18}
+.brd-create-row{display:flex;gap:8px;margin-top:10px}
+.brd-create-cancel{flex:1;padding:10px;border:1px solid #D7D1C6;border-radius:100px;background:transparent;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer}
+.brd-create-save{flex:1;padding:10px;border:none;border-radius:100px;background:#E8352C;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.brd-create-save:hover{opacity:.88}
 </style>
 </head>
 <body>
@@ -442,11 +463,136 @@ function rmGateSubmit(){
   </div>
 </div>
 
+<!-- ── Board selector modal ── -->
+<div id="board-sel-overlay" onclick="if(event.target===this)closeBoardSel()" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px 16px">
+  <div id="board-sel-box">
+    <div class="brd-header">
+      <span class="brd-title">Guardar en tablero</span>
+      <button onclick="closeBoardSel()" style="background:transparent;border:none;cursor:pointer;color:#9b958a;padding:4px;border-radius:8px;line-height:0;font-size:24px;font-weight:300">×</button>
+    </div>
+    <div class="brd-list" id="brd-list"></div>
+    <div class="brd-footer" id="brd-footer"></div>
+  </div>
+</div>
+
 <div id="ins-toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A18;color:#fff;padding:11px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap">—</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const $=id=>document.getElementById(id);
+
+    // ── Board management ──────────────────────────────────────
+    function getBoards(){try{return JSON.parse(localStorage.getItem('ins_boards')||'[]');}catch(e){return[];}}
+    function saveBoards(b){try{localStorage.setItem('ins_boards',JSON.stringify(b));}catch(e){}}
+    let _pendingPin=null;
+    window.openBoardSel=function(pinData){
+      _pendingPin=pinData;
+      renderBrdList();
+      const o=document.getElementById('board-sel-overlay');
+      o.style.display='flex';
+    };
+    window.closeBoardSel=function(){
+      document.getElementById('board-sel-overlay').style.display='none';
+      _pendingPin=null;
+    };
+    window.renderBrdList=function(){
+      const boards=getBoards();
+      const list=document.getElementById('brd-list');
+      const footer=document.getElementById('brd-footer');
+      if(!boards.length){
+        list.innerHTML='<div style="text-align:center;padding:28px 16px;color:#9b958a;font-size:13px">Aún no tenés tableros. Creá uno para empezar a organizar.</div>';
+      }else{
+        list.innerHTML=boards.map(b=>{
+          const pins=b.pins||[];
+          const covSrc=pins.find(p=>p.img)?pins.find(p=>p.img).img:'';
+          const cov=covSrc?'<img src="'+covSrc+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8E4DC,#D4CFC6)"></div>';
+          return '<button class="brd-item" onclick="window.saveToBoard(\''+b.id+'\')">'
+            +'<div class="brd-cover">'+cov+'</div>'
+            +'<div class="brd-item-info">'
+            +'<div class="brd-name">'+b.name+'</div>'
+            +'<div class="brd-count">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</div>'
+            +'</div></button>';
+        }).join('');
+      }
+      footer.innerHTML='<button class="brd-new-btn" onclick="window.showCreateBoard()">'
+        +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+        +'Crear tablero</button>';
+    };
+    window.showCreateBoard=function(){
+      const footer=document.getElementById('brd-footer');
+      footer.innerHTML='<div style="padding:4px 0 2px">'
+        +'<input class="brd-create-input" id="brd-name-input" type="text" placeholder="Nombre del tablero" maxlength="60">'
+        +'<div class="brd-create-row">'
+        +'<button class="brd-create-cancel" onclick="window.renderBrdList()">Cancelar</button>'
+        +'<button class="brd-create-save" onclick="window.confirmCreateBoard()">Crear</button>'
+        +'</div></div>';
+      const inp=document.getElementById('brd-name-input');
+      if(inp)inp.focus();
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')window.confirmCreateBoard();});
+    };
+    window.confirmCreateBoard=function(){
+      const inp=document.getElementById('brd-name-input');
+      const name=(inp?inp.value.trim():'')||'Mi tablero';
+      const boards=getBoards();
+      const newBoard={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,createdAt:new Date().toISOString(),pins:[]};
+      boards.push(newBoard);
+      saveBoards(boards);
+      if(_pendingPin){window.saveToBoard(newBoard.id);}
+      else{window.closeBoardSel();if(typeof loadBoardsView==='function')loadBoardsView();toast('Tablero "'+name+'" creado ✓');}
+    };
+    window.saveToBoard=function(boardId){
+      const boards=getBoards();
+      const b=boards.find(x=>x.id===boardId);
+      if(!b)return;
+      if(_pendingPin){
+        const already=(b.pins||[]).some(p=>p.id===_pendingPin.id);
+        if(!already){if(!b.pins)b.pins=[];b.pins.push({..._pendingPin,savedAt:new Date().toISOString()});}
+        saveBoards(boards);
+        const nm=b.name;
+        window.closeBoardSel();
+        toast('Guardado en "'+nm+'" ✓');
+        if(window._refreshSaveBtn)window._refreshSaveBtn();
+        if($('view-saved')&&$('view-saved').style.display!=='none'&&typeof loadBoardsView==='function')loadBoardsView();
+      }
+    };
+    window.openBoardDetail=function(boardId){
+      const boards=getBoards();
+      const b=boards.find(x=>x.id===boardId);
+      if(!b)return;
+      const vm=$('view-saved');if(!vm)return;
+      const pins=b.pins||[];
+      let html='<button onclick="loadBoardsView()" style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:none;padding:0 0 20px;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer">'
+        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Tableros</button>'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">'
+        +'<div><h1 style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 4px">'+b.name+'</h1>'
+        +'<span style="font-size:13px;color:#9b958a">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</span></div>'
+        +'<button onclick="window.deleteBoardConfirm(\''+b.id+'\')" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px solid #E4DFD5;background:transparent;color:#9b958a;cursor:pointer">Eliminar tablero</button>'
+        +'</div>';
+      if(!pins.length){
+        html+='<div style="padding:40px;border:1.5px dashed #D7D1C6;border-radius:16px;text-align:center;color:#9b958a;font-size:13px">Este tablero está vacío. Guardá proyectos desde Explorar.</div>';
+      }else{
+        html+='<div style="column-width:200px;column-gap:12px">';
+        pins.forEach(p=>{
+          const cover=p.img?'<img src="'+p.img+'" style="width:100%;display:block;border-radius:12px 12px 0 0;object-fit:cover">':'<div style="height:120px;background:linear-gradient(135deg,#E8E4DC,#D4CFC6);border-radius:12px 12px 0 0"></div>';
+          html+='<div style="break-inside:avoid;margin-bottom:12px;background:#fff;border:1px solid #E4DFD5;border-radius:14px;overflow:hidden">'
+            +cover
+            +'<div style="padding:10px 12px">'
+            +'<div style="font-size:13px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.title+'</div>'
+            +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+( p.subtitle||'')+'</div>'
+            +'</div></div>';
+        });
+        html+='</div>';
+      }
+      vm.innerHTML=html;
+    };
+    window.deleteBoardConfirm=function(id){
+      if(!confirm('¿Eliminar este tablero y todos sus pines?'))return;
+      const boards=getBoards().filter(b=>b.id!==id);
+      saveBoards(boards);
+      loadBoardsView();
+      toast('Tablero eliminado');
+    };
+
     // ── noise + color helpers ─────────────────────────────────
     const h2r=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -632,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const save=document.createElement('button');
       save.type='button';save.textContent=opts.saveLabel||'Guardar';
       save.style.cssText='position:absolute;top:12px;right:12px;background:#E0491A;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:9px 15px;cursor:pointer;opacity:0;transition:opacity .18s;';
-      save.addEventListener('click',e=>{e.stopPropagation();toast(opts.saveMsg||('Guardado en Tus realmood · '+title));});
+      save.addEventListener('click',e=>{e.stopPropagation();if(window.openBoardSel){const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});}else{toast(opts.saveMsg||('Guardado en Tus realmood · '+title));}});
       inner.appendChild(save);
       if(opts.overlayBtns){
         const row=document.createElement('div');
@@ -1041,7 +1187,45 @@ document.addEventListener('DOMContentLoaded', function() {
       vm.querySelector('#board-back').addEventListener('click',loadMoodList);
     }
 
-    $('view-saved').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Tableros','Los proyectos que guardes desde Explorar quedarán acá para volver a verlos y reutilizar sus materiales.',{label:'Ver proyectos de Córdoba',go:'explorar'});
+    function loadBoardsView(){
+      const vm=$('view-saved');if(!vm)return;
+      const boards=getBoards();
+      if(!boards.length){
+        vm.innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Tableros','Guardá proyectos desde Explorar o Novedades para organizarlos en tableros temáticos.',{label:'Ver proyectos',go:'explorar'});
+        const crBtn=document.createElement('div');crBtn.style.cssText='text-align:center;margin-top:16px';
+        crBtn.innerHTML='<button onclick="openBoardSel(null)" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 24px;border-radius:100px;border:1.5px solid #D7D1C6;background:#fff;color:#1A1A18;cursor:pointer;transition:all .15s">+ Crear tablero</button>';
+        vm.appendChild(crBtn);
+        return;
+      }
+      let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px">'
+        +'<div><h1 style="font-size:22px;font-weight:700;margin:0 0 3px;letter-spacing:-.01em">Tableros</h1>'
+        +'<span style="font-size:13px;color:#9b958a">'+boards.length+' tablero'+(boards.length!==1?'s':'')+'</span></div>'
+        +'<button onclick="openBoardSel(null)" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:100px;border:1.5px solid #D7D1C6;background:#fff;color:#1A1A18;cursor:pointer">'
+        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+        +'Crear tablero</button></div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">';
+      boards.forEach(b=>{
+        const pins=b.pins||[];
+        const covers=pins.slice(0,4).map(p=>p.img?'<img src="'+p.img+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8E4DC,#D4CFC6)"></div>');
+        while(covers.length<4)covers.push('<div style="width:100%;height:100%;background:#F0EDE8"></div>');
+        const mosaic='<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;height:130px;border-radius:14px 14px 0 0;overflow:hidden">'
+          +covers.map(c=>'<div style="overflow:hidden">'+c+'</div>').join('')+'</div>';
+        html+='<div data-brd-id="'+b.id+'" style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden;cursor:pointer;transition:box-shadow .18s" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.12)\'" onmouseout="this.style.boxShadow=\'\'">'
+          +mosaic
+          +'<div style="padding:14px 16px">'
+          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</div>'
+          +'</div></div>';
+      });
+      html+='</div>';
+      vm.innerHTML=html;
+      vm.querySelectorAll('[data-brd-id]').forEach(card=>{
+        const id=card.getAttribute('data-brd-id');
+        card.addEventListener('click',()=>openBoardDetail(id));
+      });
+    }
+    window.loadBoardsView=loadBoardsView;
+    loadBoardsView();
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
@@ -1055,6 +1239,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
       if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
       if(v==='mood')loadMoodList();
+      if(v==='saved')loadBoardsView();
       if(v==='mis-proyectos')loadMisProyectos();
       if(v==='explorar'){setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
@@ -1182,24 +1367,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         inspSec.style.display='';
       }else{inspSec.style.display='none';}
-      // Save button
+      // Save button — board selector flow
       const saveBtn=document.getElementById('pm-save-btn');
-      const savedKey='ins_pinned';
       const pinId=data.title||data.subtitle||'pin';
+      const pinImg=data.img||(document.querySelector('#pm-main img')?document.querySelector('#pm-main img').src:'')||'';
       const heartSvg='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-      const refreshSaveBtn=()=>{let s;try{s=JSON.parse(localStorage.getItem(savedKey)||'[]');}catch(e){s=[];}
-        const isSaved=s.some(x=>x.id===pinId);
+      const refreshSaveBtn=()=>{
+        const isSaved=getBoards().some(b=>(b.pins||[]).some(p=>p.id===pinId));
         saveBtn.className='pm-save-btn'+(isSaved?' saved':'');
-        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar en Realmood');};
-      refreshSaveBtn();
-      saveBtn.onclick=()=>{
-        let lst;try{lst=JSON.parse(localStorage.getItem(savedKey)||'[]');}catch(e){lst=[];}
-        const already=lst.some(x=>x.id===pinId);
-        if(already){lst=lst.filter(x=>x.id!==pinId);toast('Quitado de Realmood');}
-        else{lst.push({id:pinId,title:data.title,subtitle:data.subtitle,savedAt:new Date().toISOString()});toast('Guardado en Realmood ✓');}
-        try{localStorage.setItem(savedKey,JSON.stringify(lst));}catch(e){}
-        refreshSaveBtn();
+        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar');
       };
+      window._refreshSaveBtn=refreshSaveBtn;
+      refreshSaveBtn();
+      saveBtn.onclick=()=>openBoardSel({id:pinId,title:data.title,subtitle:data.subtitle,img:pinImg});
       // Update back button label
       const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
       const bl=document.getElementById('vpin-back-label');if(bl)bl.textContent='Volver a '+(labels[window._pinPrevView]||'inicio');
