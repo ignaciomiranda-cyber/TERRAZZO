@@ -59,6 +59,221 @@ const OFFER_CARDS: PinCard[] = [
   { id: 'o8', img: '/life-1.jpg',                 title: 'Rincón de trabajo',         tag: 'Ambiente',    aspectRatio: '3/4' },
 ]
 
+// ── Password gate ──────────────────────────────────────────────────
+
+const GATE_PASSWORD = '987'
+const GATE_SESSION_KEY = 'rm-auth'
+
+function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
+  const [value, setValue] = useState('')
+  const [error, setError] = useState(false)
+  const [shaking, setShaking] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (value === GATE_PASSWORD) {
+      sessionStorage.setItem(GATE_SESSION_KEY, '1')
+      onUnlock()
+    } else {
+      setError(true)
+      setShaking(true)
+      setValue('')
+      inputRef.current?.focus()
+      setTimeout(() => setShaking(false), 400)
+      setTimeout(() => setError(false), 2000)
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        background: '#F4F1EB',
+        display: 'flex',
+        alignItems: 'stretch',
+        overflow: 'hidden',
+        fontFamily: "'Space Grotesk', sans-serif",
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap');
+        @keyframes rmShake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+        .rm-gate-shake { animation: rmShake 0.35s ease; }
+        .rm-gate-panel { width: 42%; max-width: 608px; }
+        @media (max-width: 768px) { .rm-gate-panel { display: none !important; } }
+      `}</style>
+
+      {/* Left column */}
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          padding: 'clamp(32px,7vh,100px) clamp(24px,8vw,120px) clamp(24px,5vh,50px)',
+          overflowY: 'auto',
+        }}
+      >
+        {/* Brand */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexShrink: 0 }}>
+          <svg width="52" height="48" viewBox="0 0 130 120">
+            <rect x="38" y="32" width="62" height="62" rx="13" fill="#16140F" stroke="#F4F1EB" strokeWidth="3" transform="rotate(16 69 63)"/>
+            <rect x="34" y="30" width="62" height="62" rx="13" fill="#16140F" stroke="#F4F1EB" strokeWidth="3"/>
+            <g transform="rotate(-16 61 59)">
+              <clipPath id="logoLux"><rect x="30" y="28" width="62" height="62" rx="13"/></clipPath>
+              <rect x="30" y="28" width="62" height="62" rx="13" fill="#4A4A52" stroke="#F4F1EB" strokeWidth="3"/>
+              <g clipPath="url(#logoLux)">
+                <text x="57" y="63" fontFamily="'Space Grotesk',sans-serif" fontSize="104" fontWeight="600" fill="#F4F1EB" textAnchor="middle" dominantBaseline="central">R</text>
+              </g>
+            </g>
+          </svg>
+          <div style={{ fontSize: '20px', fontWeight: 500, letterSpacing: '-0.01em', color: '#16140F' }}>
+            realmoodboard
+          </div>
+        </div>
+
+        {/* Tagline */}
+        <div style={{ padding: 'clamp(36px,8vh,100px) 0 clamp(28px,4vh,52px)', flexShrink: 0 }}>
+          <div style={{ fontSize: '11px', letterSpacing: '.3em', textTransform: 'uppercase', color: '#A8895A', marginBottom: 'clamp(14px,3vh,34px)' }}>
+            Acceso privado
+          </div>
+          <div
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontWeight: 300,
+              fontSize: 'clamp(26px,5vw,54px)',
+              lineHeight: 1.08,
+              letterSpacing: '-0.012em',
+              color: '#16140F',
+              maxWidth: '560px',
+            }}
+          >
+            El momento en que una idea toca la{' '}
+            <span style={{ fontStyle: 'italic', fontWeight: 400 }}>materia</span>.
+          </div>
+        </div>
+
+        {/* Password form */}
+        <form
+          onSubmit={handleSubmit}
+          className={shaking ? 'rm-gate-shake' : ''}
+          style={{ display: 'flex', flexDirection: 'column', gap: '22px', margin: 0, flexShrink: 0, maxWidth: '430px' }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <span style={{ fontSize: '11px', letterSpacing: '.22em', textTransform: 'uppercase', color: '#9a948a' }}>
+              Contraseña
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '1.5px solid #16140F', paddingBottom: '14px' }}>
+              <input
+                ref={inputRef}
+                type="password"
+                placeholder="••••••••••"
+                autoComplete="current-password"
+                value={value}
+                onChange={e => setValue(e.target.value)}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  background: 'transparent',
+                  outline: 'none',
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: '19px',
+                  letterSpacing: '.12em',
+                  color: '#16140F',
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: '12px',
+                  letterSpacing: '.18em',
+                  textTransform: 'uppercase',
+                  color: '#A8895A',
+                  padding: 0,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Entrar <span style={{ fontSize: '16px' }}>→</span>
+              </button>
+            </div>
+            <p
+              style={{
+                color: '#C04030',
+                fontSize: '12px',
+                fontWeight: 500,
+                margin: 0,
+                letterSpacing: '.04em',
+                opacity: error ? 1 : 0,
+                transition: 'opacity 0.2s',
+              }}
+            >
+              Contraseña incorrecta
+            </p>
+          </div>
+        </form>
+
+        <div style={{ flex: 1, minHeight: '24px' }} />
+
+        {/* Footer */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px',
+            borderTop: '1px solid rgba(22,20,15,.12)',
+            paddingTop: '18px',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ fontSize: '11px', letterSpacing: '.2em', textTransform: 'uppercase', color: '#b3ada2' }}>
+            Realmood Estudio
+          </div>
+          <div style={{ fontSize: '11px', letterSpacing: '.04em', color: '#b3ada2' }}>
+            © 2026 Mildesign SAS · Todos los derechos reservados
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel – desktop only */}
+      <div
+        className="rm-gate-panel"
+        style={{ background: '#16140F', flexShrink: 0, position: 'relative', overflow: 'hidden' }}
+      >
+        <svg width="300" height="277" viewBox="0 0 130 120" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%) rotate(-6deg)' }}>
+          <rect x="38" y="32" width="62" height="62" rx="13" fill="#2A2A2E" stroke="#16140F" strokeWidth="3" transform="rotate(16 69 63)"/>
+          <rect x="34" y="30" width="62" height="62" rx="13" fill="#2A2A2E" stroke="#16140F" strokeWidth="3"/>
+          <g transform="rotate(-16 61 59)">
+            <clipPath id="heroClip"><rect x="30" y="28" width="62" height="62" rx="13"/></clipPath>
+            <rect x="30" y="28" width="62" height="62" rx="13" fill="#4A4A52" stroke="#16140F" strokeWidth="3"/>
+            <g clipPath="url(#heroClip)">
+              <text x="57" y="63" fontFamily="'Space Grotesk',sans-serif" fontSize="104" fontWeight="600" fill="#16140F" textAnchor="middle" dominantBaseline="central">R</text>
+            </g>
+          </g>
+        </svg>
+        <div style={{ position: 'absolute', left: 0, top: 0, width: '1px', height: '100%', background: 'rgba(186,150,92,.30)' }} />
+      </div>
+    </div>
+  )
+}
+
+// ── Lightbox ───────────────────────────────────────────────────────
+
 function LightboxModal({ img, title, onClose }: { img: string; title: string; onClose: () => void }) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -72,7 +287,7 @@ function LightboxModal({ img, title, onClose }: { img: string; title: string; on
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 9999,
+        zIndex: 9000,
         background: 'rgba(0,0,0,0.82)',
         display: 'flex',
         alignItems: 'center',
@@ -146,6 +361,8 @@ function LightboxModal({ img, title, onClose }: { img: string; title: string; on
   )
 }
 
+// ── PinCard ────────────────────────────────────────────────────────
+
 function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: boolean; delay: number; onExpand: (img: string, title: string) => void }) {
   const [hovered, setHovered] = useState(false)
 
@@ -177,7 +394,6 @@ function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: b
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Image */}
         <div style={{ aspectRatio: card.aspectRatio, overflow: 'hidden' }}>
           <img
             src={card.img}
@@ -186,7 +402,6 @@ function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: b
             style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
-        {/* Hover overlay with title + expand button */}
         <div
           style={{
             position: 'absolute',
@@ -206,7 +421,6 @@ function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: b
             {card.tag}
           </div>
         </div>
-        {/* Expand button – top-right, shown on hover */}
         <button
           aria-label="Ampliar imagen"
           onClick={(e) => { e.stopPropagation(); onExpand(card.img, card.title) }}
@@ -235,7 +449,6 @@ function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: b
           </svg>
         </button>
       </div>
-      {/* Caption below */}
       <div style={{ padding: '7px 4px 2px' }}>
         <div style={{ fontSize: '12px', fontWeight: 600, color: '#1A1A18', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {card.title}
@@ -265,7 +478,10 @@ function PinterestGrid({ cards, visible, onExpand }: { cards: PinCard[]; visible
   )
 }
 
+// ── Hero page ──────────────────────────────────────────────────────
+
 export default function Home() {
+  const [gated, setGated] = useState(true)
   const [mode, setMode] = useState<'hire' | 'offer'>('hire')
   const [wordIdx, setWordIdx] = useState(0)
   const [fading, setFading] = useState(false)
@@ -275,6 +491,13 @@ export default function Home() {
   const [lightbox, setLightbox] = useState<{ img: string; title: string } | null>(null)
   const openLightbox = useCallback((img: string, title: string) => setLightbox({ img, title }), [])
   const closeLightbox = useCallback(() => setLightbox(null), [])
+
+  // Check sessionStorage on mount — bypass gate if already authenticated
+  useEffect(() => {
+    if (sessionStorage.getItem(GATE_SESSION_KEY) === '1') {
+      setGated(false)
+    }
+  }, [])
 
   useEffect(() => {
     setWordIdx(0)
@@ -313,6 +536,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      {gated && <PasswordGate onUnlock={() => setGated(false)} />}
       {lightbox && <LightboxModal img={lightbox.img} title={lightbox.title} onClose={closeLightbox} />}
       <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-100 flex-shrink-0">
         <img src="/Realmood-Hibrida-Grafito.png" alt="Realmoodboard" className="h-8 w-auto" />
@@ -397,7 +621,6 @@ export default function Home() {
 
         {/* Right: Pinterest-style project grid */}
         <div className="flex-1 relative overflow-hidden bg-[#f7f4f0]" style={{ minHeight: '300px' }}>
-          {/* Gradient fade on left edge to blend with white content */}
           <div
             className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(90deg, #f7f4f0 0%, transparent 100%)' }}
