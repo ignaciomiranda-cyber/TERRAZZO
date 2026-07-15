@@ -95,6 +95,10 @@ body{background:#fff}
 .pm-brd-new:hover{background:#F5F3EF}
 .pm-save-btn:hover{opacity:.88}
 .pm-save-btn.saved{background:#1A1A18}
+.pm-save-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-shrink:0}
+.pm-save-row .pm-save-btn{margin-bottom:0}
+.pm-board-select{height:40px;padding:0 12px;border:1.5px solid #E4DFD5;border-radius:100px;font-family:inherit;font-size:13px;color:#1A1A18;background:#fff;cursor:pointer;outline:none;min-width:0;flex:1;transition:border-color .15s}
+.pm-board-select:focus{border-color:#1A1A18}
 .pm-inspire{padding:0 0 28px}
 .pm-inspire-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:12px}
 .pm-inspire-img{border-radius:10px;overflow:hidden;aspect-ratio:1;background:#F5F3EF;cursor:zoom-in}
@@ -397,7 +401,10 @@ function rmGateSubmit(){
               <div class="pm-main" id="pm-main"></div>
             </div>
             <div class="pm-col-r">
-              <button type="button" class="pm-save-btn" id="pm-save-btn"></button>
+              <div class="pm-save-row" id="pm-save-row">
+                <select id="pm-board-select" class="pm-board-select" style="display:none"></select>
+                <button type="button" class="pm-save-btn" id="pm-save-btn"></button>
+              </div>
               <div id="pm-board-panel"></div>
               <div id="pm-hdr"></div>
               <div id="pm-detail-imgs" style="display:none;flex-direction:row;gap:7px;margin-bottom:18px"></div>
@@ -781,11 +788,35 @@ document.addEventListener('DOMContentLoaded', function() {
       const ov=document.createElement('div');
       ov.style.cssText='position:absolute;inset:0;opacity:0;transition:opacity .18s;pointer-events:none;background:linear-gradient(180deg,rgba(26,26,24,.32) 0%,rgba(26,26,24,0) 26%,rgba(26,26,24,0) 60%,rgba(26,26,24,.45));';
       inner.appendChild(ov);
+      const saveRow=document.createElement('div');
+      saveRow.style.cssText='position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:7px;opacity:0;transition:opacity .18s;';
+      const boardSel=document.createElement('select');
+      boardSel.style.cssText='height:30px;padding:0 8px;border:none;border-radius:100px;font-family:inherit;font-size:11px;color:#1A1A18;background:rgba(255,255,255,.96);cursor:pointer;outline:none;max-width:120px;display:none;';
+      boardSel.addEventListener('click',e=>e.stopPropagation());
       const save=document.createElement('button');
       save.type='button';save.textContent=opts.saveLabel||'Guardar';
-      save.style.cssText='position:absolute;top:12px;right:12px;background:#E0491A;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:9px 15px;cursor:pointer;opacity:0;transition:opacity .18s;';
-      save.addEventListener('click',e=>{e.stopPropagation();if(window.openBoardSel){const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});}else{toast(opts.saveMsg||('Guardado en Tus realmood · '+title));}});
-      inner.appendChild(save);
+      save.style.cssText='background:#E0491A;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:9px 15px;cursor:pointer;white-space:nowrap;';
+      save.addEventListener('click',e=>{
+        e.stopPropagation();
+        const bds=getBoards();
+        const boardId=boardSel.value;
+        if(!bds.length||!boardId){
+          if(window.openBoardSel){const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});}
+          else{toast(opts.saveMsg||('Guardado en Tus realmood · '+title));}
+          return;
+        }
+        const b=bds.find(x=>x.id===boardId);if(!b)return;
+        const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';
+        const pd={id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc};
+        const already=(b.pins||[]).some(p=>p.id===pd.id);
+        if(!already){if(!b.pins)b.pins=[];b.pins.push({...pd,savedAt:new Date().toISOString()});}
+        saveBoards(bds);
+        toast('Guardado en "'+b.name+'" ✓');
+        if(window.loadMoodList)window.loadMoodList();
+      });
+      saveRow.appendChild(boardSel);
+      saveRow.appendChild(save);
+      inner.appendChild(saveRow);
       if(opts.overlayBtns){
         const row=document.createElement('div');
         row.style.cssText='position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;opacity:0;transition:opacity .18s;';
@@ -801,8 +832,8 @@ document.addEventListener('DOMContentLoaded', function() {
         inner.appendChild(titleOv);
         inner._titleOv=titleOv;
       }
-      inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';save.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';});
-      inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';save.style.opacity='0';if(inner._row)inner._row.style.opacity='0';if(inner._titleOv)inner._titleOv.style.opacity='0';});
+      inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';saveRow.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';const bds=getBoards();boardSel.innerHTML=bds.map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('');boardSel.style.display=bds.length?'':'none';});
+      inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';saveRow.style.opacity='0';if(inner._row)inner._row.style.opacity='0';if(inner._titleOv)inner._titleOv.style.opacity='0';});
       if(opts.detail){
         const det=opts.detail;
         inner.addEventListener('click',e=>{
@@ -1428,22 +1459,31 @@ document.addEventListener('DOMContentLoaded', function() {
       const pmPanel=document.getElementById('pm-board-panel');
       if(pmPanel)pmPanel.style.display='none';
       const refreshSaveBtn=()=>{
-        const isSaved=getBoards().some(b=>(b.pins||[]).some(p=>p.id===pinId));
+        const bds=getBoards();
+        const isSaved=bds.some(b=>(b.pins||[]).some(p=>p.id===pinId));
         saveBtn.className='pm-save-btn'+(isSaved?' saved':'');
-        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar en realmood');
+        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar');
+        const sel=document.getElementById('pm-board-select');
+        if(sel){
+          const prev=sel.value;
+          sel.innerHTML=bds.map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('');
+          if(prev&&bds.some(b=>b.id===prev))sel.value=prev;
+          sel.style.display=bds.length?'':'none';
+        }
       };
       window._refreshSaveBtn=refreshSaveBtn;
       refreshSaveBtn();
-      // Save button toggles inline board panel
+      // Save button saves directly to selected board — no popup
       saveBtn.onclick=()=>{
-        const panel=document.getElementById('pm-board-panel');
-        if(!panel)return;
-        if(panel.style.display==='none'||!panel.style.display){
+        const sel=document.getElementById('pm-board-select');
+        const bds=getBoards();
+        if(!bds.length||!sel||!sel.value){
           _renderPmBoardPanel();
-          panel.style.display='block';
-        }else{
-          panel.style.display='none';
+          const panel=document.getElementById('pm-board-panel');
+          if(panel)panel.style.display='block';
+          return;
         }
+        window._pmSaveToBoard(sel.value);
       };
       // Inline board panel renderer
       function _renderPmBoardPanel(){
