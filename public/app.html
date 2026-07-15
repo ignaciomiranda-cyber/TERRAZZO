@@ -23,12 +23,12 @@ body{background:#fff}
 #rm-nav{overflow:visible;z-index:10}
 #rm-nav .rm-logo-text{display:none}
 #rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
-#rm-nav [data-view]{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav [data-view]{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav [data-view] span{display:none!important}
 #rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav [data-view]:hover::after{opacity:1}
 #rm-nav [data-view]:hover{z-index:301}
-#rm-nav .rm-cfg-btn{justify-content:center!important;padding:11px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav .rm-cfg-btn{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav .rm-cfg-btn span{display:none!important}
 #rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav .rm-cfg-btn:hover::after{opacity:1}
@@ -84,7 +84,15 @@ body{background:#fff}
 .pm-col-r{padding:28px 32px;display:flex;flex-direction:column}
 .pm-main{width:100%;flex:1;display:flex;align-items:center;justify-content:center}
 .pm-main img,.pm-main canvas{display:block;width:100%;height:100%;min-height:480px;object-fit:cover}
-.pm-save-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#E8352C;color:#fff;border:none;border-radius:100px;padding:13px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:22px;width:100%;flex-shrink:0}
+.pm-save-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#E8352C;color:#fff;border:none;border-radius:100px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:10px;align-self:flex-start;flex-shrink:0}
+#pm-board-panel{display:none;border:1.5px solid #E4DFD5;border-radius:14px;overflow:hidden;margin-bottom:16px;background:#fff;max-height:320px;overflow-y:auto}
+.pm-brd-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border:none;border-bottom:1px solid #F0EDE8;width:100%;background:transparent;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s}
+.pm-brd-row:last-of-type{border-bottom:none}
+.pm-brd-row:hover{background:#F5F3EF}
+.pm-brd-row-cover{width:44px;height:44px;border-radius:8px;overflow:hidden;flex:none;background:#E8E4DC}
+.pm-brd-row-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.pm-brd-new{display:flex;align-items:center;gap:10px;padding:10px 14px;border:none;border-top:1px solid #ECE8E0;width:100%;background:transparent;font-family:inherit;font-size:13px;font-weight:600;color:#1A1A18;cursor:pointer;transition:background .15s}
+.pm-brd-new:hover{background:#F5F3EF}
 .pm-save-btn:hover{opacity:.88}
 .pm-save-btn.saved{background:#1A1A18}
 .pm-inspire{padding:0 0 28px}
@@ -282,39 +290,35 @@ function rmGateSubmit(){
     </button>
 
     <button type="button" data-view="inicio" data-label="Novedades" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
       <span>Novedades</span>
     </button>
     <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
       <span>Explorar</span>
     </button>
     <button type="button" data-view="mood" data-label="Tus realmood" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><rect x="6.5" y="7.5" width="5" height="5" rx="1"></rect><circle cx="16" cy="9.6" r="2"></circle><rect x="9" y="14" width="8" height="2.6" rx="1.1"></rect></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><rect x="6.5" y="7.5" width="5" height="5" rx="1"></rect><circle cx="16" cy="9.6" r="2"></circle><rect x="9" y="14" width="8" height="2.6" rx="1.1"></rect></svg>
       <span>Tus realmood</span>
     </button>
 
     <div class="rm-divider" style="height:1px;background:#ECE8E0;margin:10px 12px"></div>
 
     <button type="button" data-view="mis-proyectos" data-label="Mis proyectos" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
       <span>Mis proyectos</span>
     </button>
     <button type="button" data-view="crear" data-label="Crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
       <span>Crear</span>
     </button>
-    <button type="button" data-view="saved" data-label="Tableros" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3.5 7.6a2 2 0 0 1 2-2h3a2 2 0 0 1 1.5.7l1.1 1.2h7.4a2 2 0 0 1 2 2v8.4a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2z"></path></svg>
-      <span>Tableros</span>
-    </button>
     <button type="button" data-view="mensajes" data-label="Mensajes" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
       <span>Mensajes</span>
     </button>
 
     <button type="button" class="rm-cfg-btn" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s" onmouseenter="this.style.background='#F3F0EA'" onmouseleave="this.style.background='transparent'">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>Configuración</span>
     </button>
   </aside>
@@ -394,6 +398,7 @@ function rmGateSubmit(){
             </div>
             <div class="pm-col-r">
               <button type="button" class="pm-save-btn" id="pm-save-btn"></button>
+              <div id="pm-board-panel"></div>
               <div id="pm-hdr"></div>
               <div id="pm-detail-imgs" style="display:none;flex-direction:row;gap:7px;margin-bottom:18px"></div>
               <p class="pm-desc" id="pm-desc"></p>
@@ -467,7 +472,7 @@ function rmGateSubmit(){
 <div id="board-sel-overlay" onclick="if(event.target===this)closeBoardSel()" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px 16px">
   <div id="board-sel-box">
     <div class="brd-header">
-      <span class="brd-title">Guardar en tablero</span>
+      <span class="brd-title">Guardar en realmood</span>
       <button onclick="closeBoardSel()" style="background:transparent;border:none;cursor:pointer;color:#9b958a;padding:4px;border-radius:8px;line-height:0;font-size:24px;font-weight:300">×</button>
     </div>
     <div class="brd-list" id="brd-list"></div>
@@ -500,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const list=document.getElementById('brd-list');
       const footer=document.getElementById('brd-footer');
       if(!boards.length){
-        list.innerHTML='<div style="text-align:center;padding:28px 16px;color:#9b958a;font-size:13px">Aún no tenés tableros. Creá uno para empezar a organizar.</div>';
+        list.innerHTML='<div style="text-align:center;padding:28px 16px;color:#9b958a;font-size:13px">Aún no tenés realmoods. Creá uno para empezar a organizar.</div>';
       }else{
         list.innerHTML=boards.map(b=>{
           const pins=b.pins||[];
@@ -516,12 +521,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       footer.innerHTML='<button class="brd-new-btn" onclick="window.showCreateBoard()">'
         +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
-        +'Crear tablero</button>';
+        +'Crear realmood</button>';
     };
     window.showCreateBoard=function(){
       const footer=document.getElementById('brd-footer');
       footer.innerHTML='<div style="padding:4px 0 2px">'
-        +'<input class="brd-create-input" id="brd-name-input" type="text" placeholder="Nombre del tablero" maxlength="60">'
+        +'<input class="brd-create-input" id="brd-name-input" type="text" placeholder="Nombre del realmood" maxlength="60">'
         +'<div class="brd-create-row">'
         +'<button class="brd-create-cancel" onclick="window.renderBrdList()">Cancelar</button>'
         +'<button class="brd-create-save" onclick="window.confirmCreateBoard()">Crear</button>'
@@ -532,13 +537,13 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     window.confirmCreateBoard=function(){
       const inp=document.getElementById('brd-name-input');
-      const name=(inp?inp.value.trim():'')||'Mi tablero';
+      const name=(inp?inp.value.trim():'')||'Mi realmood';
       const boards=getBoards();
       const newBoard={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,createdAt:new Date().toISOString(),pins:[]};
       boards.push(newBoard);
       saveBoards(boards);
       if(_pendingPin){window.saveToBoard(newBoard.id);}
-      else{window.closeBoardSel();if(typeof loadBoardsView==='function')loadBoardsView();toast('Tablero "'+name+'" creado ✓');}
+      else{window.closeBoardSel();if(typeof loadMoodList==='function')loadMoodList();setView('mood');toast('Realmood "'+name+'" creado ✓');}
     };
     window.saveToBoard=function(boardId){
       const boards=getBoards();
@@ -552,24 +557,25 @@ document.addEventListener('DOMContentLoaded', function() {
         window.closeBoardSel();
         toast('Guardado en "'+nm+'" ✓');
         if(window._refreshSaveBtn)window._refreshSaveBtn();
-        if($('view-saved')&&$('view-saved').style.display!=='none'&&typeof loadBoardsView==='function')loadBoardsView();
+        if($('view-mood')&&$('view-mood').style.display!=='none'&&typeof loadMoodList==='function')loadMoodList();
       }
     };
     window.openBoardDetail=function(boardId){
       const boards=getBoards();
       const b=boards.find(x=>x.id===boardId);
       if(!b)return;
-      const vm=$('view-saved');if(!vm)return;
+      const vm=$('view-mood');if(!vm)return;
+      setView('mood');
       const pins=b.pins||[];
-      let html='<button onclick="loadBoardsView()" style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:none;padding:0 0 20px;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer">'
-        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Tableros</button>'
+      let html='<button onclick="loadMoodList()" style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:none;padding:0 0 20px;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer">'
+        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Tus realmoods</button>'
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">'
         +'<div><h1 style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 4px">'+b.name+'</h1>'
         +'<span style="font-size:13px;color:#9b958a">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</span></div>'
-        +'<button onclick="window.deleteBoardConfirm(\''+b.id+'\')" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px solid #E4DFD5;background:transparent;color:#9b958a;cursor:pointer">Eliminar tablero</button>'
+        +'<button onclick="window.deleteBoardConfirm(\''+b.id+'\')" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px solid #E4DFD5;background:transparent;color:#9b958a;cursor:pointer">Eliminar realmood</button>'
         +'</div>';
       if(!pins.length){
-        html+='<div style="padding:40px;border:1.5px dashed #D7D1C6;border-radius:16px;text-align:center;color:#9b958a;font-size:13px">Este tablero está vacío. Guardá proyectos desde Explorar.</div>';
+        html+='<div style="padding:40px;border:1.5px dashed #D7D1C6;border-radius:16px;text-align:center;color:#9b958a;font-size:13px">Este realmood está vacío. Guardá proyectos desde Novedades o Explorar.</div>';
       }else{
         html+='<div style="column-width:200px;column-gap:12px">';
         pins.forEach(p=>{
@@ -586,11 +592,11 @@ document.addEventListener('DOMContentLoaded', function() {
       vm.innerHTML=html;
     };
     window.deleteBoardConfirm=function(id){
-      if(!confirm('¿Eliminar este tablero y todos sus pines?'))return;
+      if(!confirm('¿Eliminar este realmood y todos sus pines?'))return;
       const boards=getBoards().filter(b=>b.id!==id);
       saveBoards(boards);
-      loadBoardsView();
-      toast('Tablero eliminado');
+      loadMoodList();
+      toast('Realmood eliminado');
     };
 
     // ── noise + color helpers ─────────────────────────────────
@@ -1099,32 +1105,75 @@ document.addEventListener('DOMContentLoaded', function() {
     function fmtDate(iso){try{const d=new Date(iso);return d.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'2-digit'});}catch(e){return '';}}
     function loadMoodList(){
       const vm=$('view-mood');if(!vm)return;
+      const boards=getBoards();
       let list;try{list=JSON.parse(localStorage.getItem('ins_realmoods')||'[]');}catch(e){list=[];}
       list=[...list].reverse();
-      if(!list.length){
-        vm.innerHTML='<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">Tus realmood</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">Creá un realmood en el configurador y guardalo para verlo acá.</p><button type="button" data-goto="crear" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Crear realmood</button></div>';
-        vm.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>setView(el.getAttribute('data-goto'))));
+
+      if(!boards.length && !list.length){
+        vm.innerHTML='<div style="max-width:520px;margin:80px auto;text-align:center">'
+          +'<div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">'
+          +'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></div>'
+          +'<h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">Tus realmoods</h1>'
+          +'<p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">Guardá proyectos desde Novedades o Explorar para armar tus realmoods.</p>'
+          +'<button type="button" onclick="window.openBoardSel(null)" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Crear realmood</button>'
+          +'</div>';
         return;
       }
-      let html='<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:24px"><h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Tus realmood</h1><span style="font-size:13px;color:#9b958a">'+list.length+' guardado'+(list.length!==1?'s':'')+'</span></div>';
-      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">';
-      list.forEach((rm,i)=>{
-        const st=rm.state||{};
-        const tags=[st.terrazzo?'Terrazzo':'',... (st.faplacs||[]).slice(0,1).map(()=>'Melamina'),(st.stones||[]).slice(0,1).map(()=>'Piedra'),(st.pisos||[]).slice(0,1).map(()=>'Piso')].filter(Boolean).join(' · ')||'Sin materiales';
-        html+='<div data-rm-id="'+rm.id+'" style="background:#fff;border-radius:16px;border:1px solid #E4DFD5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">'
-          +'<div style="height:8px;background:linear-gradient(90deg,#1A1A18,#6f6a60)"></div>'
-          +'<div style="padding:18px 18px 14px">'
-          +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rm.name+'</div>'
-          +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">'+tags+'</div>'
-          +'<div style="font-size:10px;color:#B3AD9F;margin-bottom:14px">Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>'
-          +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
-          +'<button type="button" class="rm-view-btn" style="flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Ver tablero →</button>'
-          +'<button type="button" class="rm-load-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Cargar</button>'
-          +'<button type="button" class="rm-del-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Borrar</button>'
-          +'</div></div></div>';
-      });
-      html+='</div>';
+
+      let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px">'
+        +'<div><h1 style="font-size:22px;font-weight:700;margin:0 0 3px;letter-spacing:-.01em">Tus realmoods</h1>'
+        +'<span style="font-size:13px;color:#9b958a">'+boards.length+' realmood'+(boards.length!==1?'s':'')+'</span></div>'
+        +'<button onclick="window.openBoardSel(null)" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:100px;border:1.5px solid #D7D1C6;background:#fff;color:#1A1A18;cursor:pointer">'
+        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+        +'Crear realmood</button></div>';
+
+      if(boards.length){
+        html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:32px">';
+        boards.forEach(b=>{
+          const pins=b.pins||[];
+          const covers=pins.slice(0,4).map(p=>p.img?'<img src="'+p.img+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8E4DC,#D4CFC6)"></div>');
+          while(covers.length<4)covers.push('<div style="width:100%;height:100%;background:#F0EDE8"></div>');
+          const mosaic='<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;height:130px;border-radius:14px 14px 0 0;overflow:hidden">'
+            +covers.map(c=>'<div style="overflow:hidden">'+c+'</div>').join('')+'</div>';
+          html+='<div data-brd-id="'+b.id+'" style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden;cursor:pointer;transition:box-shadow .18s" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.12)\'" onmouseout="this.style.boxShadow=\'\'">'
+            +mosaic
+            +'<div style="padding:14px 16px">'
+            +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.name+'</div>'
+            +'<div style="font-size:11px;color:#9b958a">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</div>'
+            +'</div></div>';
+        });
+        html+='</div>';
+      }else{
+        html+='<div style="padding:28px;border:1.5px dashed #D7D1C6;border-radius:14px;text-align:center;color:#9b958a;font-size:13px;margin-bottom:32px">Guardá proyectos desde Novedades o Explorar para llenar tus realmoods.</div>';
+      }
+
+      if(list.length){
+        html+='<div style="border-top:1px solid #ECE8E0;padding-top:24px;margin-top:8px">'
+          +'<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:16px">Moodboards del configurador</div>'
+          +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">';
+        list.forEach((rm)=>{
+          const st=rm.state||{};
+          const tags=[st.terrazzo?'Terrazzo':'',...(st.faplacs||[]).slice(0,1).map(()=>'Melamina'),...(st.stones||[]).slice(0,1).map(()=>'Piedra')].filter(Boolean).join(' · ')||'Sin materiales';
+          html+='<div data-rm-id="'+rm.id+'" style="background:#fff;border-radius:16px;border:1px solid #E4DFD5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">'
+            +'<div style="height:8px;background:linear-gradient(90deg,#1A1A18,#6f6a60)"></div>'
+            +'<div style="padding:18px 18px 14px">'
+            +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rm.name+'</div>'
+            +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">'+tags+'</div>'
+            +'<div style="font-size:10px;color:#B3AD9F;margin-bottom:14px">Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>'
+            +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+            +'<button type="button" class="rm-view-btn" style="flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Ver →</button>'
+            +'<button type="button" class="rm-load-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Cargar</button>'
+            +'<button type="button" class="rm-del-btn" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Borrar</button>'
+            +'</div></div></div>';
+        });
+        html+='</div></div>';
+      }
+
       vm.innerHTML=html;
+      vm.querySelectorAll('[data-brd-id]').forEach(card=>{
+        const id=card.getAttribute('data-brd-id');
+        card.addEventListener('click',()=>openBoardDetail(id));
+      });
       vm.querySelectorAll('[data-rm-id]').forEach(card=>{
         const id=card.getAttribute('data-rm-id');
         const rmObj=list.find(r=>r.id===id);
@@ -1134,17 +1183,18 @@ document.addEventListener('DOMContentLoaded', function() {
           setTimeout(()=>{const f=$('crear-frame');if(f)f.contentWindow.postMessage({loadRmId:id},'*');},400);
         });
         card.querySelector('.rm-del-btn').addEventListener('click',()=>{
-          if(!confirm('¿Borrar este realmood?'))return;
+          if(!confirm('¿Borrar este moodboard?'))return;
           let lst;try{lst=JSON.parse(localStorage.getItem('ins_realmoods')||'[]');}catch(e){lst=[];}
           lst=lst.filter(x=>x.id!==id);
           try{localStorage.setItem('ins_realmoods',JSON.stringify(lst));}catch(e){}
           loadMoodList();
-          toast('Realmood eliminado');
+          toast('Moodboard eliminado');
         });
       });
     }
     loadMoodList();
     window._loadMoodList=loadMoodList;
+    window.loadMoodList=loadMoodList;
 
     function openMoodBoard(rm){
       if(!rm)return;
@@ -1159,7 +1209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         +'<h1 style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 6px">'+rm.name+'</h1>'
         +'<div style="font-size:12px;color:#9b958a;margin-bottom:24px">'+tags+' · Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>';
       if(pins.length){
-        html+='<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:14px;letter-spacing:-.01em">Tableros</div>'
+        html+='<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:14px;letter-spacing:-.01em">Pines guardados</div>'
           +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:36px">';
         pins.forEach(p=>{
           html+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:14px;padding:14px 16px;cursor:pointer" onclick="toast(\'Abriendo \'+\''+p.title.replace(/'/g,"\\'")+'\''+'\')">'
@@ -1191,18 +1241,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const vm=$('view-saved');if(!vm)return;
       const boards=getBoards();
       if(!boards.length){
-        vm.innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Tableros','Guardá proyectos desde Explorar o Novedades para organizarlos en tableros temáticos.',{label:'Ver proyectos',go:'explorar'});
+        vm.innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h12v15.5l-6-4.2-6 4.2z"/></svg>','Realmoods','Guardá proyectos desde Explorar o Novedades para organizarlos en tus realmoods.',{label:'Ver proyectos',go:'explorar'});
         const crBtn=document.createElement('div');crBtn.style.cssText='text-align:center;margin-top:16px';
-        crBtn.innerHTML='<button onclick="openBoardSel(null)" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 24px;border-radius:100px;border:1.5px solid #D7D1C6;background:#fff;color:#1A1A18;cursor:pointer;transition:all .15s">+ Crear tablero</button>';
+        crBtn.innerHTML='<button onclick="openBoardSel(null)" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 24px;border-radius:100px;border:1.5px solid #D7D1C6;background:#fff;color:#1A1A18;cursor:pointer;transition:all .15s">+ Crear realmood</button>';
         vm.appendChild(crBtn);
         return;
       }
       let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px">'
-        +'<div><h1 style="font-size:22px;font-weight:700;margin:0 0 3px;letter-spacing:-.01em">Tableros</h1>'
-        +'<span style="font-size:13px;color:#9b958a">'+boards.length+' tablero'+(boards.length!==1?'s':'')+'</span></div>'
+        +'<div><h1 style="font-size:22px;font-weight:700;margin:0 0 3px;letter-spacing:-.01em">Realmoods</h1>'
+        +'<span style="font-size:13px;color:#9b958a">'+boards.length+' realmood'+(boards.length!==1?'s':'')+'</span></div>'
         +'<button onclick="openBoardSel(null)" style="display:flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;padding:10px 18px;border-radius:100px;border:1.5px solid #D7D1C6;background:#fff;color:#1A1A18;cursor:pointer">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
-        +'Crear tablero</button></div>';
+        +'Crear realmood</button></div>';
       html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">';
       boards.forEach(b=>{
         const pins=b.pins||[];
@@ -1372,16 +1422,91 @@ document.addEventListener('DOMContentLoaded', function() {
       const pinId=data.title||data.subtitle||'pin';
       const pinImg=data.img||(document.querySelector('#pm-main img')?document.querySelector('#pm-main img').src:'')||'';
       const heartSvg='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+      const pinData={id:pinId,title:data.title,subtitle:data.subtitle,img:pinImg};
+      window._pmPinData=pinData;
+      // Reset inline board panel
+      const pmPanel=document.getElementById('pm-board-panel');
+      if(pmPanel)pmPanel.style.display='none';
       const refreshSaveBtn=()=>{
         const isSaved=getBoards().some(b=>(b.pins||[]).some(p=>p.id===pinId));
         saveBtn.className='pm-save-btn'+(isSaved?' saved':'');
-        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar');
+        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar en realmood');
       };
       window._refreshSaveBtn=refreshSaveBtn;
       refreshSaveBtn();
-      saveBtn.onclick=()=>openBoardSel({id:pinId,title:data.title,subtitle:data.subtitle,img:pinImg});
+      // Save button toggles inline board panel
+      saveBtn.onclick=()=>{
+        const panel=document.getElementById('pm-board-panel');
+        if(!panel)return;
+        if(panel.style.display==='none'||!panel.style.display){
+          _renderPmBoardPanel();
+          panel.style.display='block';
+        }else{
+          panel.style.display='none';
+        }
+      };
+      // Inline board panel renderer
+      function _renderPmBoardPanel(){
+        const panel=document.getElementById('pm-board-panel');if(!panel)return;
+        const bds=getBoards();
+        let h='';
+        if(!bds.length){
+          h='<div style="padding:14px 16px;text-align:center;font-size:13px;color:#9b958a">Aún no tenés realmoods. Creá uno abajo.</div>';
+        }else{
+          bds.forEach(b=>{
+            const bp=b.pins||[];
+            const covSrc=bp.find(p=>p.img)?bp.find(p=>p.img).img:'';
+            const cov=covSrc?'<img src="'+covSrc+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8E4DC,#D4CFC6)"></div>';
+            const alreadySaved=bp.some(p=>p.id===pinId);
+            h+='<button class="pm-brd-row" onclick="window._pmSaveToBoard(\''+b.id+'\')" style="'+(alreadySaved?'background:#F5F3EF;':'')+'">'+
+              '<div class="pm-brd-row-cover">'+cov+'</div>'+
+              '<div style="flex:1;min-width:0">'+
+              '<div style="font-size:14px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.name+'</div>'+
+              '<div style="font-size:11px;color:#9b958a">'+bp.length+' pin'+(bp.length!==1?'s':'')+(alreadySaved?' · Guardado':'')+'</div>'+
+              '</div>'+
+              (alreadySaved?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A18" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>':'')+
+              '</button>';
+          });
+        }
+        h+='<button class="pm-brd-new" onclick="window._pmShowCreateBoard()">'
+          +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+          +'Crear realmood</button>';
+        panel.innerHTML=h;
+      }
+      window._pmSaveToBoard=function(boardId){
+        const pd=window._pmPinData;if(!pd)return;
+        const bds=getBoards();const b=bds.find(x=>x.id===boardId);if(!b)return;
+        const already=(b.pins||[]).some(p=>p.id===pd.id);
+        if(!already){if(!b.pins)b.pins=[];b.pins.push({...pd,savedAt:new Date().toISOString()});}
+        saveBoards(bds);
+        const panel=document.getElementById('pm-board-panel');
+        if(panel)panel.style.display='none';
+        toast('Guardado en "'+b.name+'" ✓');
+        refreshSaveBtn();
+        if(window.loadMoodList)window.loadMoodList();
+      };
+      window._pmShowCreateBoard=function(){
+        const panel=document.getElementById('pm-board-panel');if(!panel)return;
+        panel.innerHTML='<div style="padding:12px">'
+          +'<input class="brd-create-input" id="pm-brd-name-inp" type="text" placeholder="Nombre del realmood" maxlength="60">'
+          +'<div class="brd-create-row">'
+          +'<button class="brd-create-cancel" onclick="document.getElementById(\'pm-board-panel\').style.display=\'none\'">Cancelar</button>'
+          +'<button class="brd-create-save" onclick="window._pmConfirmCreate()">Crear</button>'
+          +'</div></div>';
+        const inp=document.getElementById('pm-brd-name-inp');
+        if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')window._pmConfirmCreate();});}
+      };
+      window._pmConfirmCreate=function(){
+        const inp=document.getElementById('pm-brd-name-inp');
+        const name=(inp?inp.value.trim():'')||'Mi realmood';
+        const bds=getBoards();
+        const nb={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,createdAt:new Date().toISOString(),pins:[]};
+        bds.push(nb);saveBoards(bds);
+        if(window._pmPinData)window._pmSaveToBoard(nb.id);
+        else{const panel=document.getElementById('pm-board-panel');if(panel)panel.style.display='none';toast('Realmood "'+name+'" creado ✓');}
+      };
       // Update back button label
-      const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
+      const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmoods','saved':'Guardados','mensajes':'Mensajes'};
       const bl=document.getElementById('vpin-back-label');if(bl)bl.textContent='Volver a '+(labels[window._pinPrevView]||'inicio');
       // Navigate to pin page
       window._setViewPin();
