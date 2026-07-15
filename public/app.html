@@ -84,7 +84,7 @@ body{background:#fff}
 .pm-col-r{padding:28px 32px;display:flex;flex-direction:column}
 .pm-main{width:100%;flex:1;display:flex;align-items:center;justify-content:center}
 .pm-main img,.pm-main canvas{display:block;width:100%;height:100%;min-height:480px;object-fit:cover}
-.pm-save-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#E8352C;color:#fff;border:none;border-radius:100px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:10px;align-self:flex-start;flex-shrink:0}
+.pm-save-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#E60023;color:#fff;border:none;border-radius:100px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:10px;align-self:flex-start;flex-shrink:0}
 #pm-board-panel{display:none;border:1.5px solid #E4DFD5;border-radius:14px;overflow:hidden;margin-bottom:16px;background:#fff;max-height:320px;overflow-y:auto}
 .pm-brd-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border:none;border-bottom:1px solid #F0EDE8;width:100%;background:transparent;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s}
 .pm-brd-row:last-of-type{border-bottom:none}
@@ -155,8 +155,29 @@ body{background:#fff}
 .brd-create-input:focus{border-color:#1A1A18}
 .brd-create-row{display:flex;gap:8px;margin-top:10px}
 .brd-create-cancel{flex:1;padding:10px;border:1px solid #D7D1C6;border-radius:100px;background:transparent;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer}
-.brd-create-save{flex:1;padding:10px;border:none;border-radius:100px;background:#E8352C;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.brd-create-save{flex:1;padding:10px;border:none;border-radius:100px;background:#E60023;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
 .brd-create-save:hover{opacity:.88}
+/* ── Pinterest aesthetic refinements ─────────────────── */
+/* Topbar: search bar toma protagonismo */
+#rm-topbar{gap:12px}
+#ins-search{background:#F5F2EC!important;border-radius:24px!important;font-size:14px!important}
+/* Cards: imagen sin borde visible */
+#grid-inicio .inner,#grid-explorar .inner{border:none}
+/* Masonry: gap uniforme en mobile */
+@media(max-width:768px){
+  #grid-inicio{column-gap:8px!important}
+  #grid-explorar{column-gap:8px!important}
+}
+/* Board selector en pin detail: siempre visible, estilo limpio */
+.pm-board-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239b958a' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px!important}
+/* Save-row en pin: botón Guardar más prominente */
+.pm-save-btn{font-size:14px!important;padding:11px 22px!important;box-shadow:0 2px 8px rgba(230,0,35,.25)!important}
+.pm-save-btn.saved{box-shadow:none!important}
+/* Board modal: header border más suave */
+.brd-header{border-bottom-color:#F0EDE8}
+.brd-footer{border-top-color:#F0EDE8}
+/* Pin detail: cols más cómodas */
+@media(min-width:780px){.pm-col-r{padding:32px 36px}}
 </style>
 </head>
 <body>
@@ -270,7 +291,7 @@ function rmGateSubmit(){
       <input type="text" placeholder="Encuentra proveedores" style="width:100%;padding:10px 16px 10px 36px;border:1.5px solid #E4DFD5;border-radius:100px;font-family:'Inter',-apple-system,sans-serif;font-size:13px;background:#fff;color:#1A1A18;outline:none;box-sizing:border-box;transition:border-color .15s" onfocus="this.style.borderColor='#A8895A'" onblur="this.style.borderColor='#E4DFD5'">
     </div>
   </div>
-  <div id="rm-discover-grid" style="column-width:200px;column-gap:14px;padding:20px 20px 360px;max-width:1400px;margin:0 auto"></div>
+  <div id="rm-discover-grid" style="column-width:200px;column-gap:12px;padding:20px 20px 360px;max-width:1400px;margin:0 auto"></div>
   <div onclick="_hideDiscover()" style="position:fixed;inset:0;cursor:pointer;z-index:1"></div>
   <div style="position:fixed;bottom:0;left:0;right:0;z-index:2;pointer-events:none;text-align:center">
     <div style="height:220px;background:linear-gradient(to bottom,transparent,rgba(250,250,248,.97) 55%)"></div>
@@ -355,7 +376,7 @@ function rmGateSubmit(){
           <span style="font-size:13px;color:#9b958a">Terrazzo, materiales y obras que combinan</span>
         </div>
         <div id="inicio-cats" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
-        <div id="grid-inicio" style="column-width:210px;column-gap:16px"></div>
+        <div id="grid-inicio" style="column-width:210px;column-gap:12px"></div>
       </section>
 
       <section id="view-explorar" style="display:none;animation:vIn .35s ease">
@@ -379,7 +400,7 @@ function rmGateSubmit(){
         <div id="explorar-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px"></div>
         <div id="explorar-map" style="height:460px;border-radius:16px;overflow:hidden;margin-bottom:20px;border:1px solid #E4DFD5"></div>
         <div id="explorar-map-below" style="margin-bottom:24px"></div>
-        <div id="grid-explorar" style="display:none;column-width:230px;column-gap:16px"></div>
+        <div id="grid-explorar" style="display:none;column-width:230px;column-gap:12px"></div>
         <div id="explorar-empty" style="display:none;text-align:center;padding:48px 0;color:#9b958a;font-size:14px">No hay proyectos que coincidan con tu búsqueda.</div>
       </section>
 
@@ -512,7 +533,16 @@ document.addEventListener('DOMContentLoaded', function() {
       const list=document.getElementById('brd-list');
       const footer=document.getElementById('brd-footer');
       if(!boards.length){
-        list.innerHTML='<div style="text-align:center;padding:28px 16px;color:#9b958a;font-size:13px">Aún no tenés realmoods. Creá uno para empezar a organizar.</div>';
+        // No boards yet: show create-board form directly
+        list.innerHTML='<div style="padding:16px 12px 4px">'
+          +'<div style="font-size:13px;color:#6F6A60;margin-bottom:14px;line-height:1.5">Aún no tenés realmoods. Creá uno para guardar este pin.</div>'
+          +'<input class="brd-create-input" id="brd-name-input" type="text" placeholder="Nombre del realmood" maxlength="60">'
+          +'<div class="brd-create-row">'
+          +'<button class="brd-create-cancel" onclick="window.closeBoardSel()">Cancelar</button>'
+          +'<button class="brd-create-save" onclick="window.confirmCreateBoard()">Crear y guardar</button>'
+          +'</div></div>';
+        footer.innerHTML='';
+        setTimeout(()=>{const inp=document.getElementById('brd-name-input');if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')window.confirmCreateBoard();});}},60);
       }else{
         list.innerHTML=boards.map(b=>{
           const pins=b.pins||[];
@@ -525,10 +555,10 @@ document.addEventListener('DOMContentLoaded', function() {
             +'<div class="brd-count">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</div>'
             +'</div></button>';
         }).join('');
+        footer.innerHTML='<button class="brd-new-btn" onclick="window.showCreateBoard()">'
+          +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+          +'Crear realmood</button>';
       }
-      footer.innerHTML='<button class="brd-new-btn" onclick="window.showCreateBoard()">'
-        +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
-        +'Crear realmood</button>';
     };
     window.showCreateBoard=function(){
       const footer=document.getElementById('brd-footer');
@@ -781,9 +811,9 @@ document.addEventListener('DOMContentLoaded', function() {
       card.setAttribute('data-title',(title+' '+(tag||'')+' '+(opts.search||'')).toLowerCase());
       if(opts.filter)card.setAttribute('data-tag',opts.filter);
       if(opts.cat)card.setAttribute('data-cat',opts.cat);
-      card.style.cssText='break-inside:avoid;margin-bottom:16px;display:inline-block;width:100%';
+      card.style.cssText='break-inside:avoid;margin-bottom:12px;display:inline-block;width:100%';
       const inner=document.createElement('div');
-      inner.style.cssText='position:relative;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:zoom-in;transition:box-shadow .25s,transform .2s';
+      inner.style.cssText='position:relative;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:zoom-in;transition:box-shadow .22s';
       inner.appendChild(media);
       const ov=document.createElement('div');
       ov.style.cssText='position:absolute;inset:0;opacity:0;transition:opacity .18s;pointer-events:none;background:linear-gradient(180deg,rgba(26,26,24,.32) 0%,rgba(26,26,24,0) 26%,rgba(26,26,24,0) 60%,rgba(26,26,24,.45));';
@@ -792,7 +822,7 @@ document.addEventListener('DOMContentLoaded', function() {
       saveRow.style.cssText='position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:7px;opacity:0;transition:opacity .18s;';
       const save=document.createElement('button');
       save.type='button';save.textContent=opts.saveLabel||'Guardar';
-      save.style.cssText='background:#E0491A;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:9px 15px;cursor:pointer;white-space:nowrap;';
+      save.style.cssText='background:#E60023;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.22);transition:opacity .15s;';
       save.addEventListener('click',e=>{
         e.stopPropagation();
         if(window.openBoardSel){const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});}
@@ -815,8 +845,8 @@ document.addEventListener('DOMContentLoaded', function() {
         inner.appendChild(titleOv);
         inner._titleOv=titleOv;
       }
-      inner.addEventListener('mouseenter',()=>{inner.style.transform='translateY(-3px)';inner.style.boxShadow='0 14px 34px rgba(0,0,0,.15)';ov.style.opacity='1';saveRow.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';});
-      inner.addEventListener('mouseleave',()=>{inner.style.transform='none';inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';saveRow.style.opacity='0';if(inner._row)inner._row.style.opacity='0';if(inner._titleOv)inner._titleOv.style.opacity='0';});
+      inner.addEventListener('mouseenter',()=>{inner.style.boxShadow='0 4px 18px rgba(0,0,0,.14)';ov.style.opacity='1';saveRow.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';});
+      inner.addEventListener('mouseleave',()=>{inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';saveRow.style.opacity='0';if(inner._row)inner._row.style.opacity='0';if(inner._titleOv)inner._titleOv.style.opacity='0';});
       if(opts.detail){
         const det=opts.detail;
         inner.addEventListener('click',e=>{
@@ -833,16 +863,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       card.appendChild(inner);
       if(title&&opts.captionBelow!==false){
-        const views=Math.round(800+hash2(title.length*7.3+(title.charCodeAt(0)||0)*2.1,(tag||'').length*3.7)*28000);
-        const vStr=views>=1000?(views/1000).toFixed(1).replace('.0','')+'k':views;
         const cap=document.createElement('div');
-        cap.style.cssText='padding:9px 8px 4px';
+        cap.style.cssText='padding:8px 8px 6px';
         cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'
-          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+tag+'</div>':'')
-          +'<div style="display:flex;align-items:center;gap:4px;margin-top:5px">'
-          +'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b0aaa0" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
-          +'<span style="font-size:10px;color:#b0aaa0;font-weight:500">'+vStr+' visualizaciones</span>'
-          +'</div>';
+          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+tag+'</div>':'');
         card.appendChild(cap);
       }
       return card;
@@ -1043,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', function() {
       +'</div>'
       +'<div style="margin:0 -26px;padding:48px 26px 64px;border-top:1px solid #ECE8E0">'
       +'<div style="font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:20px">Proyectos e ideas para inspirarte</div>'
-      +'<div id="grid-crear-inspira" style="column-width:220px;column-gap:16px"></div>'
+      +'<div id="grid-crear-inspira" style="column-width:220px;column-gap:12px"></div>'
       +'</div>';
     // Global helper — chips call this to send a material to the moodboard iframe
     window.crearAdd=function(type,data){
@@ -1449,9 +1473,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const sel=document.getElementById('pm-board-select');
         if(sel){
           const prev=sel.value;
-          sel.innerHTML=bds.map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('');
-          if(prev&&bds.some(b=>b.id===prev))sel.value=prev;
-          sel.style.display=bds.length?'':'none';
+          sel.innerHTML=bds.map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('')
+            +'<option value="__new__">+ Crear realmood…</option>';
+          if(prev&&(bds.some(b=>b.id===prev)||prev==='__new__'))sel.value=prev;
+          sel.style.display='';
         }
       };
       window._refreshSaveBtn=refreshSaveBtn;
@@ -1460,10 +1485,13 @@ document.addEventListener('DOMContentLoaded', function() {
       saveBtn.onclick=()=>{
         const sel=document.getElementById('pm-board-select');
         const bds=getBoards();
-        if(!bds.length||!sel||!sel.value){
+        const wantsCreate=!bds.length||!sel||!sel.value||sel.value==='__new__';
+        if(wantsCreate){
           _renderPmBoardPanel();
           const panel=document.getElementById('pm-board-panel');
           if(panel)panel.style.display='block';
+          // Jump straight to create form (no boards exist or user chose "+ Crear")
+          window._pmShowCreateBoard();
           return;
         }
         window._pmSaveToBoard(sel.value);
