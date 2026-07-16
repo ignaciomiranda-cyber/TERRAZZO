@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden}
@@ -116,6 +118,25 @@ body{background:#fff}
 .prof-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.18);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;font-size:20px;line-height:1;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:background .15s}
 .prof-close:hover{background:rgba(255,255,255,.32)}
 @media(max-width:540px){#prof-overlay{padding:0}#prof-box{border-radius:0 0 24px 24px;margin:0}.prof-portfolio{grid-template-columns:repeat(3,1fr)}.prof-body{padding:60px 20px 24px}}
+/* ── Mapa split view ─────────────────────────────────── */
+#view-mapa{margin:-24px -26px -64px;display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 74px);overflow:hidden}
+#mapa-map-el{width:100%;height:100%}
+#mapa-pins-col{display:flex;flex-direction:column;height:100%;overflow:hidden;background:#FAFAF8;border-left:1px solid #ECE8E0}
+#mapa-pins-hdr{padding:12px 16px 10px;border-bottom:1px solid #ECE8E0;background:#fff;position:sticky;top:0;z-index:5;flex:none}
+#mapa-pins-inner{overflow-y:auto;flex:1;padding:14px 16px 48px}
+.mapa-pin-grid{column-width:150px;column-gap:12px}
+.mapa-card-inner{border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;transition:box-shadow .2s,transform .15s}
+.mapa-card-inner:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.13)}
+.mapa-card-thumb{width:100%;height:95px;object-fit:cover;display:block}
+.mapa-card-info{padding:8px 10px 9px}
+.mapa-card-name{font-size:12px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mapa-card-sub{font-size:11px;color:#9b958a;margin-top:1px}
+.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.16)!important;padding:0!important}
+.leaflet-popup-content{margin:10px 14px!important}
+@media(max-width:768px){
+  #view-mapa{grid-template-columns:1fr;grid-template-rows:45vh 1fr;height:calc(100vh - 62px)}
+  #mapa-pins-col{border-left:none;border-top:1px solid #ECE8E0}
+}
 </style>
 </head>
 <body>
@@ -135,6 +156,10 @@ body{background:#fff}
     <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
       <span>Explorar</span>
+    </button>
+    <button type="button" data-view="mapa" data-label="Mapa" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      <span>Mapa</span>
     </button>
     <button type="button" data-view="crear" data-label="Crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
@@ -208,6 +233,20 @@ body{background:#fff}
       <section id="view-mood" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
+
+      <!-- Map split view -->
+      <section id="view-mapa" style="display:none">
+        <div id="mapa-map-el"></div>
+        <div id="mapa-pins-col">
+          <div id="mapa-pins-hdr">
+            <span id="mapa-count" style="font-size:13px;font-weight:600;color:#6f6a60;letter-spacing:-.01em"></span>
+          </div>
+          <div id="mapa-pins-inner">
+            <div class="mapa-pin-grid" id="mapa-grid"></div>
+            <div id="mapa-empty" style="display:none;text-align:center;padding:48px 16px;color:#9b958a;font-size:14px">Sin proyectos en esta zona del mapa</div>
+          </div>
+        </div>
+      </section>
 
       <!-- Pin detail page (full view, like Pinterest) -->
       <section id="view-pin" style="display:none;animation:vIn .35s ease">
@@ -554,18 +593,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── Explorar · Córdoba projects ───────────────────────────
     const PROJECTS=[
-      {name:'Copa Tomada',barrio:'Nueva Córdoba',tag:'Local',img:'proj-1.jpg'},
-      {name:'Estructura roja',barrio:'Centro',tag:'Local',img:'proj-4.jpg'},
-      {name:'Cielorraso modular',barrio:'General Paz',tag:'Comedor',img:'proj-3.jpg'},
-      {name:'Cocina Cerro',barrio:'Cerro de las Rosas',tag:'Cocina',terr:TERR[0]},
-      {name:'Baño en blanco',barrio:'Nueva Córdoba',tag:'Baño',terr:TERR[5]},
-      {name:'Mesada granito',barrio:'General Paz',tag:'Cocina',slab:SLABS[4]},
-      {name:'Piso Cofico',barrio:'Cofico',tag:'Piso',terr:TERR[6]},
-      {name:'Local Güemes',barrio:'Güemes',tag:'Local',terr:TERR[2]},
-      {name:'Patio Villa Belgrano',barrio:'Villa Belgrano',tag:'Exterior',terr:TERR[3]},
-      {name:'Obra atelier',barrio:'Alberdi',tag:'Comedor',img:'proj-2.jpg'},
-      {name:'Mesada antracita',barrio:'Nueva Córdoba',tag:'Cocina',terr:TERR[7]},
-      {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4]}
+      {name:'Copa Tomada',barrio:'Nueva Córdoba',tag:'Local',img:'proj-1.jpg',lat:-31.4201,lng:-64.1850},
+      {name:'Estructura roja',barrio:'Centro',tag:'Local',img:'proj-4.jpg',lat:-31.4135,lng:-64.1810},
+      {name:'Cielorraso modular',barrio:'General Paz',tag:'Comedor',img:'proj-3.jpg',lat:-31.4020,lng:-64.1900},
+      {name:'Cocina Cerro',barrio:'Cerro de las Rosas',tag:'Cocina',terr:TERR[0],lat:-31.3855,lng:-64.2072},
+      {name:'Baño en blanco',barrio:'Nueva Córdoba',tag:'Baño',terr:TERR[5],lat:-31.4230,lng:-64.1842},
+      {name:'Mesada granito',barrio:'General Paz',tag:'Cocina',slab:SLABS[4],lat:-31.4045,lng:-64.1915},
+      {name:'Piso Cofico',barrio:'Cofico',tag:'Piso',terr:TERR[6],lat:-31.4090,lng:-64.1820},
+      {name:'Local Güemes',barrio:'Güemes',tag:'Local',terr:TERR[2],lat:-31.4292,lng:-64.1908},
+      {name:'Patio Villa Belgrano',barrio:'Villa Belgrano',tag:'Exterior',terr:TERR[3],lat:-31.3738,lng:-64.2125},
+      {name:'Obra atelier',barrio:'Alberdi',tag:'Comedor',img:'proj-2.jpg',lat:-31.4145,lng:-64.2082},
+      {name:'Mesada antracita',barrio:'Nueva Córdoba',tag:'Cocina',terr:TERR[7],lat:-31.4215,lng:-64.1865},
+      {name:'Piso pulido',barrio:'Centro',tag:'Piso',terr:TERR[4],lat:-31.4160,lng:-64.1800}
     ];
     const ge=$('grid-explorar');
     const projCards=[];
@@ -651,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','crear','mood','saved','mensajes','perfil','pin'];
+    const VIEWS=['inicio','explorar','mapa','crear','mood','saved','mensajes','perfil','pin'];
     window._provPrevView='inicio';
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
@@ -661,6 +700,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
       if(v==='crear'){const cfr=$('crear-frame');if(cfr&&cfr.contentWindow){[150,450,1000,1700].forEach(t=>setTimeout(()=>{try{cfr.contentWindow.postMessage({ask:'crearHeight'},'*');}catch(_){}},t));}}
       if(v==='mood')loadMoodList();
+      if(v==='mapa')initMapaView();
       $('ins-search').value='';doSearch('');
       const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
       if(mNav)mNav.classList.remove('rm-open');if(mOv)mOv.classList.remove('rm-open');
@@ -694,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openPm=function(data){
       window._lastPmData=data;
       // Track prev view only when coming from a base view (not from perfil/pin)
-      const VIEWS_BASE=['inicio','explorar','crear','mood','saved','mensajes'];
+      const VIEWS_BASE=['inicio','explorar','mapa','crear','mood','saved','mensajes'];
       const curBase=VIEWS_BASE.find(x=>{const s=$('view-'+x);return s&&s.style.display!=='none';});
       if(curBase)window._pinPrevView=curBase;
       // Main image (left column, full-bleed)
@@ -770,12 +810,105 @@ document.addEventListener('DOMContentLoaded', function() {
         refreshSaveBtn();
       };
       // Update back button label
-      const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
+      const labels={'inicio':'Novedades','explorar':'Proyectos','mapa':'Mapa','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
       const bl=document.getElementById('vpin-back-label');if(bl)bl.textContent='Volver a '+(labels[window._pinPrevView]||'inicio');
       // Navigate to pin page
       window._setViewPin();
       const rc=document.getElementById('rm-content');if(rc)rc.scrollTop=0;
     };
+
+    // ── Mapa split view ───────────────────────────────────────────
+    let _mapaLeaflet=null;
+
+    // Pre-build compact map cards for each project
+    const mapaCards=PROJECTS.map(p=>{
+      // Create fresh media for map card thumbnail
+      let thumb;
+      if(p.img){
+        thumb=document.createElement('img');
+        thumb.src=p.img;thumb.alt='';thumb.loading='lazy';
+        thumb.className='mapa-card-thumb';
+      }else{
+        thumb=document.createElement('canvas');
+        thumb.style.cssText='width:100%;height:95px;display:block';
+        if(p.slab)renderSlab(thumb,{...p.slab},260,95);
+        else renderTerr(thumb,p.terr.base,p.terr.stones,260,95);
+      }
+      // Info
+      const info=document.createElement('div');
+      info.className='mapa-card-info';
+      info.innerHTML='<div class="mapa-card-name">'+p.name+'</div><div class="mapa-card-sub">'+p.barrio+' · '+p.tag+'</div>';
+      // Inner card
+      const inner=document.createElement('div');
+      inner.className='mapa-card-inner';
+      inner.appendChild(thumb);inner.appendChild(info);
+      // Wrap (masonry cell)
+      const wrap=document.createElement('div');
+      wrap.style.cssText='break-inside:avoid;margin-bottom:10px;display:inline-block;width:100%';
+      wrap.appendChild(inner);
+      // Click: open pin detail, mark prev view as mapa
+      inner.addEventListener('click',()=>{
+        window._pinPrevView='mapa';
+        let makeMain;
+        if(p.img){makeMain=()=>{const im=new Image();im.src=p.img;im.style.cssText='display:block;width:100%';return im;};}
+        else if(p.slab){makeMain=()=>{const c=document.createElement('canvas');renderSlab(c,{...p.slab,r:1},480,480);return c;};}
+        else{makeMain=()=>{const c=document.createElement('canvas');renderTerr(c,p.terr.base,p.terr.stones,480,480);return c;};}
+        const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía de obra';
+        window.openPm({
+          title:p.name,subtitle:p.barrio+' · '+p.tag,makeMain,
+          text:'Proyecto realizado en '+p.barrio+', Córdoba. Categoría: '+p.tag+'. Materiales: '+mat+'.',
+          relatedImgs:REL_AMB
+        });
+      });
+      return wrap;
+    });
+
+    function filterMapaPins(){
+      if(!_mapaLeaflet)return;
+      const bounds=_mapaLeaflet.getBounds();
+      const grid=$('mapa-grid');
+      const countEl=$('mapa-count');
+      const emptyEl=$('mapa-empty');
+      if(!grid)return;
+      grid.innerHTML='';
+      let count=0;
+      PROJECTS.forEach((p,i)=>{
+        if(!p.lat||!bounds.contains([p.lat,p.lng]))return;
+        grid.appendChild(mapaCards[i]);
+        count++;
+      });
+      if(countEl)countEl.textContent=count?(count+' proyecto'+(count!==1?'s':'')+' en esta zona'):'';
+      if(emptyEl)emptyEl.style.display=count?'none':'block';
+    }
+
+    function initMapaView(){
+      const el=$('mapa-map-el');
+      if(!el||typeof L==='undefined')return;
+      if(!_mapaLeaflet){
+        _mapaLeaflet=L.map(el,{zoomControl:true}).setView([-31.413,-64.188],13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+          attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom:19
+        }).addTo(_mapaLeaflet);
+        // Add circle markers per project
+        PROJECTS.forEach(p=>{
+          if(!p.lat)return;
+          const m=L.circleMarker([p.lat,p.lng],{
+            radius:9,fillColor:'#E0491A',fillOpacity:1,
+            color:'#fff',weight:2.5,opacity:1
+          }).addTo(_mapaLeaflet);
+          m.bindPopup(
+            '<div style="font-size:13px;font-weight:700;color:#1A1A18;padding:2px 0 1px">'+p.name+'</div>'
+            +'<div style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</div>'
+          );
+        });
+        _mapaLeaflet.on('moveend zoomend',filterMapaPins);
+        filterMapaPins();
+      }else{
+        // Already initialized — just recalculate size (container was hidden)
+        setTimeout(()=>{_mapaLeaflet.invalidateSize();filterMapaPins();},60);
+      }
+    }
 
     setView('inicio');
 });
@@ -808,7 +941,7 @@ function openProfOverlay(prov,projectTitle){
   const pmOv=document.getElementById('pm-overlay');
   if(pmOv){pmOv.style.display='none';document.body.style.overflow='';}
   // Track which view to return to
-  const VIEWS_BASE=['inicio','explorar','crear','mood','saved','mensajes'];
+  const VIEWS_BASE=['inicio','explorar','mapa','crear','mood','saved','mensajes'];
   window._provPrevView=VIEWS_BASE.find(x=>{const s=document.getElementById('view-'+x);return s&&s.style.display!=='none';})||'inicio';
   // Hero background
   document.getElementById('vp-hero').style.background='linear-gradient(145deg,'+prov.color+' 0%,'+prov.color+'cc 60%,'+prov.color+'88 100%)';
