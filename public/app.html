@@ -68,7 +68,10 @@ body{background:#fff}
   #view-inicio>div>span,#view-explorar>div>p{font-size:12px!important}
   /* Masonry grids: smaller column to show more cards */
   #grid-inicio{column-width:160px!important;column-gap:12px!important}
-  #grid-explorar{column-width:170px!important;column-gap:12px!important}
+  #explorar-pins-left{column-width:140px!important}
+  #view-explorar .rm-split-wrap{flex-direction:column!important;height:auto!important}
+  #view-explorar .rm-split-wrap>div{width:100%!important}
+  #view-explorar .rm-split-wrap>div:last-child{height:300px;position:relative}
   /* Category / city filter pills */
   #inicio-cats,#explorar-filters{gap:6px!important;margin-bottom:14px!important}
   /* Mood list cards */
@@ -162,11 +165,11 @@ body{background:#fff}
 #rm-topbar{gap:12px}
 #ins-search{background:#F5F2EC!important;border-radius:24px!important;font-size:14px!important}
 /* Cards: imagen sin borde visible */
-#grid-inicio .inner,#grid-explorar .inner{border:none}
+#grid-inicio .inner,#explorar-pins-left .inner{border:none}
 /* Masonry: gap uniforme en mobile */
 @media(max-width:768px){
   #grid-inicio{column-gap:8px!important}
-  #grid-explorar{column-gap:8px!important}
+  #explorar-pins-left{column-gap:8px!important}
 }
 /* Board selector en pin detail: siempre visible, estilo limpio */
 .pm-board-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239b958a' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px!important}
@@ -380,28 +383,33 @@ function rmGateSubmit(){
       </section>
 
       <section id="view-explorar" style="display:none;animation:vIn .35s ease">
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
           <div>
             <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:7px">Córdoba · Capital</div>
             <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Explorar proyectos y sus materiales</h1>
             <p style="font-size:13px;color:#9b958a;margin:0">Obras realizadas con terrazzo Instone en Córdoba</p>
           </div>
-          <div style="display:flex;gap:6px;flex:none">
-            <button id="exp-grid-btn" type="button" onclick="setExplorarMode('grid')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#3a3733;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Galería</button>
-            <button id="exp-map-btn" type="button" onclick="setExplorarMode('map')" style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 15px;border-radius:100px;border:1px solid #1A1A18;background:#1A1A18;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>Mapa</button>
+        </div>
+        <!-- Airbnb-style split: left=pins (scrollable, filtered by map bounds), right=map -->
+        <div class="rm-split-wrap" style="display:flex;height:calc(100vh - 168px);min-height:450px;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">
+          <!-- Left panel: search + filters + pin grid -->
+          <div style="width:50%;display:flex;flex-direction:column;border-right:1px solid #E4DFD5;background:#FAFAF8">
+            <div style="padding:14px 14px 10px;border-bottom:1px solid #E4DFD5;background:#FAFAF8;flex-shrink:0">
+              <div style="position:relative;margin-bottom:10px">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"/><path d="m21 21-4.3-4.3"/></svg></span>
+                <input id="explorar-map-search" type="text" placeholder="Buscar por estudio, barrio o tipo…" style="width:100%;padding:9px 14px 9px 34px;border:1px solid #E4DFD5;border-radius:100px;font-family:inherit;font-size:13px;background:#fff;color:#1A1A18;outline:none;box-sizing:border-box">
+              </div>
+              <div id="explorar-filters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+            </div>
+            <div id="explorar-bounds-label" style="padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;border-bottom:1px solid #ECE8E0;flex-shrink:0"></div>
+            <div id="explorar-pins-left" style="flex:1;overflow-y:auto;padding:12px;column-width:130px;column-gap:10px"></div>
+            <div id="explorar-empty" style="display:none;text-align:center;padding:48px 16px;color:#9b958a;font-size:14px;flex-shrink:0">No hay proyectos que coincidan con tu búsqueda.</div>
+          </div>
+          <!-- Right panel: map fills 100% height -->
+          <div style="width:50%;position:relative">
+            <div id="explorar-map" style="position:absolute;inset:0"></div>
           </div>
         </div>
-        <div id="explorar-map-search-wrap" style="display:flex;gap:8px;margin-bottom:14px">
-          <div style="position:relative;flex:1;max-width:420px">
-            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"/><path d="m21 21-4.3-4.3"/></svg></span>
-            <input id="explorar-map-search" type="text" placeholder="Buscar por estudio, barrio o tipo…" style="width:100%;padding:10px 14px 10px 38px;border:1px solid #E4DFD5;border-radius:100px;font-family:inherit;font-size:13px;background:#FAFAF8;color:#1A1A18;outline:none">
-          </div>
-        </div>
-        <div id="explorar-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px"></div>
-        <div id="explorar-map" style="height:460px;border-radius:16px;overflow:hidden;margin-bottom:20px;border:1px solid #E4DFD5"></div>
-        <div id="explorar-map-below" style="margin-bottom:24px"></div>
-        <div id="grid-explorar" style="display:none;column-width:230px;column-gap:12px"></div>
-        <div id="explorar-empty" style="display:none;text-align:center;padding:48px 0;color:#9b958a;font-size:14px">No hay proyectos que coincidan con tu búsqueda.</div>
       </section>
 
       <section id="view-mis-proyectos" style="display:none;animation:vIn .35s ease"></section>
@@ -973,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function() {
       for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}
       items.forEach(el=>dg.appendChild(el));
     };
-    const ge=$('grid-explorar');
+    const ge=$('explorar-pins-left');
     const projCards=[];
     PROJECTS.forEach(p=>{
       let media,makeMain;
@@ -990,53 +998,42 @@ document.addEventListener('DOMContentLoaded', function() {
           makeMain,relatedImgs:REL_AMB
         }
       });
-      projCards.push(card);ge.appendChild(card);
+      card._rmProject=p;projCards.push(card);ge.appendChild(card);
     });
     const TAGS=['Todos','Cocina','Baño','Local','Comedor','Piso','Exterior'];
     const fwrap=$('explorar-filters');let activeFilter='Todos';
-    const applyFilter=()=>{let shown=0;projCards.forEach(c=>{const ok=activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter;c.style.display=ok?'inline-block':'none';if(ok)shown++;});$('explorar-empty').style.display=shown?'none':'block';};
+    const applyFilter=()=>updateMapBelow();
     const fbtns={};
     TAGS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeFilter;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeFilter=t;Object.entries(fbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});applyFilter();});fbtns[t]=b;fwrap.appendChild(b);});
 
-    // ── Explorar: toggle galería / mapa ──────────────────────
-    window.setExplorarMode=function(mode){
-      const gridEl=$('grid-explorar'),mapEl=$('explorar-map'),emptyEl=$('explorar-empty');
-      const belowEl=$('explorar-map-below'),swEl=$('explorar-map-search-wrap');
-      const gBtn=$('exp-grid-btn'),mBtn=$('exp-map-btn');
-      if(mode==='map'){
-        gridEl.style.display='none';mapEl.style.display='';emptyEl.style.display='none';
-        if(belowEl)belowEl.style.display='';if(swEl)swEl.style.display='flex';
-        gBtn.style.background='transparent';gBtn.style.color='#3a3733';gBtn.style.borderColor='#D7D1C6';
-        mBtn.style.background='#1A1A18';mBtn.style.color='#fff';mBtn.style.borderColor='#1A1A18';
-        initExplorarMap();
-        setTimeout(()=>{if(window._explorarMapRef){window._explorarMapRef.invalidateSize();updateMapBelow();}},250);
-      }else{
-        gridEl.style.display='';mapEl.style.display='none';
-        if(belowEl)belowEl.style.display='none';if(swEl)swEl.style.display='none';
-        emptyEl.style.display='none';
-        gBtn.style.background='#1A1A18';gBtn.style.color='#fff';gBtn.style.borderColor='#1A1A18';
-        mBtn.style.background='transparent';mBtn.style.color='#3a3733';mBtn.style.borderColor='#D7D1C6';
-        applyFilter();
-      }
-    };
+    // setExplorarMode is no longer needed — layout is always split
+    window.setExplorarMode=function(){};
 
     function updateMapBelow(){
-      const el=$('explorar-map-below');
-      if(!el||!window._explorarMapRef||!window._explorarMarkerData)return;
-      const bounds=window._explorarMapRef.getBounds();
-      const vis=window._explorarMarkerData.filter(({marker})=>window._explorarMapRef.hasLayer(marker)&&bounds.contains(marker.getLatLng()));
-      if(!vis.length){el.innerHTML='<div style="font-size:12px;color:#9b958a;padding:12px 0">No hay proyectos en esta área.</div>';return;}
-      let html='<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:12px">'+vis.length+' proyecto'+(vis.length!==1?'s':'')+' en vista</div>'
-        +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">';
-      vis.forEach(({proj})=>{
-        const bg=proj.terr?proj.terr.base:proj.slab?proj.slab.bg:'#E8E4DC';
-        html+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:12px;overflow:hidden;cursor:pointer" onclick="toast(\''+proj.name.replace(/'/g,"\\'")+'\')">'
-          +'<div style="height:52px;background:'+bg+'"></div>'
-          +'<div style="padding:10px 12px"><div style="font-size:12px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+proj.name+'</div>'
-          +'<div style="font-size:10px;color:#9b958a;margin-top:2px">'+proj.barrio+' · '+proj.tag+'</div></div></div>';
-      });
-      html+='</div>';
-      el.innerHTML=html;
+      const pinsEl=$('explorar-pins-left');
+      const labelEl=$('explorar-bounds-label');
+      const emptyEl=$('explorar-empty');
+      if(!pinsEl)return;
+      let shown=0;
+      if(!window._explorarMapRef||!window._explorarMarkerData){
+        projCards.forEach(c=>{
+          const tagOk=activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter;
+          c.style.display=tagOk?'inline-block':'none';
+          if(tagOk)shown++;
+        });
+      }else{
+        const bounds=window._explorarMapRef.getBounds();
+        const visSet=new Set(window._explorarMarkerData.filter(({marker})=>window._explorarMapRef.hasLayer(marker)&&bounds.contains(marker.getLatLng())).map(({proj})=>proj));
+        projCards.forEach(c=>{
+          const inBounds=c._rmProject&&visSet.has(c._rmProject);
+          const tagOk=activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter;
+          const ok=inBounds&&tagOk;
+          c.style.display=ok?'inline-block':'none';
+          if(ok)shown++;
+        });
+      }
+      if(labelEl)labelEl.textContent=shown+' proyecto'+(shown!==1?'s':'')+' en vista';
+      if(emptyEl)emptyEl.style.display=shown?'none':'block';
     }
 
     function filterMapMarkers(q){
@@ -1081,9 +1078,7 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(updateMapBelow,400);
     }
 
-    // Abrir en modo mapa por defecto al entrar a Explorar
-    setExplorarMode('map');
-    setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();},600);
+    // Map initializes lazily on first visit to Explorar (needs visible container for Leaflet)
 
     // ── placeholder views ─────────────────────────────────────
     const placeholder=(icon,title,body,cta)=>`<div style="max-width:520px;margin:80px auto;text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:22px">${icon}</div><h1 style="font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">${title}</h1><p style="font-size:14px;color:#9b958a;line-height:1.65;margin:0 0 24px">${body}</p>${cta?`<button type="button" data-goto="${cta.go}" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">${cta.label}</button>`:''}</div>`;
@@ -1358,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='mood')loadMoodList();
       if(v==='saved')loadBoardsView();
       if(v==='mis-proyectos')loadMisProyectos();
-      if(v==='explorar'){setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
+      if(v==='explorar'){if(!window._explorarMapRef)initExplorarMap();setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
       if(history.replaceState)history.replaceState(null,'','#'+v);
       const mNav=document.getElementById('rm-nav');const mOv=document.getElementById('rm-mob-overlay');
@@ -1377,15 +1372,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const doSearch=q=>{
       q=(q||'').trim().toLowerCase();
       const active=VIEWS.find(x=>{const s=$('view-'+x);return s&&s.style.display!=='none';});
-      const grid=active==='inicio'?gi:active==='explorar'?ge:null;
+      if(active==='explorar'){filterMapMarkers(q);return;}
+      const grid=active==='inicio'?gi:null;
       if(!grid)return;
       let shown=0;
       Array.from(grid.children).forEach(c=>{
-        const passFilter=active==='explorar'?(activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter):(active==='inicio'?(activeCat==='Todos'||c.getAttribute('data-cat')===activeCat):true);
+        const passFilter=active==='inicio'?(activeCat==='Todos'||c.getAttribute('data-cat')===activeCat):true;
         const passQ=!q||(c.getAttribute('data-title')||'').includes(q);
         const ok=passFilter&&passQ;c.style.display=ok?'inline-block':'none';if(ok)shown++;
       });
-      if(active==='explorar')$('explorar-empty').style.display=shown?'none':'block';
     };
     $('ins-search').addEventListener('input',e=>doSearch(e.target.value));
 
