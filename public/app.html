@@ -1465,11 +1465,14 @@ document.addEventListener('DOMContentLoaded', function() {
       // Reset inline board panel
       const pmPanel=document.getElementById('pm-board-panel');
       if(pmPanel)pmPanel.style.display='none';
+      const updateSaveBtnLabel=(bds,isSaved,selVal)=>{
+        const wc=!bds.length||selVal==='__new__';
+        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':wc?' Crear realmood':' Guardar');
+      };
       const refreshSaveBtn=()=>{
         const bds=getBoards();
         const isSaved=bds.some(b=>(b.pins||[]).some(p=>p.id===pinId));
         saveBtn.className='pm-save-btn'+(isSaved?' saved':'');
-        saveBtn.innerHTML=heartSvg+(isSaved?' Guardado':' Guardar');
         const sel=document.getElementById('pm-board-select');
         if(sel){
           const prev=sel.value;
@@ -1477,7 +1480,21 @@ document.addEventListener('DOMContentLoaded', function() {
             +'<option value="__new__">+ Crear realmood…</option>';
           if(prev&&(bds.some(b=>b.id===prev)||prev==='__new__'))sel.value=prev;
           sel.style.display='';
+          sel.onchange=()=>{
+            const bs=getBoards();
+            const sv=bs.some(b=>(b.pins||[]).some(p=>p.id===pinId));
+            if(sel.value==='__new__'){
+              updateSaveBtnLabel(bs,sv,'__new__');
+              _renderPmBoardPanel();
+              const panel=document.getElementById('pm-board-panel');
+              if(panel)panel.style.display='block';
+              window._pmShowCreateBoard();
+            }else{
+              updateSaveBtnLabel(bs,sv,sel.value);
+            }
+          };
         }
+        updateSaveBtnLabel(bds,isSaved,sel?sel.value:'');
       };
       window._refreshSaveBtn=refreshSaveBtn;
       refreshSaveBtn();
