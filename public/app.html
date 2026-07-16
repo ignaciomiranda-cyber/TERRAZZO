@@ -517,6 +517,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Board management ──────────────────────────────────────
     function getBoards(){try{return JSON.parse(localStorage.getItem('ins_boards')||'[]');}catch(e){return[];}}
     function saveBoards(b){try{localStorage.setItem('ins_boards',JSON.stringify(b));}catch(e){}}
+    function getLastBoardId(){return localStorage.getItem('ins_last_board')||'';}
+    function setLastBoardId(id){try{localStorage.setItem('ins_last_board',id);}catch(e){}}
     let _pendingPin=null;
     window.openBoardSel=function(pinData){
       _pendingPin=pinData;
@@ -579,6 +581,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const newBoard={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,createdAt:new Date().toISOString(),pins:[]};
       boards.push(newBoard);
       saveBoards(boards);
+      setLastBoardId(newBoard.id);
       if(_pendingPin){window.saveToBoard(newBoard.id);}
       else{window.closeBoardSel();if(typeof loadMoodList==='function')loadMoodList();setView('mood');toast('Realmood "'+name+'" creado ✓');}
     };
@@ -590,6 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const already=(b.pins||[]).some(p=>p.id===_pendingPin.id);
         if(!already){if(!b.pins)b.pins=[];b.pins.push({..._pendingPin,savedAt:new Date().toISOString()});}
         saveBoards(boards);
+        setLastBoardId(boardId);
         const nm=b.name;
         window.closeBoardSel();
         toast('Guardado en "'+nm+'" ✓');
@@ -819,14 +823,39 @@ document.addEventListener('DOMContentLoaded', function() {
       ov.style.cssText='position:absolute;inset:0;opacity:0;transition:opacity .18s;pointer-events:none;background:linear-gradient(180deg,rgba(26,26,24,.32) 0%,rgba(26,26,24,0) 26%,rgba(26,26,24,0) 60%,rgba(26,26,24,.45));';
       inner.appendChild(ov);
       const saveRow=document.createElement('div');
-      saveRow.style.cssText='position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:7px;opacity:0;transition:opacity .18s;';
+      saveRow.style.cssText='position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .18s;';
+      // Board selector pill (left) — Pinterest style
+      const brdBtn=document.createElement('button');
+      brdBtn.type='button';
+      const _chevSvg='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+      const _updateBrdBtn=()=>{const id=getLastBoardId();const lb=id?getBoards().find(b=>b.id===id):null;const nm=lb?lb.name.slice(0,13)+(lb.name.length>13?'…':''):'Tablero';brdBtn.innerHTML=nm+' '+_chevSvg;};
+      _updateBrdBtn();
+      brdBtn.style.cssText='background:rgba(26,26,24,.88);color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:7px 10px 7px 12px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.22);display:inline-flex;align-items:center;gap:4px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:opacity .15s;';
+      brdBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';
+        if(window.openBoardSel)window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});
+      });
+      saveRow.appendChild(brdBtn);
+      // Save button (right) — saves directly to selected board or opens picker
       const save=document.createElement('button');
       save.type='button';save.textContent=opts.saveLabel||'Guardar';
       save.style.cssText='background:#E60023;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.22);transition:opacity .15s;';
       save.addEventListener('click',e=>{
         e.stopPropagation();
-        if(window.openBoardSel){const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});}
-        else{toast(opts.saveMsg||('Guardado en Tus realmood · '+title));}
+        const bds=getBoards();const lbId=getLastBoardId();const lb=lbId?bds.find(b=>b.id===lbId):null;
+        if(lb){
+          const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';
+          const pd={id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc};
+          const already=(lb.pins||[]).some(p=>p.id===pd.id);
+          if(!already){if(!lb.pins)lb.pins=[];lb.pins.push({...pd,savedAt:new Date().toISOString()});}
+          saveBoards(bds);
+          toast('Guardado en "'+lb.name+'" ✓');
+          if(window._refreshSaveBtn)window._refreshSaveBtn();
+        }else{
+          const imgEl=inner.querySelector('img');const imgSrc=imgEl?imgEl.src:'';
+          if(window.openBoardSel)window.openBoardSel({id:opts.pinId||(title+tag),title:title||'Pin',subtitle:tag||'',img:imgSrc});
+        }
       });
       saveRow.appendChild(save);
       inner.appendChild(saveRow);
@@ -845,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
         inner.appendChild(titleOv);
         inner._titleOv=titleOv;
       }
-      inner.addEventListener('mouseenter',()=>{inner.style.boxShadow='0 4px 18px rgba(0,0,0,.14)';ov.style.opacity='1';saveRow.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';});
+      inner.addEventListener('mouseenter',()=>{inner.style.boxShadow='0 4px 18px rgba(0,0,0,.14)';ov.style.opacity='1';saveRow.style.opacity='1';if(inner._row)inner._row.style.opacity='1';if(inner._titleOv)inner._titleOv.style.opacity='1';_updateBrdBtn();});
       inner.addEventListener('mouseleave',()=>{inner.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';ov.style.opacity='0';saveRow.style.opacity='0';if(inner._row)inner._row.style.opacity='0';if(inner._titleOv)inner._titleOv.style.opacity='0';});
       if(opts.detail){
         const det=opts.detail;
