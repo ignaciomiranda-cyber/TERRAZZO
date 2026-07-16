@@ -166,6 +166,9 @@ body{background:#fff}
 #ins-search{background:#F5F2EC!important;border-radius:24px!important;font-size:14px!important}
 /* Cards: imagen sin borde visible */
 #grid-inicio .inner,#explorar-pins-left .inner{border:none}
+/* Explorar 2-col grid: cap media at 4:3 landscape so 4 pins (2×2) fit in viewport */
+#explorar-pins-left>div>div:first-child{aspect-ratio:4/3;overflow:hidden}
+#explorar-pins-left>div{margin-bottom:0!important}
 /* Masonry: gap uniforme en mobile */
 @media(max-width:768px){
   #grid-inicio{column-gap:8px!important}
@@ -402,7 +405,7 @@ function rmGateSubmit(){
               <div id="explorar-filters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
             </div>
             <div id="explorar-bounds-label" style="padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;border-bottom:1px solid #ECE8E0;flex-shrink:0"></div>
-            <div id="explorar-pins-left" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column"></div>
+            <div id="explorar-pins-left" style="flex:1;overflow-y:auto;padding:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-content:start"></div>
             <div id="explorar-empty" style="display:none;text-align:center;padding:48px 16px;color:#9b958a;font-size:14px;flex-shrink:0">No hay proyectos que coincidan con tu búsqueda.</div>
           </div>
           <!-- Right panel: map fills 100% height -->
@@ -964,11 +967,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       return card;
     };
-    const terrMedia=t=>{const c=document.createElement('canvas');c.style.cssText='display:block;width:100%';const W=180,H=Math.round(W*16/9);renderTerr(c,t.base,t.stones,W,H);return c;};
-    const slabMedia=m=>{const c=document.createElement('canvas');c.style.cssText='display:block;width:100%';const W=180,H=Math.round(W*16/9);renderSlab(c,m,W,H);return c;};
+    const terrMedia=t=>{const c=document.createElement('canvas');c.style.cssText='display:block;width:100%';const W=180,H=Math.round(W*(t.r??16/9));renderTerr(c,t.base,t.stones,W,H);return c;};
+    const slabMedia=m=>{const c=document.createElement('canvas');c.style.cssText='display:block;width:100%';const W=180,H=Math.round(W*(m.r??16/9));renderSlab(c,m,W,H);return c;};
     const melMedia=m=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;height:300px;background-color:'+m.bg+';background-image:'+(m.wood?'repeating-linear-gradient(92deg,rgba(255,255,255,.08) 0,rgba(0,0,0,.06) 6px,rgba(255,255,255,.05) 13px),linear-gradient(160deg,rgba(255,255,255,.14),rgba(0,0,0,.10))':'linear-gradient(155deg,rgba(255,255,255,.16),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12))')+';';return d;};
     const panMedia=p=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;background:#fff';d.innerHTML='<div style="height:150px;background:'+p.hex+'"></div><div style="padding:10px 12px 14px"><div style="font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:13px;letter-spacing:-.02em;color:#111">PANTONE<sup style="font-size:7px">®</sup></div><div style="font-size:11px;font-weight:700;color:#111;margin-top:6px">'+p.code+'</div><div style="font-size:11px;font-weight:700;color:#111">'+p.name+'</div></div>';return d;};
-    const photoMedia=src=>{const wrap=document.createElement('div');wrap.style.cssText='display:block;width:100%;aspect-ratio:9/16;overflow:hidden';const im=document.createElement('img');im.src=src;im.loading='lazy';im.style.cssText='display:block;width:100%;height:100%;object-fit:cover';wrap.appendChild(im);return wrap;};
+    const photoMedia=(src,ar)=>{const wrap=document.createElement('div');wrap.style.cssText='display:block;width:100%;aspect-ratio:'+(ar||'9/16')+';overflow:hidden';const im=document.createElement('img');im.src=src;im.loading='lazy';im.style.cssText='display:block;width:100%;height:100%;object-fit:cover';wrap.appendChild(im);return wrap;};
 
     // ── Inicio feed ───────────────────────────────────────────
     const REL_AMB=['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg','prod-eco.jpg','prod-brass.jpg','life-1.jpg','proj-2.jpg','proj-3.jpg','pasted-1781733750827-0.png'];
@@ -1041,12 +1044,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const projCards=[];
     PROJECTS.forEach(p=>{
       let media,makeMain;
-      if(p.img){media=photoMedia(p.img);const s=p.img;makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
-      else if(p.slab){const sl={...p.slab,r:16/9};media=slabMedia(sl);makeMain=()=>{const c=document.createElement('canvas');renderSlab(c,{...p.slab,r:1},480,480);return c;};}
-      else{const tr={...p.terr,r:16/9};media=terrMedia(tr);makeMain=()=>{const c=document.createElement('canvas');renderTerr(c,p.terr.base,p.terr.stones,480,480);return c;};}
+      if(p.img){media=photoMedia(p.img,'4/3');const s=p.img;makeMain=()=>{const im=new Image();im.src=s;im.style.cssText='display:block;width:100%';return im;};}
+      else if(p.slab){const sl={...p.slab,r:3/4};media=slabMedia(sl);makeMain=()=>{const c=document.createElement('canvas');renderSlab(c,{...p.slab,r:1},480,480);return c;};}
+      else{const tr={...p.terr,r:3/4};media=terrMedia(tr);makeMain=()=>{const c=document.createElement('canvas');renderTerr(c,p.terr.base,p.terr.stones,480,480);return c;};}
       const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía de obra';
       const card=mkCard(media,p.name,p.barrio+' · '+p.tag,{
         filter:p.tag,search:p.barrio,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.name,
+        captionBelow:false,
         overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.name},{label:'Usar materiales',msg:'Cargando materiales de '+p.name}],
         detail:{
           title:p.name,subtitle:p.barrio+' · '+p.tag,
