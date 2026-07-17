@@ -215,6 +215,16 @@ body{background:#fff}
         </div>
         <div id="inicio-ciudades" style="display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
         <div id="inicio-cats" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
+        <div id="configurador-banner" style="margin-bottom:28px;border-radius:16px;overflow:hidden;background:linear-gradient(110deg,#1A1A18 60%,#3a3733);display:flex;align-items:stretch;min-height:112px;box-shadow:0 4px 24px rgba(26,26,24,.18);cursor:pointer" onclick="setView('crear')">
+          <div style="padding:22px 28px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#9b958a">Instone · Realmood</div>
+            <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1.25">Creá tu terrazzo personalizado</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:2px">Elegí base, piedras y tamaños — configurador interactivo con vista previa al instante</div>
+          </div>
+          <div style="padding:22px 28px 22px 0;display:flex;align-items:center;flex:none">
+            <button type="button" onclick="event.stopPropagation();setView('crear')" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;border:none;background:#fff;color:#1A1A18;cursor:pointer;white-space:nowrap;letter-spacing:-.01em;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">Abrir configurador →</button>
+          </div>
+        </div>
         <div id="grid-inicio" style="column-width:210px;column-gap:16px"></div>
       </section>
 
