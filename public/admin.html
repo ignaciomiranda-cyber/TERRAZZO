@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · Realmood</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: #F4F1EB;
+      color: #16140F;
+      min-height: 100vh;
+    }
+
+    /* ── Auth screen ─────────────────────── */
+    #screen-auth {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .auth-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 4px 24px rgba(22,20,15,.10);
+    }
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .auth-logo-text {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .auth-sub {
+      font-size: 13px;
+      color: #9b958a;
+      margin-bottom: 28px;
+    }
+    .auth-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #9b958a;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .auth-input {
+      width: 100%;
+      border: 1.5px solid #D9D3C6;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #16140F;
+      background: #FAFAF7;
+      outline: none;
+      transition: border-color .15s;
+      margin-bottom: 16px;
+    }
+    .auth-input:focus { border-color: #A8895A; }
+    .auth-btn {
+      width: 100%;
+      background: #16140F;
+      color: #F4F1EB;
+      border: none;
+      border-radius: 100px;
+      padding: 13px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+      margin-top: 4px;
+    }
+    .auth-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .auth-err {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #C04030;
+      font-weight: 500;
+      display: none;
+    }
+
+    /* ── Unauthorized screen ─────────────── */
+    #screen-unauth {
+      min-height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    #screen-unauth p {
+      font-size: 16px;
+      color: #6F6A60;
+    }
+
+    /* ── Admin panel ─────────────────────── */
+    #screen-admin {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      background: #16140F;
+      color: #F4F1EB;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .admin-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .admin-header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .admin-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      background: #A8895A;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .admin-user {
+      font-size: 12px;
+      color: rgba(244,241,235,.55);
+    }
+    .signout-btn {
+      background: rgba(244,241,235,.12);
+      color: #F4F1EB;
+      border: 1px solid rgba(244,241,235,.22);
+      border-radius: 100px;
+      padding: 7px 16px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .signout-btn:hover { background: rgba(244,241,235,.2); }
+
+    .admin-main {
+      flex: 1;
+      padding: 32px;
+      max-width: 960px;
+    }
+
+    /* Summary stats */
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 24px;
+      min-width: 140px;
+      box-shadow: 0 1px 6px rgba(22,20,15,.07);
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #9b958a;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #16140F;
+      line-height: 1;
+    }
+
+    /* Filter pills */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .filter-label {
+      font-size: 12px;
+      color: #9b958a;
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .filter-btn {
+      background: #fff;
+      border: 1.5px solid #D9D3C6;
+      border-radius: 100px;
+      padding: 6px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6F6A60;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn.active {
+      background: #16140F;
+      border-color: #16140F;
+      color: #F4F1EB;
+      font-weight: 600;
+    }
+    .filter-btn:hover:not(.active) {
+      border-color: #A8895A;
+      color: #A8895A;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(22,20,15,.07);
+      overflow: hidden;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .admin-table thead th {
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #9b958a;
+      border-bottom: 1.5px solid #F0EBE3;
+      background: #FAFAF7;
+      white-space: nowrap;
+    }
+    .admin-table tbody tr {
+      border-bottom: 1px solid #F0EBE3;
+      transition: background .12s;
+    }
+    .admin-table tbody tr:last-child { border-bottom: none; }
+    .admin-table tbody tr:hover { background: #FAFAF7; }
+    .admin-table td {
+      padding: 16px 20px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .prov-name {
+      font-weight: 600;
+      color: #16140F;
+      margin-bottom: 2px;
+    }
+    .prov-role {
+      font-size: 12px;
+      color: #9b958a;
+    }
+    .benefit-pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: #F1ECE2;
+      color: #6F6A60;
+    }
+    .count-cell {
+      font-size: 22px;
+      font-weight: 700;
+      color: #16140F;
+      text-align: center;
+    }
+    .count-cell.zero { color: #C8C3BC; }
+    .date-cell {
+      font-size: 12px;
+      color: #9b958a;
+    }
+
+    /* Loading/empty state */
+    .state-msg {
+      padding: 40px 20px;
+      text-align: center;
+      color: #9b958a;
+      font-size: 14px;
+    }
+
+    /* Ghost btn (signout on unauth screen) */
+    .ghost-btn {
+      background: none;
+      border: 1.5px solid #D9D3C6;
+      border-radius: 100px;
+      padding: 9px 22px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6F6A60;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .ghost-btn:hover { border-color: #A8895A; color: #A8895A; }
+  </style>
+</head>
+<body>
+
+<!-- ── Auth screen ─────────────────────────────── -->
+<div id="screen-auth">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="32" height="30" viewBox="0 0 130 120">
+        <rect x="38" y="32" width="62" height="62" rx="13" fill="#16140F" transform="rotate(16 69 63)"/>
+        <rect x="34" y="30" width="62" height="62" rx="13" fill="#16140F"/>
+        <g transform="rotate(-16 61 59)">
+          <clipPath id="ac"><rect x="30" y="28" width="62" height="62" rx="13"/></clipPath>
+          <rect x="30" y="28" width="62" height="62" rx="13" fill="#4A4A52"/>
+          <g clip-path="url(#ac)">
+            <text x="57" y="63" font-family="'Space Grotesk',sans-serif" font-size="104" font-weight="600" fill="#F4F1EB" text-anchor="middle" dominant-baseline="central">R</text>
+          </g>
+        </g>
+      </svg>
+      <div class="auth-logo-text">realmoodboard</div>
+    </div>
+    <div class="auth-title">Panel de administración</div>
+    <div class="auth-sub">Acceso restringido — solo administradores</div>
+    <form id="login-form" onsubmit="doLogin(event)">
+      <label class="auth-label" for="admin-email">Email</label>
+      <input class="auth-input" type="email" id="admin-email" placeholder="tu@email.com" autocomplete="email" required>
+      <label class="auth-label" for="admin-pwd">Contraseña</label>
+      <input class="auth-input" type="password" id="admin-pwd" placeholder="••••••••" autocomplete="current-password" required>
+      <button class="auth-btn" type="submit" id="login-btn">Ingresar</button>
+      <p class="auth-err" id="login-err"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ── Unauthorized screen ─────────────────────── -->
+<div id="screen-unauth">
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D9D3C6" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="17" y1="3" x2="22" y2="8"/><line x1="22" y1="3" x2="17" y2="8"/></svg>
+  <p>Tu cuenta no tiene acceso a esta sección.</p>
+  <button class="ghost-btn" onclick="doSignOut()">Cerrar sesión</button>
+</div>
+
+<!-- ── Admin panel ────────────────────────────────── -->
+<div id="screen-admin">
+  <div class="admin-header">
+    <div class="admin-header-left">
+      <h1>Panel de administración</h1>
+      <span class="admin-badge">Admin</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span class="admin-user" id="admin-user-label"></span>
+      <button class="signout-btn" onclick="doSignOut()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="admin-main">
+
+    <!-- Summary stats -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total solicitudes</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Proveedores activos</div>
+        <div class="stat-value" id="stat-providers">—</div>
+      </div>
+    </div>
+
+    <!-- Date filters -->
+    <div class="filter-row">
+      <span class="filter-label">Período:</span>
+      <button class="filter-btn" id="filter-today" onclick="setFilter('today')">Hoy</button>
+      <button class="filter-btn" id="filter-week" onclick="setFilter('week')">Última semana</button>
+      <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">Todo</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Proveedor</th>
+            <th>Beneficio</th>
+            <th style="text-align:center">Solicitudes</th>
+            <th>Última solicitud</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="4" class="state-msg">Cargando datos…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────────
+// SQL para habilitar SELECT en Supabase (correr una sola vez en SQL Editor):
+// CREATE POLICY "admin select benefit_requests"
+//   ON benefit_requests FOR SELECT
+//   USING (auth.jwt()->>'email' = 'ignacio.miranda@mi.unc.edu.ar');
+
+const SUPABASE_URL    = 'https://xzatiewlgmoalpzsnicz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
+const ADMIN_EMAIL     = 'ignacio.miranda@mi.unc.edu.ar';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PROVIDERS = [
+  { id: 'bertone',   name: 'Estudio Bertone',      role: 'Arquitecto · Proyectista',        benefit: null },
+  { id: 'martinez',  name: 'Obras Martínez SRL',   role: 'Proveedor · Construcción',        benefit: null },
+  { id: 'instone',   name: 'Instone',               role: 'Proveedor · Terrazzo',            benefit: 'muestra gratis' },
+  { id: 'destefano', name: 'De Stefano',            role: 'Proveedor · Piedras & Tablas',   benefit: 'descuento' },
+];
+
+let currentFilter = 'all';
+
+// ── Auth ─────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && session.user) {
+      onSignedIn(session.user);
+    } else {
+      showScreen('auth');
+    }
+    sb.auth.onAuthStateChange((_ev, session) => {
+      if (session && session.user) onSignedIn(session.user);
+      else showScreen('auth');
+    });
+  } catch (e) {
+    showScreen('auth');
+  }
+}
+
+function onSignedIn(user) {
+  if (user.email !== ADMIN_EMAIL) {
+    showScreen('unauth');
+    return;
+  }
+  document.getElementById('admin-user-label').textContent = user.email;
+  showScreen('admin');
+  loadData();
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('admin-email').value.trim();
+  const pwd   = document.getElementById('admin-pwd').value;
+  const btn   = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-err');
+
+  btn.disabled = true;
+  btn.textContent = 'Ingresando…';
+  errEl.style.display = 'none';
+
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+    if (error) throw error;
+    // onAuthStateChange will handle the rest
+  } catch (err) {
+    const map = {
+      'Invalid login credentials': 'Email o contraseña incorrectos.',
+      'Email not confirmed': 'Confirmá tu email antes de ingresar.',
+    };
+    errEl.textContent = map[err.message] || ('Error: ' + err.message);
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ingresar';
+  }
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  showScreen('auth');
+}
+
+// ── Screens ─────────────────────────────────────────────────────
+function showScreen(id) {
+  ['auth', 'unauth', 'admin'].forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    el.style.display = (s === id) ? (s === 'admin' ? 'flex' : (s === 'unauth' ? 'flex' : 'flex')) : 'none';
+  });
+}
+
+// ── Filters ─────────────────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  ['today', 'week', 'all'].forEach(k => {
+    document.getElementById('filter-' + k).classList.toggle('active', k === f);
+  });
+  loadData();
+}
+
+function filterStart() {
+  const now = new Date();
+  if (currentFilter === 'today') {
+    const d = new Date(now);
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }
+  if (currentFilter === 'week') {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 7);
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }
+  return null;
+}
+
+// ── Data ─────────────────────────────────────────────────────────
+async function loadData() {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '<tr><td colspan="4" class="state-msg">Cargando…</td></tr>';
+  document.getElementById('stat-total').textContent = '—';
+  document.getElementById('stat-providers').textContent = '—';
+
+  try {
+    let q = sb.from('benefit_requests').select('provider_id, created_at');
+    const from = filterStart();
+    if (from) q = q.gte('created_at', from);
+
+    const { data, error } = await q.order('created_at', { ascending: false });
+    if (error) throw error;
+
+    renderTable(data || []);
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="4" class="state-msg" style="color:#C04030">Error al cargar datos: ' + escHtml(err.message) + '</td></tr>';
+  }
+}
+
+function renderTable(rows) {
+  // Build counts + last-date per provider
+  const countMap = {};
+  const lastMap  = {};
+
+  rows.forEach(r => {
+    countMap[r.provider_id] = (countMap[r.provider_id] || 0) + 1;
+    if (!lastMap[r.provider_id] || r.created_at > lastMap[r.provider_id]) {
+      lastMap[r.provider_id] = r.created_at;
+    }
+  });
+
+  const total = rows.length;
+  const activeProviders = Object.keys(countMap).filter(k => countMap[k] > 0).length;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-providers').textContent = activeProviders;
+
+  const tbody = document.getElementById('table-body');
+
+  if (PROVIDERS.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="state-msg">Sin proveedores cargados.</td></tr>';
+    return;
+  }
+
+  const sorted = [...PROVIDERS].sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
+
+  tbody.innerHTML = sorted.map(p => {
+    const count = countMap[p.id] || 0;
+    const last  = lastMap[p.id] ? formatDate(lastMap[p.id]) : '—';
+    const benefitHtml = p.benefit
+      ? `<span class="benefit-pill">${escHtml(p.benefit)}</span>`
+      : '<span style="color:#C8C3BC;font-size:12px">—</span>';
+
+    return `<tr>
+      <td>
+        <div class="prov-name">${escHtml(p.name)}</div>
+        <div class="prov-role">${escHtml(p.role)}</div>
+      </td>
+      <td>${benefitHtml}</td>
+      <td class="count-cell ${count === 0 ? 'zero' : ''}">${count}</td>
+      <td class="date-cell">${escHtml(last)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function formatDate(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch { return iso; }
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
