@@ -481,6 +481,7 @@ function rmGateSubmit(){
           </div>
           <p id="vp-bio" style="font-size:14px;line-height:1.75;color:#6F6A60;text-align:left;margin:0 0 22px;background:#FAFAF8;border-radius:16px;padding:18px 22px;border:1px solid #ECE8E0"></p>
           <div id="vp-tags" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:28px"></div>
+          <div id="vp-benefit" style="display:none;margin-bottom:28px;text-align:left"></div>
           <h2 style="font-size:14px;font-weight:700;color:#1A1A18;text-align:left;margin:0 0 12px;letter-spacing:-.01em">Portfolio</h2>
           <div id="vp-portfolio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px;text-align:left"></div>
           <a id="vp-cta" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#1A1A18;color:#fff;border:none;border-radius:100px;padding:16px 30px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .15s;letter-spacing:-.01em">
@@ -1720,12 +1721,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Upload wizard (global — outside DOMContentLoaded) ─────────
 var _uploadStep=1,_uploadTotalSteps=5;
-var _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{name:'',role:'',contact:''}]};
+var _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{id:'',name:'',role:'',contact:''}]};
 var _STEP_LABELS=['Estudio','Proyecto','Fotos','Materiales','Publicar'];
 
 function openUploadModal(){
   _uploadStep=1;
-  _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{name:'',role:'',contact:''}]};
+  _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{id:'',name:'',role:'',contact:''}]};
   var ov=document.getElementById('rm-upload-overlay');ov.style.display='flex';
   _renderUpload();
 }
@@ -1780,8 +1781,8 @@ function _renderUpload(){
       html5+='<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:12px;padding:14px 16px;margin-bottom:10px">'
         +'<div style="font-size:10px;font-weight:700;color:#9b958a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Proveedor '+(i+1)+'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-        +'<input placeholder="Nombre" value="'+(pv.name||'')+'" oninput="_uploadData.providers['+i+'].name=this.value" style="'+_uploadInputStyle()+'">'
-        +'<input placeholder="Rol (Arquitecto, Herrería...)" value="'+(pv.role||'')+'" oninput="_uploadData.providers['+i+'].role=this.value" style="'+_uploadInputStyle()+'">'
+        +_provAutoHtml(i,pv)
+        +'<input id="up-prov-role-'+i+'" placeholder="Rol" value="'+(pv.role||'')+'" readonly style="'+_uploadInputStyle()+';background:#F5F3EF;color:#6F6A60;cursor:default">'
         +'</div><input placeholder="Contacto (WhatsApp, email, web...)" value="'+(pv.contact||'')+'" oninput="_uploadData.providers['+i+'].contact=this.value" style="'+_uploadInputStyle()+'"></div>';
     });
     if(_uploadData.providers.length<4)html5+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
@@ -1827,7 +1828,51 @@ function handlePhotoUpload(input){
 }
 function removeUploadPhoto(i){_uploadData.photos.splice(i,1);var pg=document.getElementById('up-photo-grid');if(pg)pg.innerHTML=_uploadPhotoPreviews();}
 function toggleUploadMat(n){var idx=_uploadData.materials.indexOf(n);if(idx>=0)_uploadData.materials.splice(idx,1);else _uploadData.materials.push(n);_renderUpload();}
-function addUploadProvider(){_uploadData.providers.push({name:'',role:'',contact:''});_renderUpload();}
+function addUploadProvider(){_uploadData.providers.push({id:'',name:'',role:'',contact:''});_renderUpload();}
+
+function _provAutoHtml(i,pv){
+  var s=_uploadInputStyle();
+  var n=pv.name||'';
+  return '<div style="position:relative">'
+    +'<input type="text" id="up-prov-name-'+i+'" placeholder="Buscar proveedor…" autocomplete="off" value="'+n+'" '
+    +'oninput="_provInput('+i+',this.value)" onfocus="_provInput('+i+',this.value)" onblur="_provBlur('+i+')" '
+    +'style="'+s+'">'
+    +'<div id="up-prov-dd-'+i+'" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1px solid #E4DFD5;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:901;max-height:200px;overflow-y:auto"></div>'
+    +'</div>';
+}
+function _provInput(i,val){
+  var dd=document.getElementById('up-prov-dd-'+i);if(!dd)return;
+  _uploadData.providers[i].id='';
+  var q=(val||'').toLowerCase().trim();
+  if(!q){dd.style.display='none';return;}
+  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0;});
+  if(!m.length){dd.style.display='none';return;}
+  dd.style.display='block';
+  dd.innerHTML=m.map(function(c){
+    return '<div onmousedown="_provSelect('+i+',\''+c.id+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #F0ECE6" onmouseover="this.style.background=\'#F8F6F2\'" onmouseout="this.style.background=\'#fff\'">'
+      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+c.name+'</div>'
+      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+c.role+'</div>'
+      +'</div>';
+  }).join('');
+}
+function _provSelect(i,id){
+  var c=(window._PM_CONTACTS||[]).find(function(x){return x.id===id;});if(!c)return;
+  _uploadData.providers[i].id=c.id;
+  _uploadData.providers[i].name=c.name;
+  _uploadData.providers[i].role=c.role;
+  var ni=document.getElementById('up-prov-name-'+i);if(ni)ni.value=c.name;
+  var ri=document.getElementById('up-prov-role-'+i);if(ri)ri.value=c.role;
+  var dd=document.getElementById('up-prov-dd-'+i);if(dd)dd.style.display='none';
+}
+function _provBlur(i){
+  setTimeout(function(){
+    var dd=document.getElementById('up-prov-dd-'+i);if(dd)dd.style.display='none';
+    if(!_uploadData.providers[i].id&&(_uploadData.providers[i].name||'').trim()){
+      _uploadData.providers[i].name='';
+      var ni=document.getElementById('up-prov-name-'+i);if(ni)ni.value='';
+    }
+  },160);
+}
 function deleteMyProject(id){
   if(!confirm('¿Eliminar este proyecto?'))return;
   var lst;try{lst=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){lst=[];}
@@ -1863,13 +1908,31 @@ window._PM_CONTACTS=[
    location:'Córdoba Capital',
    bio:'Fabricamos terrazzo artesanal de primera calidad con piedras naturales argentinas e importadas. Cada pieza es producida a pedido, con la fórmula exacta elegida por el cliente en nuestro configurador. Entregamos en todo el país.',
    tags:['Terrazzo','Piedras naturales','Personalizado','Entrega en todo el país'],
-   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493513001001'},
+   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493513001001',
+   benefit:{type:'muestra gratis',description:'Muestra gratuita de terrazzo personalizado para tu proyecto — eligís la fórmula en el configurador y la recibís sin costo.'}},
   {id:'destefano',role:'Proveedor · Piedras & Tablas',name:'De Stefano',full:'De Stefano · Piedras & Tablas',color:'#B45C4C',
    location:'Córdoba Capital',
    bio:'Distribuidor exclusivo de mármoles, granitos, cuarcitas y piedras sinterizadas de primer nivel. Asesoramiento personalizado en showroom y servicio de corte y colocación con instaladores propios.',
    tags:['Mármol','Granito','Cuarcita','Sinterizado','Colocación'],
-   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','cocina-ambiente.jpg.webp'],wa:'5493514004567'},
+   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','cocina-ambiente.jpg.webp'],wa:'5493514004567',
+   benefit:{type:'descuento',description:'10% de descuento en primera compra para arquitectos e interioristas que lleguen por Realmood.'}},
 ];
+
+// SQL para crear la tabla en Supabase:
+// CREATE TABLE benefit_requests (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), provider_id text, provider_name text, benefit_type text, project_title text, user_email text, created_at timestamptz DEFAULT now());
+// ALTER TABLE benefit_requests ENABLE ROW LEVEL SECURITY;
+// CREATE POLICY "allow anon insert" ON benefit_requests FOR INSERT WITH CHECK (true);
+async function recordBenefitRequest(prov,pinData){
+  try{
+    await sb.from('benefit_requests').insert({
+      provider_id:prov.id,
+      provider_name:prov.name,
+      benefit_type:prov.benefit?prov.benefit.type:null,
+      project_title:pinData?pinData.title:null,
+      user_email:typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null
+    });
+  }catch(e){/* tabla aún no creada en Supabase — correr SQL de arriba */}
+}
 
 function openProfOverlay(prov,projectTitle){
   // Close pin modal first
@@ -1894,6 +1957,32 @@ function openProfOverlay(prov,projectTitle){
   // Tags
   const tg=document.getElementById('vp-tags');tg.innerHTML='';
   (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.style.cssText='font-size:11px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:100px;background:#F1ECE2;color:#6F6A60';s.textContent=t;tg.appendChild(s);});
+  // Benefit card
+  const benEl=document.getElementById('vp-benefit');
+  if(prov.benefit){
+    const typeIcon={'muestra gratis':'🎁','descuento':'💰','prioridad de entrega':'⚡'};
+    const icon=typeIcon[prov.benefit.type]||'✦';
+    benEl.style.display='';
+    benEl.innerHTML='<div style="background:linear-gradient(135deg,#F5F3EF,#EDE8DF);border:1px solid #D9D3C6;border-radius:16px;padding:20px 22px">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      +'<span style="font-size:18px">'+icon+'</span>'
+      +'<span style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9b958a">Beneficio exclusivo</span>'
+      +'</div>'
+      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+prov.benefit.description+'</p>'
+      +'<button id="vp-benefit-btn" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s">Solicitar beneficio →</button>'
+      +'</div>';
+    document.getElementById('vp-benefit-btn').addEventListener('click',async()=>{
+      const btn=document.getElementById('vp-benefit-btn');
+      btn.disabled=true;btn.style.opacity='.6';btn.textContent='Procesando…';
+      await recordBenefitRequest(prov,window._lastPmData);
+      const waMsg=encodeURIComponent('Hola '+prov.name+'! Vi tu beneficio en Realmood ("'+prov.benefit.description+'") y me gustaría solicitarlo para mi proyecto.');
+      window.open('https://wa.me/'+prov.wa+'?text='+waMsg,'_blank');
+      btn.textContent='¡Solicitado! ✓';btn.style.background='#27AE60';btn.style.opacity='1';
+      if(typeof toast==='function')toast('¡Beneficio solicitado! Te contactamos por WhatsApp.');
+    });
+  }else{
+    benEl.style.display='none';
+  }
   // Portfolio
   const po=document.getElementById('vp-portfolio');po.innerHTML='';
   (prov.portfolio||[]).forEach(src=>{
