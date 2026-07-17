@@ -348,6 +348,11 @@ function rmGateSubmit(){
       <span>Mensajes</span>
     </button>
 
+    <button id="rm-admin-btn" type="button" data-view="admin" data-label="Admin" style="display:none;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Admin</span>
+    </button>
+
     <button type="button" class="rm-cfg-btn" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s" onmouseenter="this.style.background='#F3F0EA'" onmouseleave="this.style.background='transparent'">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>Configuración</span>
@@ -430,6 +435,7 @@ function rmGateSubmit(){
       <section id="view-mood" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
+      <section id="view-admin" style="display:none;animation:vIn .35s ease"></section>
 
       <!-- Pin detail page (full view, like Pinterest) -->
       <section id="view-pin" style="display:none;animation:vIn .35s ease">
@@ -1412,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','perfil','pin'];
+    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','admin','perfil','pin'];
     window._provPrevView='inicio';
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
@@ -1424,6 +1430,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='mood')loadMoodList();
       if(v==='saved')loadBoardsView();
       if(v==='mis-proyectos')loadMisProyectos();
+      if(v==='admin')loadAdminView();
       if(v==='explorar'){if(!window._explorarMapRef)initExplorarMap();setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
       if(history.replaceState)history.replaceState(null,'','#'+v);
@@ -1676,7 +1683,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const rc=document.getElementById('rm-content');if(rc)rc.scrollTop=0;
     };
 
-    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes'];
+    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes','admin'];
     const _hashView=window.location.hash.replace('#','');
     setView(_validViews.includes(_hashView)?_hashView:'inicio');
 

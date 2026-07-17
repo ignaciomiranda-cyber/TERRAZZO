@@ -215,16 +215,6 @@ body{background:#fff}
         </div>
         <div id="inicio-ciudades" style="display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
         <div id="inicio-cats" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
-        <div id="configurador-banner" style="margin-bottom:28px;border-radius:16px;overflow:hidden;background:linear-gradient(110deg,#1A1A18 60%,#3a3733);display:flex;align-items:stretch;min-height:112px;box-shadow:0 4px 24px rgba(26,26,24,.18);cursor:pointer" onclick="setView('crear')">
-          <div style="padding:22px 28px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#9b958a">Instone · Realmood</div>
-            <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1.25">Creá tu terrazzo personalizado</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:2px">Elegí base, piedras y tamaños — configurador interactivo con vista previa al instante</div>
-          </div>
-          <div style="padding:22px 28px 22px 0;display:flex;align-items:center;flex:none">
-            <button type="button" onclick="event.stopPropagation();setView('crear')" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;border:none;background:#fff;color:#1A1A18;cursor:pointer;white-space:nowrap;letter-spacing:-.01em;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">Abrir configurador →</button>
-          </div>
-        </div>
         <div id="grid-inicio" style="column-width:210px;column-gap:16px"></div>
       </section>
 
@@ -305,13 +295,24 @@ body{background:#fff}
             <span id="vp-loc-txt"></span>
           </div>
           <p id="vp-bio" style="font-size:14px;line-height:1.75;color:#6F6A60;text-align:left;margin:0 0 22px;background:#FAFAF8;border-radius:16px;padding:18px 22px;border:1px solid #ECE8E0"></p>
-          <div id="vp-tags" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:28px"></div>
+          <div id="vp-tags" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:20px"></div>
+          <div id="vp-benefit" style="display:none;align-items:center;gap:11px;background:#FFFBEC;border:1.5px solid #F5D87A;border-radius:14px;padding:13px 18px;margin-bottom:24px;text-align:left">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B07D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <div style="flex:1;min-width:0">
+              <span id="vp-benefit-badge" style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#8A6000;background:#F5D87A;border-radius:100px;padding:3px 10px;margin-bottom:4px"></span>
+              <p id="vp-benefit-desc" style="margin:0;font-size:13px;color:#6F6A60;line-height:1.5"></p>
+            </div>
+          </div>
           <h2 style="font-size:14px;font-weight:700;color:#1A1A18;text-align:left;margin:0 0 12px;letter-spacing:-.01em">Portfolio</h2>
           <div id="vp-portfolio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px;text-align:left"></div>
           <a id="vp-cta" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#1A1A18;color:#fff;border:none;border-radius:100px;padding:16px 30px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .15s;letter-spacing:-.01em">
             <svg width="18" height="18" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg>
             Escribir mensaje
           </a>
+          <button id="vp-benefit-btn" onclick="requestBenefit()" style="display:none;align-items:center;justify-content:center;gap:9px;background:transparent;color:#1A1A18;border:2px solid #1A1A18;border-radius:100px;padding:14px 30px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s,color .15s;letter-spacing:-.01em;margin-top:12px;width:100%">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span id="vp-benefit-label">Solicitar beneficio</span>
+          </button>
         </div>
       </section>
 
@@ -496,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── toast ─────────────────────────────────────────────────
     let tT;
     const toast=msg=>{const t=$('ins-toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';clearTimeout(tT);tT=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2400);};
+    window.showToast=toast;
 
     // ── pin builder ───────────────────────────────────────────
     const mkCard=(media,title,tag,opts)=>{
@@ -928,17 +930,20 @@ window._PM_CONTACTS=[
    location:'Nueva Córdoba, Córdoba',
    bio:'Estudio de arquitectura y proyectismo con 15 años de trayectoria en diseño residencial y comercial de alta gama. Desarrollamos proyectos llave en mano desde el anteproyecto hasta la dirección de obra, con especialización en la integración de materiales contemporáneos como terrazzo, piedras naturales y acero corten.',
    tags:['Residencial','Comercial','Reforma integral','Interiorismo','Dirección de obra'],
-   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493514001234'},
+   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493514001234',
+   benefit:{type:'descuento',description:'10% de descuento en honorarios al cotizar a través de realmood'}},
   {id:'martinez',role:'Proveedor · Construcción',name:'Obras Martínez SRL',full:'Obras Martínez SRL',color:'#88A686',
    location:'General Paz, Córdoba',
    bio:'Empresa constructora con especialización en terminaciones de interiores de alta calidad. Trabajamos con los mejores materiales del mercado y contamos con equipo de colocadores certificados para terrazzo y piedra natural.',
    tags:['Construcción','Terminaciones','Pisos y revestimientos','Baños y cocinas'],
-   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','proj-2.jpg'],wa:'5493514003456'},
+   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','proj-2.jpg'],wa:'5493514003456',
+   benefit:{type:'prioridad de entrega',description:'Inicio de obra garantizado en menos de 10 días hábiles para proyectos referenciados'}},
   {id:'instone',role:'Proveedor · Terrazzo',name:'Instone',full:'Instone — Terrazzo Artesanal',color:'#1A1A18',
    location:'Córdoba Capital',
    bio:'Fabricamos terrazzo artesanal de primera calidad con piedras naturales argentinas e importadas. Cada pieza es producida a pedido, con la fórmula exacta elegida por el cliente en nuestro configurador. Entregamos en todo el país.',
    tags:['Terrazzo','Piedras naturales','Personalizado','Entrega en todo el país'],
-   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493513001001'},
+   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493513001001',
+   benefit:{type:'muestra gratis',description:'Muestra de terrazzo artesanal sin cargo en tu primera consulta'}},
   {id:'destefano',role:'Proveedor · Piedras & Tablas',name:'De Stefano',full:'De Stefano · Piedras & Tablas',color:'#B45C4C',
    location:'Córdoba Capital',
    bio:'Distribuidor exclusivo de mármoles, granitos, cuarcitas y piedras sinterizadas de primer nivel. Asesoramiento personalizado en showroom y servicio de corte y colocación con instaladores propios.',
@@ -969,6 +974,14 @@ function openProfOverlay(prov,projectTitle){
   // Tags
   const tg=document.getElementById('vp-tags');tg.innerHTML='';
   (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.style.cssText='font-size:11px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:100px;background:#F1ECE2;color:#6F6A60';s.textContent=t;tg.appendChild(s);});
+  // Benefit
+  const bfc=document.getElementById('vp-benefit');
+  if(prov.benefit&&prov.benefit.type){
+    const bLabels={'descuento':'Descuento','muestra gratis':'Muestra gratis','prioridad de entrega':'Prioridad de entrega'};
+    document.getElementById('vp-benefit-badge').textContent=bLabels[prov.benefit.type]||prov.benefit.type;
+    document.getElementById('vp-benefit-desc').textContent=prov.benefit.description||'';
+    bfc.style.display='flex';
+  }else{bfc.style.display='none';}
   // Portfolio
   const po=document.getElementById('vp-portfolio');po.innerHTML='';
   (prov.portfolio||[]).forEach(src=>{
@@ -979,10 +992,34 @@ function openProfOverlay(prov,projectTitle){
   // CTA → WhatsApp with pre-written message
   const msg=encodeURIComponent('Hola '+prov.name+'! Te contacto por el proyecto *'+(projectTitle||'que vi en realmood')+'*. ¿Podemos hablar sobre los materiales y el trabajo?');
   document.getElementById('vp-cta').href='https://wa.me/'+prov.wa+'?text='+msg;
+  // Benefit button — visible only when prov.benefit exists
+  window._currentProv=prov;
+  window._currentProjectTitle=projectTitle;
+  const bBtn=document.getElementById('vp-benefit-btn');
+  if(prov.benefit){bBtn.style.display='flex';}else{bBtn.style.display='none';}
   // Navigate to perfil view (uses setView from DOMContentLoaded closure via window)
   window._setViewPerfil();
 }
 function closeProfOverlay(){backFromProfile();}
+async function requestBenefit(){
+  const prov=window._currentProv;
+  if(!prov||!prov.benefit)return;
+  const projectTitle=window._currentProjectTitle;
+  // Track in Supabase (fire-and-forget; never blocks the UX)
+  try{
+    await sb.from('benefit_requests').insert({
+      provider_id:prov.id,
+      provider_name:prov.full||prov.name,
+      user_email:(_currentUser&&_currentUser.email)||null,
+      project_title:projectTitle||null
+    });
+  }catch(e){console.warn('benefit_requests insert failed',e);}
+  // Toast confirmation
+  if(typeof window.showToast==='function')window.showToast('¡Beneficio solicitado! Te contactamos pronto.');
+  // Open WhatsApp
+  const waMsg=encodeURIComponent('Hola '+prov.name+'! Quiero solicitar el beneficio exclusivo de realmood'+(projectTitle?' para el proyecto *'+projectTitle+'*':'')+'. ¿Me podés contar más?');
+  window.open('https://wa.me/'+prov.wa+'?text='+waMsg,'_blank','noopener');
+}
 function backFromProfile(){
   if(window._lastPmData){window.openPm(window._lastPmData);}
   else{window._setViewPerfil(window._provPrevView||'inicio');}
