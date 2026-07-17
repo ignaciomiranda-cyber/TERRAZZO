@@ -320,9 +320,9 @@ function rmGateSubmit(){
       <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
     </button>
 
-    <button type="button" data-view="inicio" data-label="Novedades" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
+    <button type="button" data-view="inicio" data-label="Inspirate" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
-      <span>Novedades</span>
+      <span>Inspirate</span>
     </button>
     <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
@@ -378,7 +378,7 @@ function rmGateSubmit(){
 
       <section id="view-inicio" style="animation:vIn .35s ease">
         <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
-          <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Novedades</h1>
+          <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Inspirate</h1>
           <span style="font-size:13px;color:#9b958a">Terrazzo, materiales y obras que combinan</span>
         </div>
         <div id="inicio-cats" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
@@ -812,14 +812,14 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     const PHOTOS=[
       {img:'prod-eco.jpg',title:'Instalación ECO-005',tag:'Inspiración'},
-      {img:'prod-bangkok.jpg',title:'Sillas Bangkok',tag:'Mobiliario'},
-      {img:'prod-brass.jpg',title:'Mesa de vidrio y latón',tag:'Detalle'},
+      {img:'prod-bangkok.jpg',title:'Sillas Bangkok',tag:'Mobiliario',cat:'Locales'},
+      {img:'prod-brass.jpg',title:'Mesa de vidrio y latón',tag:'Detalle',cat:'Locales'},
       {img:'life-1.jpg',title:'Rincón de trabajo',tag:'Ambiente'},
       {img:'proj-2.jpg',title:'Obra en Córdoba',tag:'Proyecto'},
       {img:'proj-3.jpg',title:'Detalle de obra',tag:'Proyecto'},
-      {img:'cocina-ambiente.jpg.webp',title:'Cocina en terracota',tag:'Ambiente'},
-      {img:'mesa-ambiente.jpg.jpg',title:'Mesa de comedor',tag:'Ambiente'},
-      {img:'mesa-ambienteop2.jpg.jpg',title:'Detalle de mesa',tag:'Detalle'},
+      {img:'cocina-ambiente.jpg.webp',title:'Cocina en terracota',tag:'Ambiente',cat:'Cocinas'},
+      {img:'mesa-ambiente.jpg.jpg',title:'Mesa de comedor',tag:'Ambiente',cat:'Cocinas'},
+      {img:'mesa-ambienteop2.jpg.jpg',title:'Detalle de mesa',tag:'Detalle',cat:'Cocinas'},
       {img:'pasted-1781733750827-0.png',title:'Combinación de materiales',tag:'Inspiración'},
       {img:'pasted-1781733758235-0.png',title:'Paleta natural',tag:'Inspiración'},
       {img:'pasted-1781734716790-0.png',title:'Moodboard cálido',tag:'Inspiración'}
@@ -1010,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', function() {
       makeMain:()=>{const d=panMedia(p);d.style.cssText='display:block;width:100%;background:#fff';return d;},
       relatedImgs:REL_AMB
     }})));
-    PHOTOS.forEach(p=>inicio.push(mkCard(photoMedia(p.img),p.title,p.tag,{search:p.tag,cat:'Ambientes',detail:{
+    PHOTOS.forEach(p=>inicio.push(mkCard(photoMedia(p.img),p.title,p.tag,{search:p.tag,cat:(p.cat||''),detail:{
       title:p.title,subtitle:p.tag,
       text:'Ambiente de diseño interior con selección cuidada de materiales de calidad. Combinación de terrazzo Instone con piedras naturales y melaminas premium. Fotografía de obra terminada.',
       mainImgSrc:p.img,
@@ -1018,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }})));
     for(let i=inicio.length-1;i>0;i--){const j=Math.floor(hash2(i*3.1,i*7.7)*(i+1));[inicio[i],inicio[j]]=[inicio[j],inicio[i]];}
     const gi=$('grid-inicio');inicio.forEach(c=>gi.appendChild(c));
-    const ICATS=['Todos','Terrazzo','Piedras','Melaminas','Pantone','Ambientes'];
+    const ICATS=['Todos','Cocinas','Baños','Locales'];
     const cwrap=$('inicio-cats');let activeCat='Todos';const cbtns={};
     ICATS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeCat;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeCat=t;Object.entries(cbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});doSearch($('ins-search').value);});cbtns[t]=b;cwrap.appendChild(b);});
 
@@ -1668,7 +1668,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else{const panel=document.getElementById('pm-board-panel');if(panel)panel.style.display='none';toast('Realmood "'+name+'" creado ✓');}
       };
       // Update back button label
-      const labels={'inicio':'Novedades','explorar':'Proyectos','crear':'Configurador','mood':'Realmoods','saved':'Guardados','mensajes':'Mensajes'};
+      const labels={'inicio':'Inspirate','explorar':'Proyectos','crear':'Configurador','mood':'Realmoods','saved':'Guardados','mensajes':'Mensajes'};
       const bl=document.getElementById('vpin-back-label');if(bl)bl.textContent='Volver a '+(labels[window._pinPrevView]||'inicio');
       // Navigate to pin page
       window._setViewPin();

@@ -149,9 +149,9 @@ body{background:#fff}
       <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
     </button>
 
-    <button type="button" data-view="inicio" data-label="Novedades" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
+    <button type="button" data-view="inicio" data-label="Inspirate" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
-      <span>Novedades</span>
+      <span>Inspirate</span>
     </button>
     <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
@@ -210,7 +210,7 @@ body{background:#fff}
 
       <section id="view-inicio" style="animation:vIn .35s ease">
         <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px">
-          <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Novedades</h1>
+          <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em">Inspirate</h1>
           <span style="font-size:13px;color:#9b958a">Baños, cocinas, locales y espacios que inspiran</span>
         </div>
         <div id="inicio-ciudades" style="display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cwrapC=$('inicio-ciudades');let activeCity='Todas';const cityBtns={};
     const cityStyle=(t,active)=>'font-family:inherit;font-size:12px;font-weight:'+(active?'600':'500')+';padding:6px 14px;border-radius:100px;cursor:pointer;border:1px solid '+(active?'#1A1A18':'#D7D1C6')+';background:'+(active?'#1A1A18':'transparent')+';color:'+(active?'#fff':'#6f6a60')+';white-space:nowrap;transition:all .15s;flex:none';
     CIUDADES.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.style.cssText=cityStyle(t,t===activeCity);b.addEventListener('click',()=>{activeCity=t;Object.entries(cityBtns).forEach(([k,el])=>{el.style.cssText=cityStyle(k,k===t);});doSearch($('ins-search').value);});cityBtns[t]=b;cwrapC.appendChild(b);});
-    const ICATS=['Todos','Baño','Living','Cocina','Exterior','Locales'];
+    const ICATS=['Todos','Cocinas','Baños','Locales'];
     const cwrap=$('inicio-cats');let activeCat='Todos';const cbtns={};
     ICATS.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;const on=t===activeCat;b.style.cssText='font-family:inherit;font-size:13px;font-weight:'+(on?'600':'500')+';padding:8px 17px;border-radius:100px;cursor:pointer;border:1px solid '+(on?'#1A1A18':'#D7D1C6')+';background:'+(on?'#1A1A18':'transparent')+';color:'+(on?'#fff':'#3a3733')+';transition:all .15s';b.addEventListener('click',()=>{activeCat=t;Object.entries(cbtns).forEach(([k,el])=>{const a=k===t;el.style.background=a?'#1A1A18':'transparent';el.style.color=a?'#fff':'#3a3733';el.style.borderColor=a?'#1A1A18':'#D7D1C6';el.style.fontWeight=a?'600':'500';});doSearch($('ins-search').value);});cbtns[t]=b;cwrap.appendChild(b);});
 
@@ -820,7 +820,7 @@ document.addEventListener('DOMContentLoaded', function() {
         refreshSaveBtn();
       };
       // Update back button label
-      const labels={'inicio':'Novedades','explorar':'Proyectos','mapa':'Mapa','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
+      const labels={'inicio':'Inspirate','explorar':'Proyectos','mapa':'Mapa','crear':'Configurador','mood':'Realmood','saved':'Guardados','mensajes':'Mensajes'};
       const bl=document.getElementById('vpin-back-label');if(bl)bl.textContent='Volver a '+(labels[window._pinPrevView]||'inicio');
       // Navigate to pin page
       window._setViewPin();
