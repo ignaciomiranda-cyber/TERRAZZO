@@ -2159,6 +2159,65 @@ function _onUser(user) {
   }
   const emailEl = document.getElementById('auth-user-email');
   if (emailEl) emailEl.textContent = user ? user.email : '';
+  const adminBtn = document.getElementById('rm-admin-btn');
+  if (adminBtn) adminBtn.style.display = user ? 'flex' : 'none';
+}
+
+async function loadAdminView() {
+  const vm = document.getElementById('view-admin');
+  if (!vm) return;
+  if (!_currentUser) {
+    vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">Iniciá sesión para acceder al panel de administración.</p></div>';
+    return;
+  }
+  vm.innerHTML = '<div style="max-width:860px;margin:0 auto">'
+    + '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em">Panel de administración</h1>'
+    + '<p style="font-size:13px;color:#9b958a;margin:0 0 28px">Solicitudes de beneficio por proveedor</p>'
+    + '<div id="admin-loading" style="text-align:center;color:#9b958a;padding:40px">Cargando datos…</div>'
+    + '</div>';
+  try {
+    const { data, error } = await sb.from('benefit_requests').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    const byProvider = {};
+    (window._PM_CONTACTS || []).forEach(c => { byProvider[c.id] = { ...c, requests: [] }; });
+    (data || []).forEach(r => { if (byProvider[r.provider_id]) byProvider[r.provider_id].requests.push(r); });
+    const rows = Object.values(byProvider).sort((a, b) => b.requests.length - a.requests.length);
+    const tbl = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      + '<thead><tr style="border-bottom:2px solid #E4DFD5">'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proveedor</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Beneficio</th>'
+      + '<th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Solicitudes</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Último contacto</th>'
+      + '</tr></thead><tbody>'
+      + rows.map(p => '<tr style="border-bottom:1px solid #F0EDE8">'
+        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + p.name + '</div><div style="font-size:11px;color:#9b958a">' + p.role + '</div></td>'
+        + '<td style="padding:12px 14px;color:#6F6A60">' + (p.benefit ? p.benefit.type : '—') + '</td>'
+        + '<td style="padding:12px 14px;text-align:center"><span style="font-size:18px;font-weight:800;color:' + (p.requests.length > 0 ? '#1A1A18' : '#C8C3B8') + '">' + p.requests.length + '</span></td>'
+        + '<td style="padding:12px 14px;font-size:11px;color:#9b958a">' + (p.requests.length ? new Date(p.requests[0].created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—') + '</td>'
+        + '</tr>').join('')
+      + '</tbody></table>';
+    const recent = (data || []).slice(0, 10).map(r => '<tr style="border-bottom:1px solid #F0EDE8">'
+      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + (r.provider_name || r.provider_id) + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + (r.benefit_type || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.project_title || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + (r.user_email || 'anónimo') + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + new Date(r.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>'
+      + '</tr>').join('');
+    vm.querySelector('#admin-loading').outerHTML = tbl
+      + '<h2 style="font-size:15px;font-weight:700;margin:36px 0 14px;letter-spacing:-.01em">Últimas solicitudes</h2>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      + '<thead><tr style="border-bottom:2px solid #E4DFD5">'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proveedor</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Beneficio</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proyecto</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Email</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Fecha</th>'
+      + '</tr></thead><tbody>' + (recent || '<tr><td colspan="5" style="padding:20px 14px;text-align:center;color:#9b958a">Sin solicitudes aún</td></tr>') + '</tbody></table>';
+  } catch (e) {
+    const loadEl = vm.querySelector('#admin-loading');
+    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + (e.message || 'tabla aún no creada en Supabase') + '</p>'
+      + '<pre style="font-size:11px;color:#6F6A60;background:#F5F3EF;padding:16px;border-radius:12px;text-align:left;overflow-x:auto">CREATE TABLE benefit_requests (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  provider_id text, provider_name text, benefit_type text,\n  project_title text, user_email text,\n  created_at timestamptz DEFAULT now()\n);\nALTER TABLE benefit_requests ENABLE ROW LEVEL SECURITY;\nCREATE POLICY "allow anon insert" ON benefit_requests FOR INSERT WITH CHECK (true);\nCREATE POLICY "allow auth select" ON benefit_requests FOR SELECT USING (auth.role() = \'authenticated\');</pre>';
+  }
 }
 
 function _hideDiscover() {
