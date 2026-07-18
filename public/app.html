@@ -1493,9 +1493,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }else{dtEl.style.display='none';}
       // Description
       document.getElementById('pm-desc').textContent=data.text||'';
-      // Contacts
+      // Contacts — use project-specific proveedores if available, otherwise all contacts
       const cc=document.getElementById('pm-contacts');cc.innerHTML='';
-      window._PM_CONTACTS.forEach(c=>{
+      const _contactsSource=(data.proveedoresIds&&data.proveedoresIds.length)
+        ?(window._PM_CONTACTS||[]).filter(c=>data.proveedoresIds.includes(c.id))
+        :(window._PM_CONTACTS||[]);
+      _contactsSource.forEach(c=>{
         const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:stretch;margin-bottom:8px';
         const btn=document.createElement('button');btn.type='button';btn.className='pm-cb';btn.style.marginBottom='0';btn.style.flex='1';
         btn.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
@@ -1688,52 +1691,105 @@ document.addEventListener('DOMContentLoaded', function() {
     setView(_validViews.includes(_hashView)?_hashView:'inicio');
 
     // ── Mis proyectos — sección y wizard de carga ────────────
-    function loadMisProyectos(){
+    async function loadMisProyectos(){
       const vm=$('view-mis-proyectos');if(!vm)return;
-      let list;try{list=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){list=[];}
+      vm.innerHTML='<div style="padding:40px;text-align:center;color:#9b958a;font-size:13px">Cargando…</div>';
+      let list=[];
+      try{
+        if(typeof sb!=='undefined'){
+          const userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
+          if(userEmail){
+            const{data,error}=await sb.from('projects').select('*').eq('arquitecto_email',userEmail).order('created_at',{ascending:false});
+            if(!error&&data)list=data;
+          }
+        }
+      }catch(e){console.warn('loadMisProyectos Supabase error',e);}
+      const uploadBtn='<button onclick="openUploadModal()" style="display:flex;align-items:center;gap:8px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">'
+        +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+        +'Cargar proyecto</button>';
       const header='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">'
         +'<div><h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em">Mis proyectos</h1>'
         +'<p style="font-size:13px;color:#9b958a;margin:0">'+list.length+' proyecto'+(list.length!==1?'s':'')+' cargado'+(list.length!==1?'s':'')+'</p></div>'
-        +'<button onclick="openUploadModal()" style="display:flex;align-items:center;gap:8px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">'
-        +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
-        +'Cargar proyecto</button></div>';
+        +uploadBtn+'</div>';
       if(!list.length){
+        const noSession=typeof _currentUser==='undefined'||!_currentUser;
+        const emptyMsg=noSession?'Iniciá sesión para ver y cargar tus proyectos.':'Subí tus obras para aparecer en la galería y que otros estudios y clientes te descubran.';
         vm.innerHTML=header+'<div style="max-width:480px;margin:20px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px">'
           +'<div style="width:64px;height:64px;border-radius:50%;background:#F1ECE2;display:inline-flex;align-items:center;justify-content:center;color:#9b958a;margin-bottom:18px">'
           +'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>'
           +'<h2 style="font-size:18px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em">Aún no cargaste proyectos</h2>'
-          +'<p style="font-size:13px;color:#9b958a;line-height:1.65;margin:0 0 20px">Subí tus obras para aparecer en el mapa, la galería y que otros estudios y clientes te descubran.</p>'
-          +'<button onclick="openUploadModal()" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Cargar primer proyecto</button>'
+          +'<p style="font-size:13px;color:#9b958a;line-height:1.65;margin:0 0 20px">'+emptyMsg+'</p>'
+          +(noSession?'':`<button onclick="openUploadModal()" style="font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Cargar primer proyecto</button>`)
           +'</div>';return;
       }
       let grid='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">';
-      list.slice().reverse().forEach(p=>{
-        const cover=p.photos&&p.photos[0]?'<img src="'+p.photos[0]+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC"></div>';
-        const matLine=p.materials&&p.materials.length?p.materials.slice(0,2).join(', ')+(p.materials.length>2?' +'+( p.materials.length-2):''):'Sin materiales';
+      list.forEach(p=>{
+        const cover=p.portada_url?'<img src="'+p.portada_url+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+        const provList=(p.proveedores&&p.proveedores.length)?(window._PM_CONTACTS||[]).filter(c=>p.proveedores.includes(c.id)).map(c=>c.name).join(', '):'';
         grid+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">'
           +'<div style="height:140px;overflow:hidden;background:#F5F3EF">'+cover+'</div>'
           +'<div style="padding:14px 16px">'
-          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+(p.studio?p.studio.name:'')+'</div>'
-          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</div>'
-          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.barrio+' · '+p.tag+'</div>'
-          +'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+matLine+'</div>'
-          +'<button onclick="deleteMyProject(\''+p.id+'\')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
+          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+p.tipo+'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.titulo+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.ubicacion+'</div>'
+          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+provList+'</div>':'<div style="margin-bottom:12px"></div>')
+          +'<button onclick="deleteMyProject('+p.id+')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
           +'</div></div>';
       });
       vm.innerHTML=header+grid+'</div>';
     }
     window._loadMisProyectos=loadMisProyectos;
     loadMisProyectos();
+
+    // ── Load real projects from Supabase into Explorar ────────
+    const BC_COORDS={'Nueva Córdoba':[-31.4285,-64.1843],'Centro':[-31.4135,-64.1894],'General Paz':[-31.4040,-64.2024],'Cerro de las Rosas':[-31.3808,-64.2065],'Cofico':[-31.3960,-64.1856],'Güemes':[-31.4216,-64.1843],'Villa Belgrano':[-31.3702,-64.2180],'Alberdi':[-31.4064,-64.1973]};
+    window._loadSupabaseProjects=async function(){
+      try{
+        if(typeof sb==='undefined')return;
+        const{data,error}=await sb.from('projects').select('*').order('created_at',{ascending:false});
+        if(error||!data||!data.length)return;
+        data.forEach((p,idx)=>{
+          const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):null;
+          if(!makeMain)return;
+          const media=photoMedia(p.portada_url,'4/3');
+          const provIds=p.proveedores||[];
+          const card=mkCard(media,p.titulo,p.ubicacion+' · '+p.tipo,{
+            filter:p.tipo,search:p.ubicacion,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.titulo,
+            captionBelow:false,
+            overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.titulo}],
+            detail:{
+              title:p.titulo,subtitle:p.ubicacion+' · '+p.tipo,
+              text:p.descripcion||'Proyecto en '+p.ubicacion+'. Tipo: '+p.tipo+'.',
+              makeMain,proveedoresIds:provIds,relatedImgs:[]
+            }
+          });
+          card._rmProject={name:p.titulo,barrio:p.ubicacion,tag:p.tipo,_sbId:p.id};
+          ge.appendChild(card);
+          // Add to map if map is initialized
+          if(window._explorarMapRef&&window._explorarMarkerData){
+            const c=BC_COORDS[p.ubicacion];if(!c)return;
+            const off=[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
+            const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#E8352C;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+            const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(window._explorarMapRef)
+              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+            window._explorarMarkerData.push({marker,proj:card._rmProject});
+          }
+        });
+        updateMapBelow();
+      }catch(e){console.warn('loadSupabaseProjects error',e);}
+    };
+    // Load Supabase projects on startup (non-blocking)
+    window._loadSupabaseProjects();
 });
 
 // ── Upload wizard (global — outside DOMContentLoaded) ─────────
-var _uploadStep=1,_uploadTotalSteps=5;
-var _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{id:'',name:'',role:'',contact:''}]};
-var _STEP_LABELS=['Estudio','Proyecto','Fotos','Materiales','Publicar'];
+var _uploadStep=1,_uploadTotalSteps=4;
+var _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:''},photos:[],providers:[{id:'',name:'',role:''}]};
+var _STEP_LABELS=['Datos','Fotos','Proveedores','Revisión'];
 
 function openUploadModal(){
   _uploadStep=1;
-  _uploadData={studio:{name:'',role:'Arquitecto/a',desc:''},project:{name:'',barrio:'Nueva Córdoba',tag:'Cocina',description:''},photos:[],materials:[],providers:[{id:'',name:'',role:'',contact:''}]};
+  _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:''},photos:[],providers:[{id:'',name:'',role:''}]};
   var ov=document.getElementById('rm-upload-overlay');ov.style.display='flex';
   _renderUpload();
 }
@@ -1756,57 +1812,54 @@ function _renderUpload(){
   if(nb)nb.textContent=_uploadStep===_uploadTotalSteps?'Publicar ✓':'Siguiente →';
   var c=document.getElementById('upload-step-content');if(!c)return;
   if(_uploadStep===1){
-    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Tu estudio</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Contanos quién carga el proyecto</p>'
-      +_uploadInputField('Nombre del estudio *','up-studio-name',_uploadData.studio.name,'Ej: Estudio Bertone')
-      +_uploadSelectField('Rol','up-studio-role',['Arquitecto/a','Interiorista','Constructor/a','Decorador/a','Fotógrafo/a','Proveedor/a'],_uploadData.studio.role)
-      +'<div style="margin-top:16px">'+_uploadInputField('Descripción breve (opcional)','up-studio-desc',_uploadData.studio.desc,'Ej: Especialistas en diseño residencial')+'</div>';
+    var tipoOpts=['Obra nueva','Reforma','Ambiente'];
+    var ubicOpts=['Nueva Córdoba','Centro','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Otro barrio de Córdoba'];
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Datos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Los datos básicos de la obra</p>'
+      +_uploadInputField('Título del proyecto *','up-titulo',_uploadData.project.titulo,'Ej: Residencia en Nueva Córdoba')
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Tipo','up-tipo',tipoOpts,_uploadData.project.tipo)+_uploadSelectField('Barrio / Ciudad','up-ubicacion',ubicOpts,_uploadData.project.ubicacion)+'</div>'
+      +'<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">Descripción corta</label><textarea id="up-desc" placeholder="Describí el proyecto, el espacio, los materiales destacados..." style="'+_uploadInputStyle()+';resize:vertical;min-height:80px">'+(_uploadData.project.descripcion||'')+'</textarea></div>';
   } else if(_uploadStep===2){
-    var barrios=['Nueva Córdoba','Centro','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Otro'];
-    var tags=['Cocina','Baño','Local','Comedor','Piso','Exterior','Residencial','Hospitalidad','Oficina'];
-    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">El proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Datos principales de la obra</p>'
-      +_uploadInputField('Nombre del proyecto *','up-proj-name',_uploadData.project.name,'Ej: Residencia en Nueva Córdoba')
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Barrio','up-proj-barrio',barrios,_uploadData.project.barrio)+_uploadSelectField('Categoría','up-proj-tag',tags,_uploadData.project.tag)+'</div>'
-      +'<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">Descripción</label><textarea id="up-proj-desc" placeholder="Describí el proyecto, el espacio, materiales destacados..." style="'+_uploadInputStyle()+';resize:vertical;min-height:90px">'+(_uploadData.project.description||'')+'</textarea></div>';
-  } else if(_uploadStep===3){
-    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Fotos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Hasta 5 imágenes — se comprimen automáticamente</p>'
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Fotos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Portada + galería — hasta 5 imágenes, se comprimen automáticamente</p>'
       +'<div id="up-photo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'+_uploadPhotoPreviews()+'</div>'
       +'<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px dashed #D7D1C6;border-radius:12px;cursor:pointer;color:#6F6A60;font-size:13px;font-weight:600" onmouseenter="this.style.borderColor=\'#1A1A18\';this.style.color=\'#1A1A18\'" onmouseleave="this.style.borderColor=\'#D7D1C6\';this.style.color=\'#6F6A60\'">'
       +'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Subir fotos'
       +'<input id="up-photo-input" type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)"></label>';
-  } else if(_uploadStep===4){
-    var secs=[{t:'Terrazzo Instone',items:(window._TERR||[]),getColor:function(x){return x.base;}},{t:'Piedras naturales',items:(window._SLABS||[]),getColor:function(x){return x.bg;}},{t:'Melaminas Faplac',items:(window._MEL||[]),getColor:function(x){return x.bg;}}];
-    var html='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Materiales usados</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Seleccioná los que usaste en este proyecto</p>';
-    secs.forEach(function(sec){
-      html+='<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b958a;margin-bottom:8px">'+sec.t+'</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
-      sec.items.forEach(function(m){var nm=m.title||m.name;var sel=_uploadData.materials.indexOf(nm)>=0;html+='<button type="button" onclick="toggleUploadMat(\''+nm.replace(/'/g,"\\'")+'\')" style="display:flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:100px;border:1.5px solid '+(sel?'#1A1A18':'#E4DFD5')+';background:'+(sel?'#1A1A18':'#fff')+';cursor:pointer"><div style="width:14px;height:14px;border-radius:50%;background:'+sec.getColor(m)+';border:1px solid rgba(0,0,0,.1);flex:none"></div><span style="font-size:11px;font-weight:600;color:'+(sel?'#fff':'#3a3733')+'">'+nm+'</span></button>';});
-      html+='</div></div>';
-    });
-    c.innerHTML=html;
-  } else if(_uploadStep===5){
-    var html5='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Proveedores</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">¿Quiénes participaron? (opcional)</p>';
+  } else if(_uploadStep===3){
+    var html3='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Tag de proveedores</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">¿Quiénes participaron? — podés taggear más de uno</p>';
     _uploadData.providers.forEach(function(pv,i){
-      html5+='<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:12px;padding:14px 16px;margin-bottom:10px">'
+      html3+='<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:12px;padding:14px 16px;margin-bottom:10px">'
         +'<div style="font-size:10px;font-weight:700;color:#9b958a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Proveedor '+(i+1)+'</div>'
-        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +_provAutoHtml(i,pv)
         +'<input id="up-prov-role-'+i+'" placeholder="Rol" value="'+(pv.role||'')+'" readonly style="'+_uploadInputStyle()+';background:#F5F3EF;color:#6F6A60;cursor:default">'
-        +'</div><input placeholder="Contacto (WhatsApp, email, web...)" value="'+(pv.contact||'')+'" oninput="_uploadData.providers['+i+'].contact=this.value" style="'+_uploadInputStyle()+'"></div>';
+        +'</div></div>';
     });
-    if(_uploadData.providers.length<4)html5+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
-    c.innerHTML=html5;
+    if(_uploadData.providers.length<6)html3+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
+    c.innerHTML=html3;
+  } else if(_uploadStep===4){
+    var provs=_uploadData.providers.filter(function(p){return p.name.trim();});
+    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+p.name+'</span><span style="font-size:11px;color:#9b958a">· '+p.role+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
+    var photoHtml=_uploadData.photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+_uploadData.photos.map(function(ph){return '<img src="'+ph.url+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px">';}).join('')+'</div>':'<p style="font-size:13px;color:#9b958a;margin:4px 0 0">Sin fotos</p>';
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 20px;letter-spacing:-.01em">Revisión y publicar</h2>'
+      +'<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:14px;padding:18px 20px;margin-bottom:16px">'
+      +'<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+(_uploadData.project.tipo||'')+'</div>'
+      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+(_uploadData.project.titulo||'Sin título')+'</div>'
+      +'<div style="font-size:12px;color:#9b958a;margin-bottom:'+((_uploadData.project.descripcion)?'12px':'0')+'">'+(_uploadData.project.ubicacion||'')+'</div>'
+      +(_uploadData.project.descripcion?'<p style="font-size:13px;color:#6F6A60;margin:0;line-height:1.55">'+_uploadData.project.descripcion+'</p>':'')
+      +'</div>'
+      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Fotos</div>'+photoHtml+'</div>'
+      +'<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Proveedores taggeados</div>'+provHtml+'</div>';
   }
 }
 
 function _saveUploadStepData(){
   var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
-  if(_uploadStep===1){_uploadData.studio.name=g('up-studio-name');_uploadData.studio.role=g('up-studio-role');_uploadData.studio.desc=g('up-studio-desc');}
-  else if(_uploadStep===2){_uploadData.project.name=g('up-proj-name');_uploadData.project.barrio=g('up-proj-barrio');_uploadData.project.tag=g('up-proj-tag');_uploadData.project.description=g('up-proj-desc');}
+  if(_uploadStep===1){_uploadData.project.titulo=g('up-titulo');_uploadData.project.tipo=g('up-tipo');_uploadData.project.ubicacion=g('up-ubicacion');_uploadData.project.descripcion=g('up-desc');}
 }
 
 function uploadNext(){
   _saveUploadStepData();
-  if(_uploadStep===1&&!_uploadData.studio.name.trim()){window.toast&&toast('Ingresá el nombre del estudio');return;}
-  if(_uploadStep===2&&!_uploadData.project.name.trim()){window.toast&&toast('Ingresá el nombre del proyecto');return;}
+  if(_uploadStep===1&&!_uploadData.project.titulo.trim()){window.toast&&toast('Ingresá el título del proyecto');return;}
   if(_uploadStep===_uploadTotalSteps){_submitUploadProject();return;}
   _uploadStep++;_renderUpload();
 }
@@ -1834,8 +1887,7 @@ function handlePhotoUpload(input){
   input.value='';
 }
 function removeUploadPhoto(i){_uploadData.photos.splice(i,1);var pg=document.getElementById('up-photo-grid');if(pg)pg.innerHTML=_uploadPhotoPreviews();}
-function toggleUploadMat(n){var idx=_uploadData.materials.indexOf(n);if(idx>=0)_uploadData.materials.splice(idx,1);else _uploadData.materials.push(n);_renderUpload();}
-function addUploadProvider(){_uploadData.providers.push({id:'',name:'',role:'',contact:''});_renderUpload();}
+function addUploadProvider(){_uploadData.providers.push({id:'',name:'',role:''});_renderUpload();}
 
 function _provAutoHtml(i,pv){
   var s=_uploadInputStyle();
@@ -1880,24 +1932,70 @@ function _provBlur(i){
     }
   },160);
 }
-function deleteMyProject(id){
+async function deleteMyProject(id){
   if(!confirm('¿Eliminar este proyecto?'))return;
-  var lst;try{lst=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){lst=[];}
-  lst=lst.filter(function(p){return p.id!==id;});
-  try{localStorage.setItem('ins_my_projects',JSON.stringify(lst));}catch(e){}
+  try{
+    if(typeof sb!=='undefined'){
+      var{error}=await sb.from('projects').delete().eq('id',id);
+      if(error)throw error;
+    }
+  }catch(e){console.warn('delete project error',e);}
   if(window._loadMisProyectos)window._loadMisProyectos();
   window.toast&&toast('Proyecto eliminado');
 }
-function _submitUploadProject(){
+async function _uploadPhotoToStorage(dataUrl,fname){
+  var blob=await fetch(dataUrl).then(function(r){return r.blob();});
+  var path=Date.now()+'-'+fname;
+  var{data:upData,error:upErr}=await sb.storage.from('project-images').upload(path,blob,{contentType:'image/jpeg',upsert:false});
+  if(upErr)throw upErr;
+  var{data:{publicUrl}}=sb.storage.from('project-images').getPublicUrl(upData.path);
+  return publicUrl;
+}
+async function _submitUploadProject(){
   _saveUploadStepData();
-  var id='p-'+Date.now();
-  var proj={id:id,createdAt:new Date().toISOString(),studio:Object.assign({},_uploadData.studio),name:_uploadData.project.name||'Sin nombre',barrio:_uploadData.project.barrio,tag:_uploadData.project.tag,description:_uploadData.project.description,photos:_uploadData.photos.map(function(p){return p.url;}),materials:[].concat(_uploadData.materials),providers:_uploadData.providers.filter(function(p){return p.name.trim();})};
-  var lst;try{lst=JSON.parse(localStorage.getItem('ins_my_projects')||'[]');}catch(e){lst=[];}
-  lst.push(proj);
-  try{localStorage.setItem('ins_my_projects',JSON.stringify(lst));}catch(e){window.toast&&toast('Error: las fotos son demasiado grandes. Intentá con menos imágenes.');return;}
-  closeUploadModal();
-  window.toast&&toast('¡Proyecto publicado! Revisalo en Mis proyectos →');
-  if(window._loadMisProyectos)window._loadMisProyectos();
+  var nb=document.getElementById('upload-btn-next');
+  if(nb){nb.disabled=true;nb.textContent='Guardando…';}
+  try{
+    var portadaUrl=null;var galeriaUrls=[];
+    if(_uploadData.photos.length>0&&typeof sb!=='undefined'){
+      try{
+        for(var pi=0;pi<_uploadData.photos.length;pi++){
+          var ph=_uploadData.photos[pi];
+          var url=await _uploadPhotoToStorage(ph.url,(pi===0?'portada':'foto'+pi)+'.jpg');
+          if(pi===0)portadaUrl=url;else galeriaUrls.push(url);
+        }
+      }catch(storErr){
+        console.warn('Storage upload failed, storing first photo as data URL',storErr);
+        if(_uploadData.photos.length>0)portadaUrl=_uploadData.photos[0].url;
+      }
+    }else if(_uploadData.photos.length>0){
+      portadaUrl=_uploadData.photos[0].url;
+    }
+    var provIds=_uploadData.providers.filter(function(p){return p.id;}).map(function(p){return p.id;});
+    var userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
+    var userId=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.id:null;
+    var{error:insErr}=await sb.from('projects').insert({
+      titulo:_uploadData.project.titulo,
+      tipo:_uploadData.project.tipo,
+      ubicacion:_uploadData.project.ubicacion,
+      descripcion:_uploadData.project.descripcion||null,
+      portada_url:portadaUrl,
+      galeria_urls:galeriaUrls.length?galeriaUrls:null,
+      proveedores:provIds.length?provIds:null,
+      arquitecto_email:userEmail,
+      arquitecto_id:userId
+    });
+    if(insErr)throw insErr;
+    closeUploadModal();
+    window.toast&&toast('¡Proyecto publicado! Revisalo en Mis proyectos →');
+    if(window._loadMisProyectos)window._loadMisProyectos();
+    if(window._loadSupabaseProjects)window._loadSupabaseProjects();
+  }catch(err){
+    console.error('_submitUploadProject error',err);
+    window.toast&&toast('Error al publicar: '+(err.message||'intentá de nuevo'));
+  }finally{
+    if(nb){nb.disabled=false;nb.textContent='Publicar ✓';}
+  }
 }
 // ── Provider data & profile overlay ──────────────────────────
 window._PM_CONTACTS=[
