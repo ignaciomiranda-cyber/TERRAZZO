@@ -353,7 +353,7 @@ function rmGateSubmit(){
       <span>Admin</span>
     </button>
 
-    <button type="button" class="rm-cfg-btn" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s" onmouseenter="this.style.background='#F3F0EA'" onmouseleave="this.style.background='transparent'">
+    <button type="button" class="rm-cfg-btn" data-view="config" data-label="Configuración" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>Configuración</span>
     </button>
@@ -426,6 +426,7 @@ function rmGateSubmit(){
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-admin" style="display:none;animation:vIn .35s ease"></section>
+      <section id="view-config" style="display:none;animation:vIn .35s ease;padding:32px 26px;max-width:600px;margin:0 auto"></section>
 
       <!-- Pin detail page (full view, like Pinterest) -->
       <section id="view-pin" style="display:none;animation:vIn .35s ease">
@@ -1419,7 +1420,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','admin','perfil','pin'];
+    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','admin','perfil','pin','config'];
     window._provPrevView='inicio';
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
@@ -1432,6 +1433,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='saved')loadBoardsView();
       if(v==='mis-proyectos')loadMisProyectos();
       if(v==='admin')loadAdminView();
+      if(v==='config')loadConfigView();
       if(v==='explorar'){if(!window._explorarMapRef)initExplorarMap();setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
       if(history.replaceState)history.replaceState(null,'','#'+v);
@@ -1440,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     window._setViewPerfil=(v)=>setView(v||'perfil');
     window._setViewPin=(v)=>setView(v||'pin');
+    window.setView=setView;
     navBtns.forEach(b=>{
       b.addEventListener('click',()=>setView(b.getAttribute('data-view')));
       b.addEventListener('mouseenter',()=>{if(!b._active)b.style.background='#F3F0EA';});
@@ -1905,7 +1908,7 @@ function _provInput(i,val){
   _uploadData.providers[i].id='';
   var q=(val||'').toLowerCase().trim();
   if(!q){dd.style.display='none';return;}
-  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0;});
+  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.benefit&&(c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0);});
   if(!m.length){dd.style.display='none';return;}
   dd.style.display='block';
   dd.innerHTML=m.map(function(c){
@@ -2241,6 +2244,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let _authMode = 'login';
 let _currentUser = null;
+const ADMIN_EMAILS = ['ignacio.miranda@mi.unc.edu.ar'];
 
 function _onUser(user) {
   _currentUser = user;
@@ -2259,7 +2263,7 @@ function _onUser(user) {
   const emailEl = document.getElementById('auth-user-email');
   if (emailEl) emailEl.textContent = user ? user.email : '';
   const adminBtn = document.getElementById('rm-admin-btn');
-  if (adminBtn) adminBtn.style.display = user ? 'flex' : 'none';
+  if (adminBtn) adminBtn.style.display = (user && ADMIN_EMAILS.includes(user.email)) ? 'flex' : 'none';
 }
 
 async function loadAdminView() {
@@ -2267,6 +2271,10 @@ async function loadAdminView() {
   if (!vm) return;
   if (!_currentUser) {
     vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">Iniciá sesión para acceder al panel de administración.</p></div>';
+    return;
+  }
+  if (!ADMIN_EMAILS.includes(_currentUser.email)) {
+    vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">No tenés permiso para acceder a esta sección.</p></div>';
     return;
   }
   vm.innerHTML = '<div style="max-width:860px;margin:0 auto">'
@@ -2336,8 +2344,125 @@ async function _initAuth() {
     sb.auth.onAuthStateChange((_ev, session) => {
       if (session && session.user) _hideDiscover();
       _onUser(session ? session.user : null);
+      if (_ev === 'SIGNED_IN' && session && session.user) _checkFirstLogin(session.user);
     });
   } catch (e) { /* Supabase no configurado aún */ }
+}
+
+async function _checkFirstLogin(user) {
+  try {
+    const { data } = await sb.from('user_profiles').select('id').eq('id', user.id).maybeSingle();
+    if (!data) showRoleModal();
+  } catch (e) { /* user_profiles table may not exist yet */ }
+}
+
+function showRoleModal() {
+  const ol = document.getElementById('role-modal-overlay');
+  if (ol) { ol.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function closeRoleModal() {
+  const ol = document.getElementById('role-modal-overlay');
+  if (ol) { ol.style.display = 'none'; document.body.style.overflow = ''; }
+}
+async function selectRole(role) {
+  closeRoleModal();
+  if (!_currentUser) return;
+  try {
+    await sb.from('user_profiles').upsert({ id: _currentUser.id, email: _currentUser.email, role }, { onConflict: 'id' });
+  } catch (e) { /* ignore */ }
+  if (window.setView) window.setView('config');
+  else setTimeout(() => { const b = document.querySelector('[data-view="config"]'); if (b) b.click(); }, 100);
+}
+
+async function loadConfigView() {
+  const vm = document.getElementById('view-config');
+  if (!vm) return;
+  if (!_currentUser) {
+    vm.innerHTML = '<p style="font-size:14px;color:#9b958a;margin-top:60px;text-align:center">Iniciá sesión para acceder a tu configuración.</p>';
+    return;
+  }
+  vm.innerHTML = '<p style="font-size:13px;color:#9b958a;text-align:center;padding:40px">Cargando perfil…</p>';
+  let profile = null;
+  try {
+    const { data } = await sb.from('user_profiles').select('*').eq('id', _currentUser.id).maybeSingle();
+    profile = data;
+  } catch (e) { /* ignore */ }
+  const role = profile ? profile.role : null;
+  const benefitTypes = ['descuento', 'muestra gratis', 'prioridad de entrega'];
+  const fieldRow = (label, id, val, placeholder, type) =>
+    '<div style="margin-bottom:16px">'
+    + '<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">' + label + '</label>'
+    + '<input id="cfg-' + id + '" type="' + (type||'text') + '" value="' + (val||'').replace(/"/g,'&quot;') + '" placeholder="' + placeholder + '" '
+    + 'style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
+    + '</div>';
+  const roleSelect = '<div style="margin-bottom:20px">'
+    + '<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de cuenta</label>'
+    + '<div style="display:flex;gap:10px">'
+    + '<button type="button" id="cfg-role-arq" onclick="setCfgRole(\'arquitecto\')" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid '+(role==='arquitecto'?'#1A1A18':'#E4DFD5')+';background:'+(role==='arquitecto'?'#1A1A18':'#fff')+';color:'+(role==='arquitecto'?'#fff':'#1A1A18')+';font-family:inherit;font-size:13px;font-weight:600;cursor:pointer">Arquitecto / Estudio</button>'
+    + '<button type="button" id="cfg-role-prov" onclick="setCfgRole(\'proveedor\')" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid '+(role==='proveedor'?'#1A1A18':'#E4DFD5')+';background:'+(role==='proveedor'?'#1A1A18':'#fff')+';color:'+(role==='proveedor'?'#fff':'#1A1A18')+';font-family:inherit;font-size:13px;font-weight:600;cursor:pointer">Proveedor</button>'
+    + '</div></div>';
+  const arqFields = fieldRow('Nombre / Estudio', 'nombre', profile && profile.nombre, 'Ej: Estudio Pérez & Co.', 'text')
+    + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text');
+  const provFields = fieldRow('Nombre de marca', 'nombre', profile && profile.nombre, 'Ej: Mi Proveeduría', 'text')
+    + fieldRow('Rubro', 'rubro', profile && profile.rubro, 'Ej: Materiales de construcción', 'text')
+    + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text')
+    + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
+    + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
+    + '<option value="">— Sin beneficio —</option>'
+    + benefitTypes.map(t => '<option value="' + t + '"' + (profile && profile.benefit_type === t ? ' selected' : '') + '>' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
+    + '</select></div>'
+    + fieldRow('Descripción del beneficio', 'benefit_description', profile && profile.benefit_description, 'Ej: 10% de descuento en primera compra', 'text');
+  vm.innerHTML = '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em">Configuración</h1>'
+    + '<p style="font-size:13px;color:#9b958a;margin:0 0 28px">Tu perfil en realmood</p>'
+    + roleSelect
+    + '<div id="cfg-fields">' + (role === 'proveedor' ? provFields : arqFields) + '</div>'
+    + '<button type="button" onclick="saveCfgProfile()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1A1A18;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px">Guardar cambios</button>'
+    + '<p id="cfg-msg" style="margin:14px 0 0;font-size:13px;text-align:center;color:#3F5953;display:none">¡Guardado correctamente!</p>';
+  window._cfgCurrentRole = role || 'arquitecto';
+}
+
+function setCfgRole(r) {
+  window._cfgCurrentRole = r;
+  const arqBtn = document.getElementById('cfg-role-arq');
+  const provBtn = document.getElementById('cfg-role-prov');
+  if (arqBtn) { arqBtn.style.background = r === 'arquitecto' ? '#1A1A18' : '#fff'; arqBtn.style.color = r === 'arquitecto' ? '#fff' : '#1A1A18'; arqBtn.style.borderColor = r === 'arquitecto' ? '#1A1A18' : '#E4DFD5'; }
+  if (provBtn) { provBtn.style.background = r === 'proveedor' ? '#1A1A18' : '#fff'; provBtn.style.color = r === 'proveedor' ? '#fff' : '#1A1A18'; provBtn.style.borderColor = r === 'proveedor' ? '#1A1A18' : '#E4DFD5'; }
+  const fieldsEl = document.getElementById('cfg-fields');
+  if (!fieldsEl) return;
+  const fieldRow = (label, id, val, placeholder) =>
+    '<div style="margin-bottom:16px">'
+    + '<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">' + label + '</label>'
+    + '<input id="cfg-' + id + '" type="text" value="' + (val||'') + '" placeholder="' + placeholder + '" '
+    + 'style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
+    + '</div>';
+  if (r === 'proveedor') {
+    fieldsEl.innerHTML = fieldRow('Nombre de marca', 'nombre', '', 'Ej: Mi Proveeduría')
+      + fieldRow('Rubro', 'rubro', '', 'Ej: Materiales de construcción')
+      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba')
+      + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
+      + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
+      + '<option value="">— Sin beneficio —</option>'
+      + ['descuento','muestra gratis','prioridad de entrega'].map(t => '<option value="' + t + '">' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
+      + '</select></div>'
+      + fieldRow('Descripción del beneficio', 'benefit_description', '', 'Ej: 10% de descuento en primera compra');
+  } else {
+    fieldsEl.innerHTML = fieldRow('Nombre / Estudio', 'nombre', '', 'Ej: Estudio Pérez & Co.')
+      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba');
+  }
+}
+
+async function saveCfgProfile() {
+  if (!_currentUser) return;
+  const role = window._cfgCurrentRole || 'arquitecto';
+  const get = id => { const el = document.getElementById('cfg-' + id); return el ? el.value.trim() : ''; };
+  const payload = { id: _currentUser.id, email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), updated_at: new Date().toISOString() };
+  if (role === 'proveedor') { payload.rubro = get('rubro'); payload.benefit_type = get('benefit_type'); payload.benefit_description = get('benefit_description'); }
+  try {
+    const { error } = await sb.from('user_profiles').upsert(payload, { onConflict: 'id' });
+    if (error) throw error;
+    const msg = document.getElementById('cfg-msg');
+    if (msg) { msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
+  } catch (e) { window.toast && toast('Error al guardar: ' + (e.message || 'intentá de nuevo')); }
 }
 
 function handleAvatarClick() {
@@ -2453,5 +2578,27 @@ async function authSignOut() {
 
 document.addEventListener('DOMContentLoaded', _initAuth);
 </script>
+
+<!-- ── Role selection modal (shown on first login) ───────────── -->
+<div id="role-modal-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:24px;padding:40px 36px;width:min(460px,calc(100vw - 32px));box-shadow:0 24px 64px rgba(0,0,0,.2)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+      <img src="Realmood-IG-blanco-y-negro-fondo-blanco.jpg" alt="realmood" style="width:52px;height:52px;object-fit:contain;flex:none">
+      <span style="font-size:16px;font-weight:700;letter-spacing:.01em">realmood</span>
+    </div>
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;letter-spacing:-.01em;color:#1A1A18">¿Cómo vas a usar realmood?</h2>
+    <p style="margin:0 0 28px;font-size:14px;color:#6F6A60">Elegí tu tipo de cuenta para personalizar tu experiencia.</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button type="button" onclick="selectRole('arquitecto')" style="width:100%;padding:18px 20px;border-radius:14px;border:1.5px solid #E4DFD5;background:#fff;font-family:inherit;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s" onmouseenter="this.style.borderColor='#1A1A18';this.style.boxShadow='0 2px 8px rgba(0,0,0,.08)'" onmouseleave="this.style.borderColor='#E4DFD5';this.style.boxShadow='none'">
+        <div style="font-size:15px;font-weight:700;color:#1A1A18;margin-bottom:3px">Arquitecto / Estudio</div>
+        <div style="font-size:13px;color:#9b958a">Explorá materiales y creá moodboards para tus proyectos.</div>
+      </button>
+      <button type="button" onclick="selectRole('proveedor')" style="width:100%;padding:18px 20px;border-radius:14px;border:1.5px solid #E4DFD5;background:#fff;font-family:inherit;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s" onmouseenter="this.style.borderColor='#1A1A18';this.style.boxShadow='0 2px 8px rgba(0,0,0,.08)'" onmouseleave="this.style.borderColor='#E4DFD5';this.style.boxShadow='none'">
+        <div style="font-size:15px;font-weight:700;color:#1A1A18;margin-bottom:3px">Proveedor</div>
+        <div style="font-size:13px;color:#9b958a">Publicá tu empresa y ofrecé beneficios a arquitectos de la red.</div>
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
