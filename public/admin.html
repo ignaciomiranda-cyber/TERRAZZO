@@ -315,6 +315,73 @@
       font-size: 14px;
     }
 
+    /* Add-provider form card */
+    .add-prov-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(22,20,15,.07);
+      padding: 24px 28px;
+      margin-bottom: 28px;
+    }
+    .add-prov-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 18px;
+      letter-spacing: -.01em;
+    }
+    .add-prov-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 20px;
+    }
+    @media (max-width: 600px) { .add-prov-grid { grid-template-columns: 1fr; } }
+    .add-prov-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #9b958a;
+      margin-bottom: 6px;
+    }
+    .add-prov-field input,
+    .add-prov-field select {
+      width: 100%;
+      border: 1.5px solid #D9D3C6;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #16140F;
+      background: #FAFAF7;
+      outline: none;
+      transition: border-color .15s;
+      box-sizing: border-box;
+    }
+    .add-prov-field input:focus,
+    .add-prov-field select:focus { border-color: #A8895A; }
+    .add-prov-field.full { grid-column: 1 / -1; }
+    .add-prov-submit {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .add-prov-btn {
+      background: #16140F;
+      color: #F4F1EB;
+      border: none;
+      border-radius: 100px;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .add-prov-btn:disabled { opacity: .5; cursor: not-allowed; }
+    #add-prov-msg { font-size: 13px; display: none; }
+
     /* Ghost btn (signout on unauth screen) */
     .ghost-btn {
       background: none;
@@ -397,6 +464,50 @@
       </div>
     </div>
 
+    <!-- Add-provider form -->
+    <div class="add-prov-card">
+      <h2>Agregar proveedor</h2>
+      <div class="add-prov-grid">
+        <div class="add-prov-field">
+          <label for="ap-nombre">Nombre / Marca</label>
+          <input type="text" id="ap-nombre" placeholder="Ej: Instone" autocomplete="off">
+        </div>
+        <div class="add-prov-field">
+          <label for="ap-rubro">Rubro / Rol</label>
+          <input type="text" id="ap-rubro" placeholder="Ej: Proveedor · Terrazzo">
+        </div>
+        <div class="add-prov-field">
+          <label for="ap-ciudad">Ciudad</label>
+          <input type="text" id="ap-ciudad" placeholder="Ej: Córdoba Capital">
+        </div>
+        <div class="add-prov-field">
+          <label for="ap-wa">WhatsApp (con código de país)</label>
+          <input type="text" id="ap-wa" placeholder="Ej: 5493513001001">
+        </div>
+        <div class="add-prov-field">
+          <label for="ap-email">Email (para vincular cuenta)</label>
+          <input type="email" id="ap-email" placeholder="proveedor@ejemplo.com">
+        </div>
+        <div class="add-prov-field">
+          <label for="ap-benefit-type">Tipo de beneficio</label>
+          <select id="ap-benefit-type">
+            <option value="">— Sin beneficio —</option>
+            <option value="muestra gratis">Muestra gratis</option>
+            <option value="descuento">Descuento</option>
+            <option value="prioridad de entrega">Prioridad de entrega</option>
+          </select>
+        </div>
+        <div class="add-prov-field full">
+          <label for="ap-benefit-desc">Descripción del beneficio</label>
+          <input type="text" id="ap-benefit-desc" placeholder="Ej: 10% de descuento en primera compra para arquitectos">
+        </div>
+      </div>
+      <div class="add-prov-submit">
+        <button class="add-prov-btn" id="add-prov-btn" onclick="addProvider()">Guardar proveedor</button>
+        <span id="add-prov-msg"></span>
+      </div>
+    </div>
+
     <!-- Date filters -->
     <div class="filter-row">
       <span class="filter-label">Período:</span>
@@ -438,13 +549,7 @@ const ADMIN_EMAIL     = 'ignacio.miranda@mi.unc.edu.ar';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const PROVIDERS = [
-  { id: 'bertone',   name: 'Estudio Bertone',      role: 'Arquitecto · Proyectista',        benefit: null },
-  { id: 'martinez',  name: 'Obras Martínez SRL',   role: 'Proveedor · Construcción',        benefit: null },
-  { id: 'instone',   name: 'Instone',               role: 'Proveedor · Terrazzo',            benefit: 'muestra gratis' },
-  { id: 'destefano', name: 'De Stefano',            role: 'Proveedor · Piedras & Tablas',   benefit: 'descuento' },
-];
-
+let _providers = [];       // loaded from user_profiles
 let currentFilter = 'all';
 
 // ── Auth ─────────────────────────────────────────────────────────
@@ -549,21 +654,34 @@ async function loadData() {
   document.getElementById('stat-providers').textContent = '—';
 
   try {
-    let q = sb.from('benefit_requests').select('provider_id, created_at');
-    const from = filterStart();
-    if (from) q = q.gte('created_at', from);
+    // Load providers from user_profiles and benefit_requests in parallel
+    const [provRes, reqRes] = await Promise.all([
+      sb.from('user_profiles').select('id, nombre, rubro, benefit_type').eq('role', 'proveedor').order('nombre'),
+      (() => {
+        let q = sb.from('benefit_requests').select('provider_id, created_at');
+        const from = filterStart();
+        if (from) q = q.gte('created_at', from);
+        return q.order('created_at', { ascending: false });
+      })(),
+    ]);
 
-    const { data, error } = await q.order('created_at', { ascending: false });
-    if (error) throw error;
+    if (provRes.error) throw provRes.error;
+    if (reqRes.error)  throw reqRes.error;
 
-    renderTable(data || []);
+    _providers = (provRes.data || []).map(p => ({
+      id:      p.id,
+      name:    p.nombre  || '(sin nombre)',
+      role:    p.rubro   || 'Proveedor',
+      benefit: p.benefit_type || null,
+    }));
+
+    renderTable(reqRes.data || []);
   } catch (err) {
     tbody.innerHTML = '<tr><td colspan="4" class="state-msg" style="color:#C04030">Error al cargar datos: ' + escHtml(err.message) + '</td></tr>';
   }
 }
 
 function renderTable(rows) {
-  // Build counts + last-date per provider
   const countMap = {};
   const lastMap  = {};
 
@@ -582,12 +700,12 @@ function renderTable(rows) {
 
   const tbody = document.getElementById('table-body');
 
-  if (PROVIDERS.length === 0) {
+  if (_providers.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4" class="state-msg">Sin proveedores cargados.</td></tr>';
     return;
   }
 
-  const sorted = [...PROVIDERS].sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
+  const sorted = [..._providers].sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
 
   tbody.innerHTML = sorted.map(p => {
     const count = countMap[p.id] || 0;
@@ -606,6 +724,59 @@ function renderTable(rows) {
       <td class="date-cell">${escHtml(last)}</td>
     </tr>`;
   }).join('');
+}
+
+// ── Add provider ────────────────────────────────────────────────
+async function addProvider() {
+  const btn  = document.getElementById('add-prov-btn');
+  const msg  = document.getElementById('add-prov-msg');
+  const get  = id => document.getElementById(id).value.trim();
+
+  const nombre   = get('ap-nombre');
+  const rubro    = get('ap-rubro');
+  const ciudad   = get('ap-ciudad');
+  const wa       = get('ap-wa');
+  const email    = get('ap-email') || null;
+  const benefitType = get('ap-benefit-type') || null;
+  const benefitDesc = get('ap-benefit-desc') || null;
+
+  if (!nombre) { showMsg('El nombre es obligatorio.', '#C04030'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+  msg.style.display = 'none';
+
+  try {
+    const { error } = await sb.from('user_profiles').insert({
+      role:                'proveedor',
+      nombre,
+      rubro:               rubro  || null,
+      ciudad:              ciudad || null,
+      wa:                  wa     || null,
+      email,
+      benefit_type:        benefitType,
+      benefit_description: benefitDesc || null,
+    });
+    if (error) throw error;
+
+    showMsg('¡Proveedor guardado!', '#27AE60');
+    ['ap-nombre','ap-rubro','ap-ciudad','ap-wa','ap-email','ap-benefit-desc'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('ap-benefit-type').value = '';
+    loadData();
+  } catch (e) {
+    showMsg('Error: ' + (e.message || 'intentá de nuevo'), '#C04030');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar proveedor';
+  }
+
+  function showMsg(text, color) {
+    msg.textContent = text;
+    msg.style.color = color;
+    msg.style.display = 'block';
+  }
 }
 
 function formatDate(iso) {

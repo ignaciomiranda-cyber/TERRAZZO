@@ -1467,7 +1467,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('ins-search').addEventListener('input',e=>doSearch(e.target.value));
 
     // ── Pin detail modal ──────────────────────────────────
-    window.openPm=function(data){
+    window.openPm=async function(data){
       window._lastPmData=data;
       // Track prev view only when coming from a base view (not from perfil/pin)
       const VIEWS_BASE=['inicio','explorar','crear','mood','saved','mensajes'];
@@ -1499,6 +1499,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('pm-desc').textContent=data.text||'';
       // Contacts — use project-specific proveedores if available, otherwise all contacts
       const cc=document.getElementById('pm-contacts');cc.innerHTML='';
+      if(!_providersLoaded)await _initProviders();
       const _contactsSource=(data.proveedoresIds&&data.proveedoresIds.length)
         ?(window._PM_CONTACTS||[]).filter(c=>data.proveedoresIds.includes(c.id))
         :(window._PM_CONTACTS||[]);
@@ -1903,11 +1904,12 @@ function _provAutoHtml(i,pv){
     +'<div id="up-prov-dd-'+i+'" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1px solid #E4DFD5;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:901;max-height:200px;overflow-y:auto"></div>'
     +'</div>';
 }
-function _provInput(i,val){
+async function _provInput(i,val){
   var dd=document.getElementById('up-prov-dd-'+i);if(!dd)return;
   _uploadData.providers[i].id='';
   var q=(val||'').toLowerCase().trim();
   if(!q){dd.style.display='none';return;}
+  if(!_providersLoaded)await _initProviders();
   var m=(window._PM_CONTACTS||[]).filter(function(c){return c.benefit&&(c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0);});
   if(!m.length){dd.style.display='none';return;}
   dd.style.display='block';
@@ -2002,30 +2004,37 @@ async function _submitUploadProject(){
   }
 }
 // ── Provider data & profile overlay ──────────────────────────
-window._PM_CONTACTS=[
-  {id:'bertone',role:'Arquitecto · Proyectista',name:'Estudio Bertone',full:'Bertone & Vera Arquitectura',color:'#2E4278',
-   location:'Nueva Córdoba, Córdoba',
-   bio:'Estudio de arquitectura y proyectismo con 15 años de trayectoria en diseño residencial y comercial de alta gama. Desarrollamos proyectos llave en mano desde el anteproyecto hasta la dirección de obra, con especialización en la integración de materiales contemporáneos como terrazzo, piedras naturales y acero corten.',
-   tags:['Residencial','Comercial','Reforma integral','Interiorismo','Dirección de obra'],
-   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493514001234'},
-  {id:'martinez',role:'Contratista',name:'Obras Martínez SRL',full:'Obras Martínez SRL',color:'#88A686',
-   location:'General Paz, Córdoba',
-   bio:'Empresa constructora con especialización en terminaciones de interiores de alta calidad. Trabajamos con los mejores materiales del mercado y contamos con equipo de colocadores certificados para terrazzo y piedra natural.',
-   tags:['Construcción','Terminaciones','Pisos y revestimientos','Baños y cocinas'],
-   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','proj-2.jpg'],wa:'5493514003456'},
-  {id:'instone',role:'Proveedor · Terrazzo',name:'Instone',full:'Instone — Terrazzo Artesanal',color:'#1A1A18',
-   location:'Córdoba Capital',
-   bio:'Fabricamos terrazzo artesanal de primera calidad con piedras naturales argentinas e importadas. Cada pieza es producida a pedido, con la fórmula exacta elegida por el cliente en nuestro configurador. Entregamos en todo el país.',
-   tags:['Terrazzo','Piedras naturales','Personalizado','Entrega en todo el país'],
-   portfolio:['cocina-ambiente.jpg.webp','mesa-ambiente.jpg.jpg','mesa-ambienteop2.jpg.jpg'],wa:'5493513001001',
-   benefit:{type:'muestra gratis',description:'Muestra gratuita de terrazzo personalizado para tu proyecto — eligís la fórmula en el configurador y la recibís sin costo.'}},
-  {id:'destefano',role:'Proveedor · Piedras & Tablas',name:'De Stefano',full:'De Stefano · Piedras & Tablas',color:'#B45C4C',
-   location:'Córdoba Capital',
-   bio:'Distribuidor exclusivo de mármoles, granitos, cuarcitas y piedras sinterizadas de primer nivel. Asesoramiento personalizado en showroom y servicio de corte y colocación con instaladores propios.',
-   tags:['Mármol','Granito','Cuarcita','Sinterizado','Colocación'],
-   portfolio:['prod-brass.jpg','mesa-ambiente.jpg.jpg','cocina-ambiente.jpg.webp'],wa:'5493514004567',
-   benefit:{type:'descuento',description:'10% de descuento en primera compra para arquitectos e interioristas que lleguen por Realmood.'}},
-];
+// Providers are loaded from Supabase (user_profiles where role='proveedor').
+// window._PM_CONTACTS is populated by _initProviders() on auth init.
+window._PM_CONTACTS = [];
+let _providersLoaded = false;
+
+async function _initProviders() {
+  try {
+    if (typeof sb === 'undefined') return;
+    const { data } = await sb.from('user_profiles')
+      .select('id,nombre,rubro,ciudad,wa,benefit_type,benefit_description')
+      .eq('role', 'proveedor');
+    if (data && data.length) {
+      window._PM_CONTACTS = data.map(p => ({
+        id:       p.id,
+        name:     p.nombre || '',
+        role:     p.rubro  || 'Proveedor',
+        full:     p.nombre || '',
+        color:    '#1A1A18',
+        location: p.ciudad || 'Córdoba, Argentina',
+        bio:      '',
+        tags:     [],
+        portfolio:[],
+        wa:       p.wa || '',
+        benefit:  (p.benefit_type && p.benefit_description)
+                    ? { type: p.benefit_type, description: p.benefit_description }
+                    : null,
+      }));
+    }
+    _providersLoaded = true;
+  } catch (e) { /* ignore if table doesn't exist yet */ }
+}
 
 // SQL para crear la tabla en Supabase:
 // CREATE TABLE benefit_requests (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), provider_id text, provider_name text, benefit_type text, project_title text, user_email text, created_at timestamptz DEFAULT now());
@@ -2283,6 +2292,7 @@ async function loadAdminView() {
     + '<div id="admin-loading" style="text-align:center;color:#9b958a;padding:40px">Cargando datos…</div>'
     + '</div>';
   try {
+    if (!_providersLoaded) await _initProviders();
     const { data, error } = await sb.from('benefit_requests').select('*').order('created_at', { ascending: false });
     if (error) throw error;
     const byProvider = {};
@@ -2338,6 +2348,7 @@ function _hideDiscover() {
 
 async function _initAuth() {
   try {
+    _initProviders(); // fire-and-forget; populates window._PM_CONTACTS
     const { data: { session } } = await sb.auth.getSession();
     if (session && session.user) _hideDiscover();
     _onUser(session ? session.user : null);
@@ -2351,8 +2362,29 @@ async function _initAuth() {
 
 async function _checkFirstLogin(user) {
   try {
-    const { data } = await sb.from('user_profiles').select('id').eq('id', user.id).maybeSingle();
-    if (!data) showRoleModal();
+    // 1. Check for profile created via auth signup (id = auth uid)
+    const { data: byId } = await sb.from('user_profiles').select('id').eq('id', user.id).maybeSingle();
+    if (byId) return;
+
+    // 2. Check for already-claimed provider profile (user_id = auth uid)
+    const { data: byUserId } = await sb.from('user_profiles').select('id').eq('user_id', user.id).maybeSingle();
+    if (byUserId) return;
+
+    // 3. Check for unclaimed manually-added provider with matching email
+    const { data: toClaim } = await sb.from('user_profiles')
+      .select('id')
+      .eq('email', user.email)
+      .is('user_id', null)
+      .maybeSingle();
+    if (toClaim) {
+      // Link auth account to existing provider profile
+      await sb.from('user_profiles').update({ user_id: user.id }).eq('id', toClaim.id);
+      _initProviders(); // refresh provider cache after claim
+      return;
+    }
+
+    // 4. Truly new user — ask for role
+    showRoleModal();
   } catch (e) { /* user_profiles table may not exist yet */ }
 }
 
@@ -2368,7 +2400,10 @@ async function selectRole(role) {
   closeRoleModal();
   if (!_currentUser) return;
   try {
-    await sb.from('user_profiles').upsert({ id: _currentUser.id, email: _currentUser.email, role }, { onConflict: 'id' });
+    await sb.from('user_profiles').upsert(
+      { id: _currentUser.id, email: _currentUser.email, role, user_id: _currentUser.id },
+      { onConflict: 'id' }
+    );
   } catch (e) { /* ignore */ }
   if (window.setView) window.setView('config');
   else setTimeout(() => { const b = document.querySelector('[data-view="config"]'); if (b) b.click(); }, 100);
@@ -2384,7 +2419,9 @@ async function loadConfigView() {
   vm.innerHTML = '<p style="font-size:13px;color:#9b958a;text-align:center;padding:40px">Cargando perfil…</p>';
   let profile = null;
   try {
-    const { data } = await sb.from('user_profiles').select('*').eq('id', _currentUser.id).maybeSingle();
+    const { data } = await sb.from('user_profiles').select('*')
+      .or(`id.eq.${_currentUser.id},user_id.eq.${_currentUser.id}`)
+      .maybeSingle();
     profile = data;
   } catch (e) { /* ignore */ }
   const role = profile ? profile.role : null;
@@ -2455,11 +2492,21 @@ async function saveCfgProfile() {
   if (!_currentUser) return;
   const role = window._cfgCurrentRole || 'arquitecto';
   const get = id => { const el = document.getElementById('cfg-' + id); return el ? el.value.trim() : ''; };
-  const payload = { id: _currentUser.id, email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), updated_at: new Date().toISOString() };
-  if (role === 'proveedor') { payload.rubro = get('rubro'); payload.benefit_type = get('benefit_type'); payload.benefit_description = get('benefit_description'); }
+  const payload = { email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), user_id: _currentUser.id, updated_at: new Date().toISOString() };
+  if (role === 'proveedor') { payload.rubro = get('rubro'); payload.benefit_type = get('benefit_type') || null; payload.benefit_description = get('benefit_description') || null; }
   try {
-    const { error } = await sb.from('user_profiles').upsert(payload, { onConflict: 'id' });
+    // Find the profile row to update (may be a claimed row with id ≠ auth uid)
+    const { data: existing } = await sb.from('user_profiles').select('id')
+      .or(`id.eq.${_currentUser.id},user_id.eq.${_currentUser.id}`)
+      .maybeSingle();
+    let error;
+    if (existing) {
+      ({ error } = await sb.from('user_profiles').update(payload).eq('id', existing.id));
+    } else {
+      ({ error } = await sb.from('user_profiles').insert({ id: _currentUser.id, ...payload }));
+    }
     if (error) throw error;
+    _initProviders(); // refresh provider cache in case a proveedor updated their own profile
     const msg = document.getElementById('cfg-msg');
     if (msg) { msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
   } catch (e) { window.toast && toast('Error al guardar: ' + (e.message || 'intentá de nuevo')); }
