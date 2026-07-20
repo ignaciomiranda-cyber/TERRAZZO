@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS benefit_requests (
 );
 ALTER TABLE benefit_requests ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "allow anon insert"   ON benefit_requests FOR INSERT WITH CHECK (true);
-CREATE POLICY "allow auth select"   ON benefit_requests FOR SELECT USING (auth.role() = 'authenticated');
+-- INS-49: admin-only SELECT — any authenticated user could otherwise read all rows via the API
+CREATE POLICY "admin_only_select"   ON benefit_requests FOR SELECT USING (auth.jwt() ->> 'email' = 'ignacio.miranda@mi.unc.edu.ar');
 
 
 -- ── 2. projects ──────────────────────────────────────────────
