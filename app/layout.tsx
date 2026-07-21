@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Instone",
-  description: "Instone — building the future",
+  title: "Realmood",
+  description: "Realmood — building the future",
 };
 
 export default function RootLayout({
