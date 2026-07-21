@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   rubro               text,
   benefit_type        text        CHECK (benefit_type IN ('descuento', 'muestra gratis', 'prioridad de entrega') OR benefit_type IS NULL),
   benefit_description text,
+  creador_terrazzo    boolean     DEFAULT false,
   created_at          timestamptz DEFAULT now(),
   updated_at          timestamptz DEFAULT now()
 );

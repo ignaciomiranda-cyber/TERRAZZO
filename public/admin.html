@@ -501,6 +501,13 @@
           <label for="ap-benefit-desc">Descripción del beneficio</label>
           <input type="text" id="ap-benefit-desc" placeholder="Ej: 10% de descuento en primera compra para arquitectos">
         </div>
+        <div class="add-prov-field">
+          <label for="ap-creador-terrazzo">Creador de terrazzo</label>
+          <select id="ap-creador-terrazzo">
+            <option value="false">No</option>
+            <option value="true">Sí</option>
+          </select>
+        </div>
       </div>
       <div class="add-prov-submit">
         <button class="add-prov-btn" id="add-prov-btn" onclick="addProvider()">Guardar proveedor</button>
@@ -739,6 +746,7 @@ async function addProvider() {
   const email    = get('ap-email') || null;
   const benefitType = get('ap-benefit-type') || null;
   const benefitDesc = get('ap-benefit-desc') || null;
+  const creadorTerrazzo = document.getElementById('ap-creador-terrazzo').value === 'true';
 
   if (!nombre) { showMsg('El nombre es obligatorio.', '#C04030'); return; }
 
@@ -756,6 +764,7 @@ async function addProvider() {
       email,
       benefit_type:        benefitType,
       benefit_description: benefitDesc || null,
+      creador_terrazzo:    creadorTerrazzo,
     });
     if (error) throw error;
 
@@ -764,6 +773,7 @@ async function addProvider() {
       document.getElementById(id).value = '';
     });
     document.getElementById('ap-benefit-type').value = '';
+    document.getElementById('ap-creador-terrazzo').value = 'false';
     loadData();
   } catch (e) {
     showMsg('Error: ' + (e.message || 'intentá de nuevo'), '#C04030');
