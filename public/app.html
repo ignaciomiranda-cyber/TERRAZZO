@@ -1011,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', function() {
       mainImgSrc:p.img,
       relatedImgs:PHOTOS.filter(q=>q.img!==p.img).slice(0,9).map(q=>q.img)
     }})));
-    for(let i=inicio.length-1;i>0;i--){const j=Math.floor(hash2(i*3.1,i*7.7)*(i+1));[inicio[i],inicio[j]]=[inicio[j],inicio[i]];}
+    for(let i=inicio.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[inicio[i],inicio[j]]=[inicio[j],inicio[i]];}
     const gi=$('grid-inicio');inicio.forEach(c=>gi.appendChild(c));
     const ICATS=['Todos','Cocinas','Baños','Locales'];
     const cwrap=$('inicio-cats');let activeCat='Todos';const cbtns={};
@@ -1136,6 +1136,15 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       window._explorarMapRef=map;
       window._explorarMarkerData=markerData;
+      // Add map pins for any Supabase projects loaded before map initialized
+      (window._explorarSbData||[]).forEach(({p,card,pinIdx})=>{
+        const c=BC[p.ubicacion];if(!c)return;
+        const off=[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
+        const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+        const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
+          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+        window._explorarMarkerData.push({marker,proj:card._rmProject});
+      });
       map.on('moveend zoomend',updateMapBelow);
       // Wire search input
       const si=$('explorar-map-search');
@@ -1422,6 +1431,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
     const setView=v=>{
+      document.documentElement.scrollTop=0;
       VIEWS.forEach(x=>{const s=$('view-'+x);if(s)s.style.display=x===v?'':'none';});
       navBtns.forEach(b=>{const a=b.getAttribute('data-view')===v;b.style.background=a?'#EFEBE3':'transparent';b.style.color=a?'#1A1A18':'#3a3733';b.style.fontWeight=a?'600':'500';b._active=a;});
       const sec=$('view-'+v);if(sec){sec.style.animation='none';void sec.offsetWidth;sec.style.animation='vIn .35s ease';}
@@ -1679,7 +1689,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const bl=document.getElementById('vpin-back-label');if(bl)bl.textContent='Volver a '+(labels[window._pinPrevView]||'inicio');
       // Navigate to pin page
       window._setViewPin();
-      const rc=document.getElementById('rm-content');if(rc)rc.scrollTop=0;
+      document.documentElement.scrollTop=0;
     };
 
     const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes','admin'];
@@ -1742,9 +1752,14 @@ document.addEventListener('DOMContentLoaded', function() {
     window._loadSupabaseProjects=async function(){
       try{
         if(typeof sb==='undefined')return;
+        // Dedup guard: skip projects already rendered in a previous call
+        if(!window._explorarLoadedSbIds)window._explorarLoadedSbIds=new Set();
+        if(!window._explorarSbData)window._explorarSbData=[];
         const{data,error}=await sb.from('projects').select('*').order('created_at',{ascending:false});
         if(error||!data||!data.length)return;
         data.forEach((p,idx)=>{
+          if(window._explorarLoadedSbIds.has(p.id))return;
+          window._explorarLoadedSbIds.add(p.id);
           const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):null;
           if(!makeMain)return;
           const media=photoMedia(p.portada_url,'4/3');
@@ -1760,12 +1775,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           });
           card._rmProject={name:p.titulo,barrio:p.ubicacion,tag:p.tipo,_sbId:p.id};
-          ge.appendChild(card);
-          // Add to map if map is initialized
+          // Insert before static anchor so Supabase projects appear first (newest-first order)
+          ge.insertBefore(card,window._explorarStaticAnchor||null);
+          // Include in updateMapBelow filtering (map bounds + tag)
+          projCards.push(card);
+          const sbEntry={p,card,pinIdx:window._explorarSbData.length};
+          window._explorarSbData.push(sbEntry);
+          // Add to map if map is already initialized; otherwise deferred to initExplorarMap
           if(window._explorarMapRef&&window._explorarMarkerData){
             const c=BC_COORDS[p.ubicacion];if(!c)return;
             const off=[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
-            const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#E8352C;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+            const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
             const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(window._explorarMapRef)
               .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
             window._explorarMarkerData.push({marker,proj:card._rmProject});
@@ -1775,6 +1795,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }catch(e){console.warn('loadSupabaseProjects error',e);}
     };
     // Load Supabase projects on startup (non-blocking)
+    window._explorarSbData=[];
+    window._explorarStaticAnchor=ge.firstChild||null;
     window._loadSupabaseProjects();
 });
 
