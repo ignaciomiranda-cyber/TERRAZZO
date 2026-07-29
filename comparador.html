@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REAL MOOD — Instone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1A1A18;
+  --warm:#faf9f5;
+  --line:#E4DFD5;
+  --mid:#6f6a60;
+  --sub:#9b958a;
+  --pale:#c4beb2;
+  --green:#4a8a5a;
+  --red:#c04040;
+  --pinterest:#E60023;
+}
+body{font-family:'Inter','Helvetica Neue',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--warm);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:14px}
+@media(max-width:760px){body{height:auto;overflow:auto}}
+
+/* ── NAV ── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:#fff;height:52px;flex-shrink:0}
+.nav-left{display:flex;align-items:center;gap:8px}
+.nav-brand{font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.nav-badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);background:#EDEAE2;padding:3px 9px;border-radius:2px}
+.nav-back{font-size:12px;color:var(--sub);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s}
+.nav-back:hover{color:var(--ink)}
+
+/* ── LAYOUT ── */
+.compare-wrap{display:flex;flex:1;min-height:0}
+@media(max-width:760px){.compare-wrap{flex-direction:column;flex:none}}
+
+/* ── PANEL ── */
+.panel{flex:1;display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--line)}
+.panel:last-child{border-right:none}
+.panel-head{padding:12px 18px;border-bottom:1px solid var(--line);background:#fff;flex-shrink:0;display:flex;align-items:center;gap:10px}
+.panel-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-p{background:var(--pinterest)}
+.icon-m{background:var(--ink)}
+.panel-icon svg{width:14px;height:14px;fill:#fff}
+.panel-meta{flex:1;min-width:0}
+.panel-title{font-size:12px;font-weight:700;color:var(--ink)}
+.panel-sub{font-size:10px;color:var(--sub);margin-top:1px}
+.panel-body{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
+@media(max-width:760px){.panel{min-height:420px;border-right:none;border-bottom:1px solid var(--line)}}
+
+/* ── TABS ── */
+.panel-tabs{display:flex;border-bottom:1px solid var(--line);background:#fff;flex-shrink:0}
+.panel-tab{padding:11px 18px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;color:var(--sub);transition:color .15s,border-color .15s;white-space:nowrap;user-select:none;display:flex;align-items:center;gap:6px}
+.panel-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.panel-tab:hover:not(.active){color:var(--ink)}
+.tab-pane{flex:1;min-height:0;display:none;flex-direction:column}
+.tab-pane.active{display:flex}
+.espec-frame{width:100%;flex:1;border:none;min-height:0}
+
+/* ── PINTEREST STATES ── */
+.pstate{padding:36px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+.pstate-icon{width:52px;height:52px;border-radius:50%;background:#FFF0F0;display:flex;align-items:center;justify-content:center}
+.pstate-icon svg{width:26px;height:26px;fill:var(--pinterest)}
+.pstate h3{font-size:14px;font-weight:700}
+.pstate p{font-size:12px;color:var(--mid);line-height:1.65;max-width:260px}
+
+/* buttons */
+.pbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:2px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.02em;border:none;transition:opacity .15s}
+.pbtn-red{background:var(--pinterest);color:#fff}
+.pbtn-red:hover{opacity:.86}
+.pbtn-outline{background:transparent;border:1px solid var(--line);color:var(--mid)}
+.pbtn-outline:hover{border-color:var(--ink);color:var(--ink)}
+.pbtn-ink{background:var(--ink);color:#fff}
+.pbtn-ink:hover{opacity:.82}
+.pbtn svg{flex-shrink:0}
+
+/* setup notice */
+.setup-notice{margin:16px;padding:14px 16px;background:#fffbf0;border:1px solid #f0dca0;border-radius:2px}
+.setup-notice-t{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a6200;margin-bottom:6px}
+.setup-notice p{font-size:12px;color:#6a4a00;line-height:1.7}
+.setup-notice code{font-family:monospace;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:2px;font-size:11px}
+
+/* user bar */
+.user-bar{padding:8px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:#fff;font-size:12px;flex-shrink:0}
+.user-avatar{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--line)}
+.user-name{font-weight:600;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.disc-btn{font-size:11px;background:none;border:none;color:var(--pale);cursor:pointer;font-family:inherit;transition:color .15s;flex-shrink:0}
+.disc-btn:hover{color:var(--red)}
+
+/* board selector */
+.board-wrap{padding:16px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;border-bottom:1px solid var(--line)}
+.board-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.board-row{display:flex;gap:8px;align-items:center}
+.board-sel{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:2px;font-size:12px;font-family:inherit;color:var(--ink);background:#fff;cursor:pointer;outline:none;transition:border-color .15s}
+.board-sel:focus{border-color:var(--ink)}
+
+/* pins */
+.pins-wrap{padding:10px;columns:2;column-gap:8px}
+.pin-card{break-inside:avoid;margin-bottom:8px;background:#fff;border-radius:2px;overflow:hidden;border:1px solid var(--line)}
+.pin-img{width:100%;display:block}
+.pin-title{padding:5px 7px 7px;font-size:10px;font-weight:600;color:var(--ink);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pin-empty{padding:40px 20px;text-align:center;color:var(--sub);font-size:12px}
+.load-more{display:block;width:calc(100% - 20px);margin:0 10px 12px;padding:8px;font-size:11px;font-weight:600;font-family:inherit;text-align:center;background:transparent;border:1px solid var(--line);border-radius:2px;cursor:pointer;color:var(--mid);transition:all .15s}
+.load-more:hover{border-color:var(--ink);color:var(--ink)}
+
+/* error */
+.perror{margin:14px;padding:13px 14px;background:#fff5f5;border:1px solid #f0c0c0;border-radius:2px;font-size:12px;color:#8a1a1a;line-height:1.65}
+.perror strong{display:block;margin-bottom:4px}
+
+/* spinner */
+.spinner{width:24px;height:24px;border:2px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--sub);font-size:12px}
+
+/* ── REAL MOOD PANEL ── */
+.mood-frame{width:100%;height:100%;border:none;display:block;flex:1}
+.mood-empty{padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.mood-empty-icon{width:48px;height:48px;border-radius:50%;background:#F1ECE2;display:flex;align-items:center;justify-content:center}
+.mood-empty-icon svg{width:22px;height:22px;fill:var(--sub)}
+.mood-empty p{font-size:12px;color:var(--mid);line-height:1.65;max-width:240px}
+
+/* ── ANÁLISIS DE TABLERO ── */
+.analyze-view{display:flex;flex-direction:column}
+.analyze-header{padding:12px 14px 10px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:1}
+.analyze-title{font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.analyze-subtitle{font-size:11px;color:var(--sub);margin-top:3px}
+.palette-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.palette-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.6);box-shadow:0 0 0 1px var(--line);flex-shrink:0;display:inline-block}
+.palette-label{font-size:10px;color:var(--sub);margin-left:2px}
+.kw-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.kw-tag{font-size:10px;font-weight:600;letter-spacing:.03em;padding:3px 9px;background:#EDE9E0;color:var(--ink);border-radius:20px}
+.geo-banner{padding:9px 14px;font-size:11px;color:var(--mid);display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line);background:#fdfcf8;flex-shrink:0}
+.geo-banner svg{flex-shrink:0}
+.suppliers-list{padding:10px;display:flex;flex-direction:column;gap:8px}
+.supplier-card{background:#fff;border:1px solid var(--line);border-radius:2px;padding:12px 14px}
+.supplier-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.supplier-desc{font-size:11px;color:var(--mid);margin-bottom:8px;line-height:1.5}
+.supplier-meta{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap}
+.dist-badge{font-size:10px;font-weight:600;background:#F1ECE2;color:var(--mid);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.match-badge{font-size:10px;font-weight:600;background:#EAF5EC;color:#3a7a48;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.supplier-addr{font-size:10px;color:var(--sub)}
+.supplier-matches{font-size:11px;color:var(--sub);margin-bottom:10px;line-height:1.5}
+.supplier-matches strong{color:var(--ink)}
+.supplier-actions{display:flex;gap:7px;flex-wrap:wrap}
+.wa-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:2px;font-size:11px;font-weight:700;font-family:inherit;background:#25D366;color:#fff;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s;letter-spacing:.02em}
+.wa-btn:hover{opacity:.86}
+.suppliers-empty{padding:30px 20px;text-align:center;font-size:12px;color:var(--sub);line-height:1.7}
+
+/* ── COTIZACIÓN WIZARD ── */
+.wizard-overlay{position:fixed;inset:0;background:var(--warm);z-index:100;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .2s}
+.wizard-overlay.open{opacity:1;pointer-events:all}
+.wizard-header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;border-bottom:1px solid var(--line);background:#fff;flex-shrink:0}
+.wizard-brand{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.02em}
+.wizard-steps{display:flex;align-items:center;gap:5px}
+.wstep{width:22px;height:3px;border-radius:2px;background:var(--line);transition:background .2s}
+.wstep.active{background:var(--ink)}
+.wstep.done{background:var(--mid)}
+.wizard-close{width:28px;height:28px;border-radius:50%;border:none;background:#EDEAE2;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;color:var(--mid);transition:background .15s;font-family:inherit;flex-shrink:0}
+.wizard-close:hover{background:var(--line);color:var(--ink)}
+.wizard-body{flex:1;overflow-y:auto;padding:36px 24px;max-width:540px;width:100%;margin:0 auto}
+.wizard-step-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+.wizard-title{font-size:24px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:8px;letter-spacing:-.02em}
+.wizard-subtitle{font-size:13px;color:var(--mid);line-height:1.65;margin-bottom:28px}
+.mat-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.mat-chip{display:inline-flex;align-items:center;padding:8px 14px;border-radius:2px;font-size:12px;font-weight:600;font-family:inherit;border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink);transition:all .12s;user-select:none;letter-spacing:.01em}
+.mat-chip.selected{border-color:var(--ink);background:var(--ink);color:#fff}
+.mat-chip:hover:not(.selected){border-color:var(--mid)}
+.space-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+@media(max-width:480px){.space-grid{grid-template-columns:repeat(2,1fr)}}
+.space-card{padding:16px 12px;border:1.5px solid var(--line);border-radius:2px;cursor:pointer;transition:all .12s;background:#fff;text-align:center}
+.space-card:hover:not(.selected){border-color:var(--mid)}
+.space-card.selected{border-color:var(--ink);background:var(--ink)}
+.space-card-icon{font-size:20px;margin-bottom:6px;line-height:1}
+.space-card-label{font-size:12px;font-weight:700;color:var(--ink)}
+.space-card.selected .space-card-label{color:#fff}
+.sqm-wrap{display:flex;align-items:center;gap:10px;margin-top:4px}
+.wizard-input{padding:11px 14px;border:1.5px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .15s;width:110px}
+.wizard-input:focus{border-color:var(--ink)}
+.sqm-unit{font-size:13px;color:var(--mid)}
+.budget-list{display:flex;flex-direction:column;gap:7px;margin-bottom:28px}
+.budget-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1.5px solid var(--line);border-radius:2px;cursor:pointer;background:#fff;transition:all .12s}
+.budget-item:hover:not(.selected){border-color:var(--mid)}
+.budget-item.selected{border-color:var(--ink);background:#fafaf8}
+.budget-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.budget-item.selected .budget-radio{border-color:var(--ink);background:var(--ink)}
+.budget-radio-dot{width:5px;height:5px;border-radius:50%;background:#fff;display:none}
+.budget-item.selected .budget-radio-dot{display:block}
+.budget-label{font-size:13px;font-weight:600;color:var(--ink)}
+.summary-box{background:#fff;border:1px solid var(--line);border-radius:2px;padding:20px;margin-bottom:20px}
+.summary-row{display:flex;gap:12px;margin-bottom:13px;font-size:12px;line-height:1.5}
+.summary-row:last-child{margin-bottom:0}
+.summary-key{color:var(--sub);font-weight:700;width:88px;flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding-top:1px}
+.summary-val{color:var(--ink)}
+.wizard-wa-btn{display:flex;align-items:center;justify-content:center;gap:9px;padding:15px;border-radius:2px;font-size:14px;font-weight:700;font-family:inherit;background:#25D366;color:#fff;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s;width:100%;letter-spacing:.02em}
+.wizard-wa-btn:hover{opacity:.88}
+.wizard-footer{border-top:1px solid var(--line);background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.wizard-btn-back{background:none;border:none;font-size:13px;color:var(--sub);cursor:pointer;font-family:inherit;font-weight:600;padding:6px 0;transition:color .15s}
+.wizard-btn-back:hover{color:var(--ink)}
+.wizard-btn-next{padding:11px 28px;border-radius:2px;font-size:13px;font-weight:700;font-family:inherit;background:var(--ink);color:#fff;border:none;cursor:pointer;letter-spacing:.02em;transition:opacity .15s}
+.wizard-btn-next:disabled{opacity:.35;cursor:not-allowed}
+.wizard-btn-next:not(:disabled):hover{opacity:.82}
+.quote-cta{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;width:100%;border-radius:2px;font-size:12px;font-weight:700;font-family:inherit;background:var(--ink);color:#fff;border:none;cursor:pointer;letter-spacing:.02em;transition:opacity .15s;margin-top:12px}
+.quote-cta:hover{opacity:.82}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-left">
+    <a href="terrazzo-instone.html" class="nav-brand">Instone</a>
+    <span class="nav-badge">REAL MOOD</span>
+  </div>
+  <a href="terrazzo-instone.html" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 3L5 8l5 5"/></svg>
+    Volver
+  </a>
+</nav>
+
+<div class="compare-wrap">
+
+  <!-- ── PINTEREST / ASESOR ── -->
+  <div class="panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-pinterest" onclick="switchTab('pinterest')">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        Comparar Pinterest
+      </div>
+      <div class="panel-tab" id="tab-espec" onclick="switchTab('espec')">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        Asesor Técnico
+      </div>
+    </div>
+
+    <div class="tab-pane active" id="pane-pinterest">
+      <div class="panel-head">
+        <div class="panel-icon icon-p">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        </div>
+        <div class="panel-meta">
+          <div class="panel-title">Pinterest</div>
+          <div class="panel-sub" id="p-sub">Tu tablero de inspiración</div>
+        </div>
+      </div>
+      <div class="panel-body" id="p-body"><!-- injected by JS --></div>
+    </div>
+
+    <div class="tab-pane" id="pane-espec">
+      <iframe class="espec-frame" id="espec-frame" src="" title="Asesor Técnico"></iframe>
+    </div>
+  </div>
+
+  <!-- ── REAL MOOD ── -->
+  <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel-head">
+      <div class="panel-icon icon-m">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <div class="panel-meta">
+        <div class="panel-title">Real Mood</div>
+        <div class="panel-sub">Tu moodboard guardado</div>
+      </div>
+    </div>
+    <div class="panel-body" id="mood-body" style="display:flex;flex-direction:column"><!-- injected by JS --></div>
+  </div>
+
+</div>
+
+<div id="wizard-overlay" class="wizard-overlay"></div>
+
+<script>
+// ── CONFIGURATION ──────────────────────────────────────────────────────────
+// Register your app at https://developers.pinterest.com
+// and set this constant. Redirect URI to add in your app settings:
+//   <your-site-origin>/comparador.html
+const PINTEREST_CLIENT_ID = '1581664';
+const PINTEREST_ACCESS_TOKEN = 'pina_AMAWAIQYABKS4BAAGAAOUD343M65HHQBQBIQCQSWTIHYHVCEICNSJHU5IIMULEXXFIBE2M33AI33FV55VYJMYHNY43HXZYQA';
+const REDIRECT_URI = location.origin + location.pathname.replace(/\/+$/, '');
+const PINTEREST_SCOPE = 'boards:read,pins:read,user_accounts:read';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let token = null;
+let pUser = null;
+let currentBoardId = null;
+let bookmark = null;
+let analyzedPins = [];
+
+// ── PKCE CRYPTO ────────────────────────────────────────────────────────────
+function rndB64url(n) {
+  const a = new Uint8Array(n);
+  crypto.getRandomValues(a);
+  return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+async function sha256b64url(s) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+// ── AUTH ───────────────────────────────────────────────────────────────────
+async function connectPinterest() {
+  if (!PINTEREST_CLIENT_ID) { renderSetupNotice(); return; }
+  const verifier = rndB64url(48);
+  const challenge = await sha256b64url(verifier);
+  const state = rndB64url(16);
+  sessionStorage.setItem('_pv', verifier);
+  sessionStorage.setItem('_ps', state);
+  location.href = 'https://www.pinterest.com/oauth/'
+    + '?client_id=' + encodeURIComponent(PINTEREST_CLIENT_ID)
+    + '&redirect_uri=' + encodeURIComponent(REDIRECT_URI)
+    + '&response_type=code'
+    + '&scope=' + encodeURIComponent(PINTEREST_SCOPE)
+    + '&code_challenge=' + encodeURIComponent(challenge)
+    + '&code_challenge_method=S256'
+    + '&state=' + encodeURIComponent(state);
+}
+
+async function exchangeCode(code) {
+  const verifier = sessionStorage.getItem('_pv');
+  if (!verifier) { renderError('Sesión expirada. Intentá conectar de nuevo.'); return; }
+  showLoading('Conectando con Pinterest...');
+  try {
+    const resp = await fetch('https://api.pinterest.com/v5/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: REDIRECT_URI,
+        client_id: PINTEREST_CLIENT_ID,
+        code_verifier: verifier
+      }).toString()
+    });
+    sessionStorage.removeItem('_pv');
+    sessionStorage.removeItem('_ps');
+    history.replaceState({}, '', location.pathname);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      if (resp.status === 401 || resp.status === 400) {
+        renderError(
+          '<strong>Intercambio de token fallido (HTTP ' + resp.status + ')</strong>'
+          + 'Pinterest puede requerir <code>client_secret</code> en el token endpoint incluso con PKCE. '
+          + 'En ese caso se necesita una función serverless (Vercel/Netlify/Cloudflare Workers) '
+          + 'para hacer el intercambio de forma segura — sin exponer la credencial en el browser. '
+          + 'Consultá al equipo técnico.<br><br>'
+          + '<small style="color:var(--sub)">' + JSON.stringify(err).slice(0, 220) + '</small>'
+        );
+      } else {
+        renderError('<strong>Error de Pinterest (HTTP ' + resp.status + ')</strong>' + JSON.stringify(err).slice(0, 300));
+      }
+      return;
+    }
+    const data = await resp.json();
+    token = data.access_token;
+    sessionStorage.setItem('_pt', token);
+    await loadUserAndBoards();
+  } catch (e) {
+    sessionStorage.removeItem('_pv');
+    sessionStorage.removeItem('_ps');
+    history.replaceState({}, '', location.pathname);
+    renderError(
+      '<strong>No se pudo conectar (CORS / red)</strong>'
+      + 'La API de Pinterest bloquea solicitudes de intercambio de token desde el browser. '
+      + 'Se necesita una función serverless (Vercel/Netlify/Cloudflare Workers) que actúe como proxy '
+      + 'para completar el flujo OAuth con el <code>client_secret</code> de forma segura. '
+      + 'El CEO fue notificado de esta decisión técnica pendiente.<br><br>'
+      + '<small style="color:var(--sub)">' + e.message + '</small>'
+    );
+  }
+}
+
+function disconnect() {
+  token = null; pUser = null; currentBoardId = null; bookmark = null;
+  sessionStorage.removeItem('_pt');
+  renderConnect();
+}
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function api(path) {
+  const r = await fetch('https://api.pinterest.com/v5' + path, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error('Pinterest API ' + r.status + ': ' + JSON.stringify(e).slice(0, 180)); }
+  return r.json();
+}
+
+async function loadUserAndBoards() {
+  showLoading('Cargando tableros...');
+  try {
+    const [user, boards] = await Promise.all([
+      api('/user_account'),
+      api('/boards?page_size=50')
+    ]);
+    pUser = user;
+    renderBoards(boards.items || []);
+  } catch (e) { renderError('<strong>Error al cargar tableros</strong>' + e.message); }
+}
+
+async function loadPins(boardId, bm) {
+  if (!bm) showLoading('Cargando pines...');
+  try {
+    const d = await api('/boards/' + boardId + '/pins?page_size=50' + (bm ? '&bookmark=' + encodeURIComponent(bm) : ''));
+    bookmark = d.bookmark || null;
+    bm ? appendPins(d.items || []) : renderPins(d.items || [], boardId);
+  } catch (e) { renderError('<strong>Error al cargar pines</strong>' + e.message); }
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+const pb = () => document.getElementById('p-body');
+const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function showLoading(msg) {
+  pb().innerHTML = '<div class="loading"><div class="spinner"></div><span>' + esc(msg) + '</span></div>';
+}
+
+function renderConnect() {
+  pb().innerHTML = '<div class="pstate">'
+    + '<div class="pstate-icon"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" fill="#E60023"/></svg></div>'
+    + '<h3>Conectá tu Pinterest</h3>'
+    + '<p>Conectá tu cuenta para importar un tablero y compararlo con tu Real Mood.</p>'
+    + '<button class="pbtn pbtn-red" onclick="connectPinterest()">'
+    + '<svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>'
+    + 'Conectar Pinterest</button>'
+    + '</div>';
+}
+
+function renderSetupNotice() {
+  pb().innerHTML = '<div class="setup-notice">'
+    + '<div class="setup-notice-t">App no configurada</div>'
+    + '<p>Para usar la integración de Pinterest es necesario:<br><br>'
+    + '1. Registrar una app en <strong>developers.pinterest.com</strong><br>'
+    + '2. Agregar la URI de redirección: <code>' + esc(REDIRECT_URI) + '</code><br>'
+    + '3. Establecer la constante <code>PINTEREST_CLIENT_ID</code> en <code>comparador.html</code><br><br>'
+    + 'Una vez configurado, el botón de conexión quedará activo automáticamente.</p>'
+    + '</div>';
+}
+
+function userBar() {
+  if (!pUser) return '';
+  const av = pUser.profile_image || '';
+  return '<div class="user-bar">'
+    + (av ? '<img class="user-avatar" src="' + esc(av) + '" alt="">' : '<div class="user-avatar"></div>')
+    + '<span class="user-name">' + esc(pUser.username || pUser.first_name || 'Usuario') + '</span>'
+    + '<button class="disc-btn" onclick="disconnect()">Desconectar</button>'
+    + '</div>';
+}
+
+function renderBoards(boards) {
+  if (!boards.length) {
+    pb().innerHTML = userBar() + '<div class="pstate"><p>No se encontraron tableros en tu cuenta.</p>'
+      + '<button class="pbtn pbtn-outline" onclick="disconnect()">Desconectar</button></div>';
+    return;
+  }
+  const opts = boards.map(b =>
+    '<option value="' + esc(b.id) + '">' + esc(b.name) + (b.pin_count ? ' (' + b.pin_count + ')' : '') + '</option>'
+  ).join('');
+  pb().innerHTML = userBar()
+    + '<div class="board-wrap"><div class="board-label">Elegí un tablero</div>'
+    + '<div class="board-row">'
+    + '<select class="board-sel" id="board-sel"><option value="">Seleccionar...</option>' + opts + '</select>'
+    + '<button class="pbtn pbtn-red" style="padding:8px 14px" onclick="pickBoard()">Ver</button>'
+    + '</div></div>';
+}
+
+function pickBoard() {
+  const sel = document.getElementById('board-sel');
+  if (!sel || !sel.value) return;
+  currentBoardId = sel.value;
+  bookmark = null;
+  loadPins(currentBoardId, null);
+}
+
+function renderPins(pins, boardId) {
+  analyzedPins = [...pins];
+  if (!pins.length) {
+    pb().innerHTML = userBar()
+      + '<div class="pin-empty">Este tablero no tiene pines todavía.</div>'
+      + '<div style="padding:10px 16px"><button class="pbtn pbtn-outline" onclick="backToBoards()">← Tableros</button></div>';
+    return;
+  }
+  pb().innerHTML = userBar()
+    + '<div style="padding:8px 10px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:6px">'
+    + '<button class="pbtn pbtn-outline" style="padding:5px 10px;font-size:11px" onclick="backToBoards()">← Tableros</button>'
+    + '<button class="pbtn pbtn-ink" style="padding:5px 12px;font-size:11px;display:flex;align-items:center;gap:5px" onclick="startAnalysis()">'
+    + '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+    + 'Analizar tablero</button>'
+    + '</div>'
+    + '<div class="pins-wrap" id="pins-wrap">' + pins.map(pinCard).join('') + '</div>'
+    + (bookmark ? '<button class="load-more" onclick="loadMore()">Cargar más pines</button>' : '');
+}
+
+function appendPins(pins) {
+  analyzedPins = [...analyzedPins, ...pins];
+  const w = document.getElementById('pins-wrap');
+  if (w) w.insertAdjacentHTML('beforeend', pins.map(pinCard).join(''));
+  const btn = document.querySelector('.load-more');
+  if (btn) { if (bookmark) { btn.textContent = 'Cargar más pines'; btn.disabled = false; } else btn.remove(); }
+}
+
+function pinCard(p) {
+  const img = bestImg(p);
+  const t = p.title || p.description || '';
+  return '<div class="pin-card">'
+    + (img ? '<img class="pin-img" src="' + esc(img) + '" alt="" loading="lazy">' : '')
+    + (t ? '<div class="pin-title">' + esc(t) + '</div>' : '')
+    + '</div>';
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('pane-' + tab).classList.add('active');
+  if (tab === 'espec') {
+    const fr = document.getElementById('espec-frame');
+    if (fr && !fr.src) fr.src = 'especificador.html';
+  }
+}
+
+function bestImg(p) {
+  try {
+    const m = p.media && p.media.images;
+    if (!m) return null;
+    return (m['400x300'] || m['600x'] || m['originals'] || m['150x150'] || {}).url || null;
+  } catch { return null; }
+}
+
+function backToBoards() {
+  currentBoardId = null; bookmark = null;
+  loadUserAndBoards();
+}
+
+function loadMore() {
+  if (!currentBoardId || !bookmark) return;
+  const btn = document.querySelector('.load-more');
+  if (btn) { btn.textContent = 'Cargando...'; btn.disabled = true; }
+  loadPins(currentBoardId, bookmark);
+}
+
+function renderError(html) {
+  pb().innerHTML = '<div class="perror">' + html + '</div>'
+    + '<div style="padding:10px 14px"><button class="pbtn pbtn-outline" onclick="renderConnect()">Volver</button></div>';
+}
+
+// ── REAL MOOD PANEL ────────────────────────────────────────────────────────
+let savedProjects = [];
+try { savedProjects = JSON.parse(localStorage.getItem('ins_projects') || '[]'); } catch(e) {}
+
+function renderMoodPanel() {
+  const body = document.getElementById('mood-body');
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+
+  const hasCurrent = !!localStorage.getItem('ins_mb_pos');
+  const hasProjects = savedProjects.length > 0;
+
+  if (!hasCurrent && !hasProjects) {
+    body.innerHTML = '<div class="mood-empty">'
+      + '<div class="mood-empty-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>'
+      + '<p>No hay un Real Mood guardado todavía. Componé y guardá tu moodboard en el configurador y volvé acá para compararlo.</p>'
+      + '<a href="terrazzo-instone.html" class="pbtn pbtn-ink" style="text-decoration:none">'
+      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-1.41 1.41L16.17 9H4v2h12.17l-5.58 5.59L12 18l8-8z"/></svg>'
+      + 'Ir al configurador</a>'
+      + '</div>';
+    return;
+  }
+
+  // Build selector if there are saved projects
+  let selectorHtml = '';
+  if (hasProjects) {
+    const opts = savedProjects.map((p, i) =>
+      '<option value="' + i + '">' + esc(p.name || ('Proyecto ' + (i+1))) + '</option>'
+    ).join('');
+    selectorHtml = '<div class="board-wrap" style="border-top:none">'
+      + '<div class="board-label">Elegí un proyecto guardado</div>'
+      + '<div class="board-row">'
+      + '<select class="board-sel" id="mood-proj-sel" onchange="loadMoodProject(this.value)">'
+      + (hasCurrent ? '<option value="">— Moodboard actual —</option>' : '')
+      + opts + '</select>'
+      + '</div></div>';
+  }
+
+  body.innerHTML = selectorHtml
+    + '<iframe class="mood-frame" id="mood-iframe" src="terrazzo-instone.html?compare=1" title="Real Mood"></iframe>';
+
+  // If there's an autosave, the iframe restores it automatically — skip force-loading project 0
+  const hasAutosave = !!localStorage.getItem('ins_mb_autosave');
+  if (!hasCurrent && !hasAutosave && hasProjects) {
+    loadMoodProject(0);
+  }
+}
+
+function loadMoodProject(idx) {
+  if (idx === '' || idx === null || idx === undefined) return;
+  const proj = savedProjects[parseInt(idx)];
+  if (!proj || !proj.state) return;
+  try {
+    if (proj.state.mbPos) localStorage.setItem('ins_mb_pos', JSON.stringify(proj.state.mbPos));
+  } catch(e) {}
+  const fr = document.getElementById('mood-iframe');
+  if (!fr) return;
+  const pid = proj.id;
+  // Cache-buster forces a genuine reload (fr.src = fr.src is a no-op in modern browsers)
+  fr.src = 'terrazzo-instone.html?compare=1&_=' + Date.now();
+  // Poll until the bundle's loadProject function is available (async unpack)
+  let tries = 0;
+  const timer = setInterval(() => {
+    tries++;
+    try {
+      const win = fr.contentWindow;
+      if (win && typeof win.loadProject === 'function') {
+        clearInterval(timer);
+        win.loadProject(pid);
+      }
+    } catch(e) {}
+    if (tries > 50) clearInterval(timer); // 10s timeout
+  }, 200);
+}
+
+// ── ANÁLISIS DE TABLERO ─────────────────────────────────────────────────────
+
+// Scalable supplier registry — add entries here as new partners join
+const SUPPLIERS = [
+  {
+    id:'instone', name:'Instone',
+    desc:'Revestimientos de piedra natural, terrazzo y superficies de diseño',
+    address:'Cañada 154, Córdoba', lat:-31.4201, lng:-64.1888,
+    whatsapp:'5493513578738',
+    materiales:['piedra','terrazzo','mármol','granito','concreto','hormigón','travertino','cuarcita','microcemento'],
+    colores:['gris','blanco','beige','negro','crema','topo','arena']
+  }
+];
+
+// Maps keywords found in pin text to material categories
+const MATERIAL_KW = {
+  terrazzo:'terrazzo', terazzo:'terrazzo',
+  marble:'mármol', mármol:'mármol', marmo:'mármol',
+  granito:'granito', granite:'granito',
+  travertine:'travertino', travertino:'travertino',
+  piedra:'piedra', stone:'piedra', rock:'piedra',
+  concrete:'concreto', concreto:'concreto',
+  hormigon:'hormigón', hormigón:'hormigón',
+  cemento:'cemento', cement:'cemento', microcemento:'microcemento',
+  madera:'madera', wood:'madera', timber:'madera',
+  oak:'roble', roble:'roble', nogal:'nogal', walnut:'nogal',
+  parquet:'parquet', deck:'deck',
+  acero:'acero', steel:'acero', metal:'metal',
+  iron:'hierro', hierro:'hierro',
+  vidrio:'vidrio', glass:'vidrio',
+  cuero:'cuero', leather:'cuero',
+  ladrillo:'ladrillo', brick:'ladrillo',
+  corten:'corten', copper:'cobre', cobre:'cobre',
+  bronce:'bronce', bronze:'bronce',
+  lino:'lino', linen:'lino',
+  ceramica:'cerámica', ceramic:'cerámica', tile:'cerámica'
+};
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h = 0, s = 0, l = (max+min)/2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > .5 ? d/(2-max-min) : d/(max+min);
+    switch(max) {
+      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+      case g: h = ((b-r)/d + 2)/6; break;
+      case b: h = ((r-g)/d + 4)/6; break;
+    }
+  }
+  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+}
+
+function hslToColorName(h, s, l) {
+  if (l > 82) return 'blanco';
+  if (l < 14) return 'negro';
+  if (s < 10) { return l > 55 ? 'blanco' : l < 30 ? 'negro' : 'gris'; }
+  if (h < 20 || h >= 340) return l > 55 ? 'rosa' : 'rojo';
+  if (h < 40) return l > 55 ? 'arena' : 'madera';
+  if (h < 70) return l > 55 ? 'amarillo' : 'ocre';
+  if (h < 155) return 'verde';
+  if (h < 195) return 'turquesa';
+  if (h < 260) return 'azul';
+  if (h < 290) return 'violeta';
+  return 'rosa';
+}
+
+async function extractColorsFromImage(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const timeout = setTimeout(() => resolve([]), 4000);
+    img.onload = () => {
+      clearTimeout(timeout);
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 60; canvas.height = 60;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 60, 60);
+        const data = ctx.getImageData(0, 0, 60, 60).data;
+        const buckets = {};
+        for (let i = 0; i < data.length; i += 16) {
+          if (data[i+3] < 128) continue;
+          const [h,s,l] = rgbToHsl(data[i], data[i+1], data[i+2]);
+          const name = hslToColorName(h,s,l);
+          const hex = '#' + [data[i],data[i+1],data[i+2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+          if (!buckets[name]) buckets[name] = { count:0, hex };
+          buckets[name].count++;
+        }
+        const sorted = Object.entries(buckets).sort((a,b)=>b[1].count-a[1].count);
+        resolve(sorted.slice(0,3).map(([name,{hex}])=>({name,hex})));
+      } catch { resolve([]); }
+    };
+    img.onerror = () => { clearTimeout(timeout); resolve([]); };
+    img.src = url;
+  });
+}
+
+function extractKeywordsFromPins(pins) {
+  const text = pins.map(p => ((p.title||'') + ' ' + (p.description||'')).toLowerCase()).join(' ');
+  const found = {};
+  for (const [kw, cat] of Object.entries(MATERIAL_KW)) {
+    if (text.includes(kw)) found[cat] = true;
+  }
+  return Object.keys(found).slice(0, 8);
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, toR = Math.PI/180;
+  const dLat = (lat2-lat1)*toR, dLng = (lng2-lng1)*toR;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*toR)*Math.cos(lat2*toR)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function matchSuppliers(keywords, colorNames, userLat, userLng) {
+  return SUPPLIERS.map(s => {
+    const matMatches = keywords.filter(k => s.materiales.some(m => m.includes(k) || k.includes(m)));
+    const colMatches = colorNames.filter(c => s.colores.includes(c));
+    const score = matMatches.length * 2 + colMatches.length;
+    const dist = userLat != null ? haversineKm(userLat, userLng, s.lat, s.lng) : null;
+    return { ...s, matMatches, colMatches, score, dist };
+  }).sort((a,b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    if (a.dist != null && b.dist != null) return a.dist - b.dist;
+    return 0;
+  });
+}
+
+async function startAnalysis() {
+  if (!analyzedPins.length) return;
+  pb().innerHTML = userBar()
+    + '<div class="analyze-view"><div class="analyze-header">'
+    + '<div class="analyze-title"><div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0"></div>Analizando tablero...</div>'
+    + '<div class="analyze-subtitle">Extrayendo colores y materiales de los pines</div>'
+    + '</div>'
+    + '<div class="loading" style="flex:1"><div class="spinner"></div><span>Procesando imágenes y detectando materiales...</span></div>'
+    + '</div>';
+
+  const keywords = extractKeywordsFromPins(analyzedPins);
+  const imgUrls = analyzedPins.slice(0, 8).map(p => bestImg(p)).filter(Boolean);
+  const colorBatches = await Promise.all(imgUrls.map(url => extractColorsFromImage(url)));
+
+  const freq = {};
+  colorBatches.flat().forEach(c => {
+    if (!freq[c.name]) freq[c.name] = { count:0, hex:c.hex };
+    freq[c.name].count++;
+  });
+  const palette = Object.entries(freq).sort((a,b)=>b[1].count-a[1].count).slice(0,6);
+
+  let userLat = null, userLng = null, geoStatus = 'unavailable';
+  if (navigator.geolocation) {
+    await new Promise(resolve => {
+      navigator.geolocation.getCurrentPosition(
+        pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; geoStatus = 'ok'; resolve(); },
+        () => { geoStatus = 'denied'; resolve(); },
+        { timeout: 8000 }
+      );
+    });
+  }
+
+  const colorNames = palette.map(([name]) => name);
+  const suppliers = matchSuppliers(keywords, colorNames, userLat, userLng);
+  renderAnalysisResults(keywords, palette, suppliers, geoStatus);
+}
+
+let lastAnalysis = { keywords:[], palette:[], suppliers:[] };
+
+function renderAnalysisResults(keywords, palette, suppliers, geoStatus) {
+  lastAnalysis = { keywords, palette, suppliers };
+
+  const paletteHtml = palette.length
+    ? palette.map(([name, {hex}]) =>
+        '<span class="palette-dot" style="background:' + esc(hex) + '" title="' + esc(name) + '"></span>'
+      ).join('') + '<span class="palette-label">' + palette.map(([n])=>esc(n)).join(', ') + '</span>'
+    : '<span class="palette-label" style="color:var(--sub)">No se pudieron extraer colores (CORS)</span>';
+
+  const kwHtml = keywords.length
+    ? keywords.map(k => '<span class="kw-tag">' + esc(k) + '</span>').join('')
+    : '<span style="font-size:11px;color:var(--sub)">No se detectaron materiales en los títulos de los pines</span>';
+
+  const geoBannerHtml = geoStatus === 'ok'
+    ? '<div class="geo-banner"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación detectada — distancias calculadas desde tu posición</div>'
+    : '<div class="geo-banner" style="background:#fff8f0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pale)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicación no disponible — ordenado por relevancia</div>';
+
+  const suppliersHtml = suppliers.map((s, si) => {
+    const distHtml = s.dist != null ? '<span class="dist-badge">📍 ' + s.dist.toFixed(1) + ' km</span>' : '';
+    const matchHtml = s.score > 0 ? '<span class="match-badge">✓ ' + (s.matMatches.length + s.colMatches.length) + ' coincidencias</span>' : '';
+    const matchDetail = s.matMatches.length
+      ? '<div class="supplier-matches">Materiales en común: <strong>' + s.matMatches.join(', ') + '</strong></div>'
+      : (s.colMatches.length ? '<div class="supplier-matches">Paleta compatible: <strong>' + s.colMatches.join(', ') + '</strong></div>' : '');
+    return '<div class="supplier-card">'
+      + '<div class="supplier-name">' + esc(s.name) + '</div>'
+      + '<div class="supplier-desc">' + esc(s.desc) + '</div>'
+      + '<div class="supplier-meta">' + distHtml + matchHtml + '<span class="supplier-addr">' + esc(s.address) + '</span></div>'
+      + matchDetail
+      + '<button class="quote-cta" onclick="openWizard(' + si + ')">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+      + 'Solicitar cotización</button>'
+      + '</div>';
+  }).join('');
+
+  pb().innerHTML = userBar()
+    + '<div class="analyze-view">'
+    + '<div class="analyze-header">'
+    + '<div class="analyze-title">'
+    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>'
+    + 'Análisis del tablero'
+    + '<button class="pbtn pbtn-outline" style="padding:3px 10px;font-size:10px;margin-left:auto" onclick="backFromAnalysis()">← Volver a pines</button>'
+    + '</div>'
+    + '<div class="palette-row">' + paletteHtml + '</div>'
+    + '<div class="kw-row">' + kwHtml + '</div>'
+    + '</div>'
+    + geoBannerHtml
+    + '<div class="suppliers-list">'
+    + '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);padding:2px 0 8px">Proveedor disponible en Córdoba</div>'
+    + suppliersHtml
+    + '</div></div>';
+}
+
+function backFromAnalysis() {
+  if (analyzedPins.length) renderPins(analyzedPins, currentBoardId);
+  else backToBoards();
+}
+
+// ── COTIZACIÓN WIZARD ────────────────────────────────────────────────────────
+
+const SPACES = [
+  { id:'cocina',      label:'Cocina',      icon:'🍳' },
+  { id:'bano',        label:'Baño',        icon:'🚿' },
+  { id:'living',      label:'Living',      icon:'🛋️' },
+  { id:'dormitorio',  label:'Dormitorio',  icon:'🛏️' },
+  { id:'exterior',    label:'Exterior',    icon:'🌿' },
+  { id:'otro',        label:'Otro',        icon:'✦'  },
+];
+
+const BUDGETS = [
+  'Menos de $500.000',
+  '$500.000 – $1.000.000',
+  '$1.000.000 – $2.000.000',
+  'Más de $2.000.000',
+  'Prefiero no decirlo',
+];
+
+const ALL_MATERIALS = [
+  'terrazzo','mármol','granito','travertino','piedra','concreto',
+  'microcemento','madera','roble','parquet','acero','vidrio',
+  'cuero','cerámica','ladrillo','corten'
+];
+
+let wz = { step:1, materials:[], space:null, sqm:'', budget:null, supplierIdx:0 };
+
+function openWizard(supplierIdx) {
+  const s = lastAnalysis.suppliers[supplierIdx];
+  const preselected = [...new Set([...lastAnalysis.keywords, ...s.matMatches])].slice(0, 6);
+  wz = {
+    step: 1,
+    materials: preselected.length ? preselected : s.materiales.slice(0, 4),
+    space: null, sqm: '', budget: null,
+    supplierIdx,
+  };
+  document.getElementById('wizard-overlay').classList.add('open');
+  renderWizardStep();
+}
+
+function closeWizard() {
+  document.getElementById('wizard-overlay').classList.remove('open');
+}
+
+function wizardNext() {
+  if (wz.step < 4) { wz.step++; renderWizardStep(); }
+}
+
+function wizardBack() {
+  if (wz.step > 1) { wz.step--; renderWizardStep(); }
+  else closeWizard();
+}
+
+function wizardToggleMat(mat) {
+  const i = wz.materials.indexOf(mat);
+  if (i >= 0) wz.materials.splice(i, 1); else wz.materials.push(mat);
+  renderWizardStep();
+}
+
+function wizardSetSpace(id) { wz.space = id; renderWizardStep(); }
+function wizardSetBudget(b) { wz.budget = b; renderWizardStep(); }
+function wizardSqmChange(v) { wz.sqm = v; }
+
+const WA_ICON_LG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>';
+
+function renderWizardStep() {
+  const s = lastAnalysis.suppliers[wz.supplierIdx];
+  const stepDots = [1,2,3,4].map(i =>
+    '<div class="wstep' + (i === wz.step ? ' active' : i < wz.step ? ' done' : '') + '"></div>'
+  ).join('');
+
+  let bodyHtml = '';
+  let canContinue = true;
+
+  if (wz.step === 1) {
+    canContinue = wz.materials.length > 0;
+    const chips = ALL_MATERIALS.map(m =>
+      '<button class="mat-chip' + (wz.materials.includes(m) ? ' selected' : '') + '" onclick="wizardToggleMat(\'' + m + '\')">' + esc(m) + '</button>'
+    ).join('');
+    const palHtml = lastAnalysis.palette.length
+      ? '<div class="palette-row" style="margin-bottom:20px">'
+        + lastAnalysis.palette.slice(0,5).map(([n,{hex}]) => '<span class="palette-dot" style="background:' + esc(hex) + '" title="' + esc(n) + '"></span>').join('')
+        + '<span class="palette-label">' + lastAnalysis.palette.slice(0,5).map(([n])=>esc(n)).join(', ') + '</span>'
+        + '</div>'
+      : '';
+    bodyHtml = '<div class="wizard-step-label">Paso 1 de 4 — Tu estilo</div>'
+      + '<div class="wizard-title">¿Con qué materiales soñás?</div>'
+      + '<div class="wizard-subtitle">Detectamos estos materiales en tu tablero. Ajustá la selección a tu gusto.</div>'
+      + palHtml
+      + '<div class="mat-grid">' + chips + '</div>'
+      + '<div style="font-size:11px;color:var(--sub);margin-top:6px">' + wz.materials.length + ' seleccionado' + (wz.materials.length !== 1 ? 's' : '') + '</div>';
+  }
+
+  if (wz.step === 2) {
+    canContinue = !!wz.space;
+    const cards = SPACES.map(sp =>
+      '<div class="space-card' + (wz.space === sp.id ? ' selected' : '') + '" onclick="wizardSetSpace(\'' + sp.id + '\')">'
+      + '<div class="space-card-icon">' + sp.icon + '</div>'
+      + '<div class="space-card-label">' + esc(sp.label) + '</div>'
+      + '</div>'
+    ).join('');
+    bodyHtml = '<div class="wizard-step-label">Paso 2 de 4 — Tu espacio</div>'
+      + '<div class="wizard-title">¿Qué espacio querés revestir?</div>'
+      + '<div class="wizard-subtitle">Elegí el ambiente principal de tu proyecto.</div>'
+      + '<div class="space-grid">' + cards + '</div>'
+      + '<div class="sqm-wrap">'
+      + '<input class="wizard-input" type="number" min="1" max="9999" placeholder="m²" value="' + esc(wz.sqm) + '" oninput="wizardSqmChange(this.value)">'
+      + '<span class="sqm-unit">superficie aproximada (opcional)</span>'
+      + '</div>';
+  }
+
+  if (wz.step === 3) {
+    canContinue = !!wz.budget;
+    const items = BUDGETS.map(b =>
+      '<div class="budget-item' + (wz.budget === b ? ' selected' : '') + '" onclick="wizardSetBudget(\'' + b.replace(/'/g, "\\'") + '\')">'
+      + '<div class="budget-radio"><div class="budget-radio-dot"></div></div>'
+      + '<div class="budget-label">' + esc(b) + '</div>'
+      + '</div>'
+    ).join('');
+    bodyHtml = '<div class="wizard-step-label">Paso 3 de 4 — Presupuesto</div>'
+      + '<div class="wizard-title">¿Con qué rango de inversión contás?</div>'
+      + '<div class="wizard-subtitle">Esta información ayuda al proveedor a preparar la mejor propuesta para tu proyecto.</div>'
+      + '<div class="budget-list">' + items + '</div>';
+  }
+
+  if (wz.step === 4) {
+    const spaceLabel = SPACES.find(x => x.id === wz.space)?.label || wz.space;
+    const matList = wz.materials.join(', ') || 'Sin especificar';
+    const sqmLine = wz.sqm ? wz.sqm + ' m²' : null;
+    const waMsg = 'Hola ' + s.name + '! Me gustaría cotizar materiales para mi proyecto.\n\n'
+      + '• Ambiente: ' + spaceLabel + (sqmLine ? ' (' + sqmLine + ')' : '') + '\n'
+      + '• Materiales de interés: ' + matList + '\n'
+      + '• Presupuesto aproximado: ' + (wz.budget || 'No especificado') + '\n\n'
+      + 'Los materiales los tomé de mi tablero de Pinterest. ¿Pueden asesorarme?';
+    bodyHtml = '<div class="wizard-step-label">Paso 4 de 4 — Conectar</div>'
+      + '<div class="wizard-title">Todo listo para conectarte</div>'
+      + '<div class="wizard-subtitle">Tu consulta va a incluir este resumen para que ' + esc(s.name) + ' pueda preparar la mejor propuesta.</div>'
+      + '<div class="summary-box">'
+      + '<div class="summary-row"><span class="summary-key">Proveedor</span><span class="summary-val"><strong>' + esc(s.name) + '</strong><br>' + esc(s.address) + '</span></div>'
+      + '<div class="summary-row"><span class="summary-key">Ambiente</span><span class="summary-val">' + esc(spaceLabel) + (sqmLine ? ' · ' + esc(sqmLine) : '') + '</span></div>'
+      + '<div class="summary-row"><span class="summary-key">Materiales</span><span class="summary-val">' + esc(matList) + '</span></div>'
+      + '<div class="summary-row"><span class="summary-key">Presupuesto</span><span class="summary-val">' + esc(wz.budget || '—') + '</span></div>'
+      + '</div>'
+      + '<a class="wizard-wa-btn" href="https://wa.me/' + esc(s.whatsapp) + '?text=' + encodeURIComponent(waMsg) + '" target="_blank" rel="noopener">'
+      + WA_ICON_LG + 'Enviar consulta por WhatsApp</a>';
+  }
+
+  const footerBack = '<button class="wizard-btn-back" onclick="wizardBack()">' + (wz.step === 1 ? '✕ Cancelar' : '← Atrás') + '</button>';
+  const footerNext = wz.step < 4
+    ? '<button class="wizard-btn-next"' + (canContinue ? '' : ' disabled') + ' onclick="wizardNext()">Continuar →</button>'
+    : '<span></span>';
+
+  document.getElementById('wizard-overlay').innerHTML =
+    '<div class="wizard-header">'
+    + '<span class="wizard-brand">Instone · Cotización</span>'
+    + '<div class="wizard-steps">' + stepDots + '</div>'
+    + '<button class="wizard-close" onclick="closeWizard()" aria-label="Cerrar">×</button>'
+    + '</div>'
+    + '<div class="wizard-body">' + bodyHtml + '</div>'
+    + '<div class="wizard-footer">' + footerBack + footerNext + '</div>';
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+(function init() {
+  renderMoodPanel();
+
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  const error = params.get('error');
+
+  if (error) {
+    history.replaceState({}, '', location.pathname);
+    renderConnect();
+    return;
+  }
+
+  if (code) {
+    exchangeCode(code);
+    return;
+  }
+
+  const saved = sessionStorage.getItem('_pt') || PINTEREST_ACCESS_TOKEN;
+  if (saved) {
+    token = saved;
+    sessionStorage.setItem('_pt', token);
+    loadUserAndBoards();
+    return;
+  }
+
+  renderConnect();
+})();
+</script>
+</body>
+</html>
