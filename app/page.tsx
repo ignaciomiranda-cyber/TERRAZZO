@@ -481,7 +481,9 @@ function PinterestGrid({ cards, visible, onExpand }: { cards: PinCard[]; visible
 // ── Hero page ──────────────────────────────────────────────────────
 
 export default function Home() {
-  const [gated, setGated] = useState(true)
+  const [gated, setGated] = useState(
+    () => typeof window === 'undefined' || sessionStorage.getItem(GATE_SESSION_KEY) !== '1'
+  )
   const [mode, setMode] = useState<'hire' | 'offer'>('hire')
   const [wordIdx, setWordIdx] = useState(0)
   const [fading, setFading] = useState(false)
@@ -510,14 +512,8 @@ export default function Home() {
     })
   }, [displayedCards, activeCategory, searchQuery])
 
-  // Check sessionStorage on mount — bypass gate if already authenticated
   useEffect(() => {
-    if (sessionStorage.getItem(GATE_SESSION_KEY) === '1') {
-      setGated(false)
-    }
-  }, [])
-
-  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWordIdx(0)
     setFading(false)
     setGridVisible(false)
