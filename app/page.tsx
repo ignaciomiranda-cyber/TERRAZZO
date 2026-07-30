@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 const HIRE_WORDS = [
   'revestimientos',
@@ -381,14 +381,14 @@ function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: b
       <div
         style={{
           position: 'relative',
-          borderRadius: '14px',
+          borderRadius: '20px',
           overflow: 'hidden',
           background: '#f0ebe3',
           boxShadow: hovered
-            ? '0 12px 32px rgba(0,0,0,0.18)'
-            : '0 1px 4px rgba(0,0,0,0.08)',
+            ? '0 16px 40px rgba(0,0,0,0.16)'
+            : '0 1px 3px rgba(0,0,0,0.06)',
           transform: hovered ? 'translateY(-3px)' : 'none',
-          transition: 'box-shadow 0.22s ease, transform 0.22s ease',
+          transition: 'box-shadow 0.24s ease, transform 0.24s ease',
           cursor: 'pointer',
         }}
         onMouseEnter={() => setHovered(true)}
@@ -492,6 +492,24 @@ export default function Home() {
   const openLightbox = useCallback((img: string, title: string) => setLightbox({ img, title }), [])
   const closeLightbox = useCallback(() => setLightbox(null), [])
 
+  // Search + category filter for the preview feed (visual + functional, doesn't touch the hire/offer toggle)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState('Todos')
+
+  const categories = useMemo(() => {
+    const tags = Array.from(new Set(displayedCards.map(c => c.tag)))
+    return ['Todos', ...tags]
+  }, [displayedCards])
+
+  const filteredCards = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
+    return displayedCards.filter(c => {
+      const matchesCategory = activeCategory === 'Todos' || c.tag === activeCategory
+      const matchesSearch = !q || c.title.toLowerCase().includes(q)
+      return matchesCategory && matchesSearch
+    })
+  }, [displayedCards, activeCategory, searchQuery])
+
   // Check sessionStorage on mount — bypass gate if already authenticated
   useEffect(() => {
     if (sessionStorage.getItem(GATE_SESSION_KEY) === '1') {
@@ -503,6 +521,8 @@ export default function Home() {
     setWordIdx(0)
     setFading(false)
     setGridVisible(false)
+    setSearchQuery('')
+    setActiveCategory('Todos')
     const t = setTimeout(() => {
       setDisplayedCards(mode === 'hire' ? HIRE_CARDS : OFFER_CARDS)
       setGridVisible(true)
@@ -527,7 +547,7 @@ export default function Home() {
   const bullets = mode === 'hire' ? HIRE_BULLETS : OFFER_BULLETS
 
   const accentStyle: React.CSSProperties = {
-    color: '#b45309',
+    color: '#E05A3A',
     display: 'inline-block',
     opacity: fading ? 0 : 1,
     transform: fading ? 'translateY(-8px)' : 'translateY(0)',
@@ -538,11 +558,17 @@ export default function Home() {
     <div className="min-h-screen bg-white flex flex-col">
       {gated && <PasswordGate onUnlock={() => setGated(false)} />}
       {lightbox && <LightboxModal img={lightbox.img} title={lightbox.title} onClose={closeLightbox} />}
-      <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-100 flex-shrink-0">
+      <header className="sticky top-0 z-30 flex items-center justify-between px-8 py-4 border-b border-zinc-100/80 flex-shrink-0 bg-white/95 backdrop-blur-md">
         <img src="/Realmood-Hibrida-Grafito.png" alt="Realmoodboard" className="h-8 w-auto" />
-        <nav className="flex items-center gap-6 text-sm text-zinc-500">
+        <nav className="flex items-center gap-7 text-sm text-zinc-500">
           <a href="#about" className="hover:text-zinc-900 transition-colors">Nosotros</a>
           <a href="#contact" className="hover:text-zinc-900 transition-colors">Contacto</a>
+          <a
+            href="/app.html#inicio"
+            className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-800 px-4 py-2 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+          >
+            Entrar al feed
+          </a>
         </nav>
       </header>
 
@@ -592,7 +618,7 @@ export default function Home() {
           <ul className="mb-10 space-y-3">
             {bullets.map(b => (
               <li key={b} className="flex items-start gap-3 text-zinc-600 text-base sm:text-lg">
-                <span className="mt-1 flex-shrink-0 text-amber-700">
+                <span className="mt-1 flex-shrink-0" style={{ color: '#E05A3A' }}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path
                       d="M3 8.5l3.5 3.5 6.5-7"
@@ -612,20 +638,84 @@ export default function Home() {
           <div>
             <a
               href="/app.html#inicio"
-              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md hover:bg-zinc-700 transition-all"
             >
               Ingresar
             </a>
           </div>
         </div>
 
-        {/* Right: Pinterest-style project grid */}
-        <div className="flex-1 relative overflow-hidden bg-[#f7f4f0]" style={{ minHeight: '300px' }}>
+        {/* Right: sticky search + chips, then Pinterest-style project grid with content gate */}
+        <div className="flex-1 relative overflow-hidden bg-[#f7f4f0] flex flex-col" style={{ minHeight: '300px' }}>
           <div
             className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(90deg, #f7f4f0 0%, transparent 100%)' }}
           />
-          <PinterestGrid cards={displayedCards} visible={gridVisible} onExpand={openLightbox} />
+
+          {/* Sticky search bar + category chips */}
+          <div className="sticky top-0 z-20 px-4 pt-4 pb-3 bg-[#f7f4f0]/95 backdrop-blur-sm flex-shrink-0">
+            <div className="relative mb-2.5">
+              <svg
+                width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9b958a" strokeWidth="2" strokeLinecap="round"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+              >
+                <circle cx="11" cy="11" r="7.5" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="¿Qué material o acabado te interesa?"
+                className="w-full rounded-full bg-[#E9E9E9] text-sm text-zinc-800 placeholder-zinc-500 pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-zinc-300 transition-shadow"
+              />
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                    activeCategory === cat
+                      ? 'bg-zinc-900 text-white'
+                      : 'bg-white text-zinc-600 border border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Preview feed */}
+          <div className="flex-1 relative overflow-hidden">
+            <PinterestGrid cards={filteredCards} visible={gridVisible} onExpand={openLightbox} />
+
+            {/* Content gate — fade + CTA, no login state on this landing */}
+            <div className="absolute left-0 right-0 bottom-0 pointer-events-none">
+              <div
+                className="h-28"
+                style={{ background: 'linear-gradient(180deg, transparent 0%, #f7f4f0 75%)' }}
+              />
+              <div className="bg-[#f7f4f0] px-4 pb-5 pt-1 text-center pointer-events-auto">
+                <p className="text-sm font-semibold text-zinc-800 mb-3">Seguí explorando en Realmood</p>
+                <div className="flex items-center justify-center gap-2.5 flex-wrap">
+                  <a
+                    href="/app.html#inicio"
+                    className="px-5 py-2 rounded-full text-xs font-semibold border border-zinc-300 text-zinc-800 bg-white hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+                  >
+                    Iniciar sesión
+                  </a>
+                  <a
+                    href="/app.html#inicio"
+                    className="px-5 py-2 rounded-full text-xs font-semibold bg-zinc-900 text-white shadow-sm hover:bg-zinc-700 transition-colors"
+                  >
+                    Crear cuenta
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
