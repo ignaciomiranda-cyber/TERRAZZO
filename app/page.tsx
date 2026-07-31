@@ -371,7 +371,7 @@ function FeaturedHeroPin({ card, onExpand }: { card: PinCard; onExpand: (img: st
       style={{
         borderRadius: '24px',
         overflow: 'hidden',
-        background: '#f0ebe3',
+        background: 'transparent',
         boxShadow: hovered
           ? '0 28px 64px rgba(0,0,0,0.20)'
           : '0 6px 28px rgba(0,0,0,0.11)',
@@ -423,6 +423,9 @@ export default function Home() {
   const [gridVisible, setGridVisible] = useState(true)
   const [displayedCards, setDisplayedCards] = useState<PinCard[]>(HIRE_CARDS)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const [heroCardIdx, setHeroCardIdx] = useState(0)
+  const [heroFading, setHeroFading] = useState(false)
+  const heroTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [lightbox, setLightbox] = useState<{ img: string; title: string } | null>(null)
   const openLightbox = useCallback((img: string, title: string) => setLightbox({ img, title }), [])
   const closeLightbox = useCallback(() => setLightbox(null), [])
@@ -432,6 +435,8 @@ export default function Home() {
     setWordIdx(0)
     setFading(false)
     setGridVisible(false)
+    setHeroCardIdx(0)
+    setHeroFading(false)
     const t = setTimeout(() => {
       setDisplayedCards(mode === 'hire' ? HIRE_CARDS : OFFER_CARDS)
       setGridVisible(true)
@@ -450,6 +455,17 @@ export default function Home() {
     }, 2600)
     return () => clearTimeout(timerRef.current)
   }, [wordIdx, mode])
+
+  useEffect(() => {
+    heroTimerRef.current = setTimeout(() => {
+      setHeroFading(true)
+      setTimeout(() => {
+        setHeroCardIdx(i => (i + 1) % displayedCards.length)
+        setHeroFading(false)
+      }, 300)
+    }, 3500)
+    return () => clearTimeout(heroTimerRef.current)
+  }, [heroCardIdx, displayedCards])
 
   const words = mode === 'hire' ? HIRE_WORDS : OFFER_WORDS
   const currentWord = words[wordIdx]
@@ -575,12 +591,12 @@ export default function Home() {
               width: 'min(380px, calc(100% - 48px))',
               position: 'relative',
               zIndex: 1,
-              opacity: gridVisible ? 1 : 0,
-              transform: gridVisible ? 'translateY(0)' : 'translateY(16px)',
-              transition: 'opacity 0.35s ease, transform 0.35s ease',
+              opacity: gridVisible && !heroFading ? 1 : 0,
+              transform: gridVisible && !heroFading ? 'translateY(0)' : 'translateY(16px)',
+              transition: 'opacity 0.30s ease, transform 0.30s ease',
             }}
           >
-            <FeaturedHeroPin card={displayedCards[0]} onExpand={openLightbox} />
+            <FeaturedHeroPin card={displayedCards[heroCardIdx]} onExpand={openLightbox} />
           </div>
         </div>
       </main>
@@ -605,12 +621,11 @@ export default function Home() {
           }}
         />
 
-        {/* Blurred pin grid */}
+        {/* Pin grid — visible, no blur */}
         <div
           style={{
             position: 'absolute',
             inset: '-32px',
-            filter: 'blur(6px)',
           }}
         >
           <div
@@ -638,17 +653,24 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Semi-transparent overlay to soften the blur */}
+        {/* Blur layer — only last row (bottom ~30%) */}
         <div
           style={{
             position: 'absolute',
-            inset: 0,
-            background: 'rgba(255,255,255,0.28)',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: '32%',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            maskImage: 'linear-gradient(to bottom, transparent 0%, black 50%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 50%)',
             zIndex: 2,
+            pointerEvents: 'none',
           }}
         />
 
-        {/* CTA centered on top */}
+        {/* CTA — bottom area, on top of blurred last row */}
         <div
           style={{
             position: 'absolute',
@@ -656,11 +678,24 @@ export default function Home() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-end',
             zIndex: 10,
-            padding: '24px',
+            padding: '24px 24px 40px',
           }}
         >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: '24px 32px',
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.72)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+            }}
+          >
           <p
             style={{
               fontSize: '18px',
@@ -668,7 +703,6 @@ export default function Home() {
               color: '#1A1A18',
               marginBottom: '8px',
               textAlign: 'center',
-              textShadow: '0 1px 12px rgba(255,255,255,0.9)',
             }}
           >
             Seguí explorando en Realmood
@@ -679,7 +713,6 @@ export default function Home() {
               color: '#5a554f',
               marginBottom: '22px',
               textAlign: 'center',
-              textShadow: '0 1px 8px rgba(255,255,255,0.85)',
             }}
           >
             Accedé al feed completo de proyectos e inspiración
@@ -720,6 +753,7 @@ export default function Home() {
             >
               Crear cuenta
             </a>
+          </div>
           </div>
         </div>
       </section>
