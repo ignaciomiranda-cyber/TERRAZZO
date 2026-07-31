@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 const HIRE_WORDS = [
   'revestimientos',
@@ -361,119 +361,52 @@ function LightboxModal({ img, title, onClose }: { img: string; title: string; on
   )
 }
 
-// ── PinCard ────────────────────────────────────────────────────────
+// ── FeaturedHeroPin ────────────────────────────────────────────────
 
-function PinCard({ card, visible, delay, onExpand }: { card: PinCard; visible: boolean; delay: number; onExpand: (img: string, title: string) => void }) {
+function FeaturedHeroPin({ card, onExpand }: { card: PinCard; onExpand: (img: string, title: string) => void }) {
   const [hovered, setHovered] = useState(false)
 
   return (
     <div
       style={{
-        breakInside: 'avoid',
-        marginBottom: '12px',
-        display: 'inline-block',
+        borderRadius: '24px',
+        overflow: 'hidden',
+        background: '#f0ebe3',
+        boxShadow: hovered
+          ? '0 28px 64px rgba(0,0,0,0.20)'
+          : '0 6px 28px rgba(0,0,0,0.11)',
+        transform: hovered ? 'translateY(-5px)' : 'none',
+        transition: 'box-shadow 0.30s ease, transform 0.30s ease',
+        cursor: 'pointer',
+        position: 'relative',
         width: '100%',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(12px)',
-        transition: `opacity 0.3s ease ${delay}ms, transform 0.3s ease ${delay}ms`,
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => onExpand(card.img, card.title)}
     >
+      <div style={{ aspectRatio: card.aspectRatio, overflow: 'hidden' }}>
+        <img
+          src={card.img}
+          alt={card.title}
+          style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      </div>
       <div
         style={{
-          position: 'relative',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          background: '#f0ebe3',
-          boxShadow: hovered
-            ? '0 16px 40px rgba(0,0,0,0.16)'
-            : '0 1px 3px rgba(0,0,0,0.06)',
-          transform: hovered ? 'translateY(-3px)' : 'none',
-          transition: 'box-shadow 0.24s ease, transform 0.24s ease',
-          cursor: 'pointer',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '52px 20px 20px',
+          background: 'linear-gradient(0deg, rgba(22,20,15,.84) 0%, transparent 100%)',
+          opacity: hovered ? 1 : 0.75,
+          transition: 'opacity 0.22s ease',
         }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
       >
-        <div style={{ aspectRatio: card.aspectRatio, overflow: 'hidden' }}>
-          <img
-            src={card.img}
-            alt={card.title}
-            loading="lazy"
-            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: '28px 12px 12px',
-            background: 'linear-gradient(0deg, rgba(26,26,24,.75) 0%, transparent 100%)',
-            opacity: hovered ? 1 : 0,
-            transition: 'opacity 0.18s ease',
-          }}
-        >
-          <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff', lineHeight: 1.3, textShadow: '0 1px 4px rgba(0,0,0,.4)' }}>
-            {card.title}
-          </div>
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,.75)', marginTop: '2px' }}>
-            {card.tag}
-          </div>
-        </div>
-        <button
-          aria-label="Ampliar imagen"
-          onClick={(e) => { e.stopPropagation(); onExpand(card.img, card.title) }}
-          style={{
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-            width: '30px',
-            height: '30px',
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.92)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? 'scale(1)' : 'scale(0.8)',
-            transition: 'opacity 0.18s ease, transform 0.18s ease',
-            color: '#1A1A18',
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path d="M8.5 1H13v4.5M13 1L8 6M5.5 13H1V8.5M1 13l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+        <div style={{ fontSize: '15px', fontWeight: 700, color: '#fff', lineHeight: 1.3 }}>{card.title}</div>
+        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.72)', marginTop: '4px' }}>{card.tag}</div>
       </div>
-      <div style={{ padding: '7px 4px 2px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: '#1A1A18', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {card.title}
-        </div>
-        <div style={{ fontSize: '11px', color: '#9b958a', marginTop: '1px' }}>{card.tag}</div>
-      </div>
-    </div>
-  )
-}
-
-function PinterestGrid({ cards, visible, onExpand }: { cards: PinCard[]; visible: boolean; onExpand: (img: string, title: string) => void }) {
-  return (
-    <div
-      style={{
-        columns: '160px',
-        columnGap: '12px',
-        padding: '20px 16px',
-        height: '100%',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-      }}
-    >
-      {cards.map((card, i) => (
-        <PinCard key={card.id} card={card} visible={visible} delay={i * 50} onExpand={onExpand} />
-      ))}
     </div>
   )
 }
@@ -494,31 +427,11 @@ export default function Home() {
   const openLightbox = useCallback((img: string, title: string) => setLightbox({ img, title }), [])
   const closeLightbox = useCallback(() => setLightbox(null), [])
 
-  // Search + category filter for the preview feed (visual + functional, doesn't touch the hire/offer toggle)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState('Todos')
-
-  const categories = useMemo(() => {
-    const tags = Array.from(new Set(displayedCards.map(c => c.tag)))
-    return ['Todos', ...tags]
-  }, [displayedCards])
-
-  const filteredCards = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase()
-    return displayedCards.filter(c => {
-      const matchesCategory = activeCategory === 'Todos' || c.tag === activeCategory
-      const matchesSearch = !q || c.title.toLowerCase().includes(q)
-      return matchesCategory && matchesSearch
-    })
-  }, [displayedCards, activeCategory, searchQuery])
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setWordIdx(0)
     setFading(false)
     setGridVisible(false)
-    setSearchQuery('')
-    setActiveCategory('Todos')
     const t = setTimeout(() => {
       setDisplayedCards(mode === 'hire' ? HIRE_CARDS : OFFER_CARDS)
       setGridVisible(true)
@@ -550,10 +463,14 @@ export default function Home() {
     transition: 'opacity 0.28s ease, transform 0.28s ease',
   }
 
+  // Enough cards to fill ~5 rows in the blurred preview section
+  const previewCards = [...displayedCards, ...displayedCards, ...displayedCards]
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {gated && <PasswordGate onUnlock={() => setGated(false)} />}
       {lightbox && <LightboxModal img={lightbox.img} title={lightbox.title} onClose={closeLightbox} />}
+
       <header className="sticky top-0 z-30 flex items-center justify-between px-8 py-4 border-b border-zinc-100/80 flex-shrink-0 bg-white/95 backdrop-blur-md">
         <img src="/Realmood-Hibrida-Grafito.png" alt="Realmoodboard" className="h-8 w-auto" />
         <nav className="flex items-center gap-7 text-sm text-zinc-500">
@@ -568,8 +485,10 @@ export default function Home() {
         </nav>
       </header>
 
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Left: text content */}
+      {/* ── Hero: 2-column ── */}
+      <main className="flex flex-col lg:flex-row" style={{ minHeight: '82vh' }}>
+
+        {/* Left: text content — unchanged */}
         <div className="flex flex-col justify-center px-8 sm:px-14 lg:pl-20 lg:pr-10 py-12 lg:py-16 lg:w-[500px] xl:w-[560px] flex-shrink-0">
 
           {/* Toggle / switch */}
@@ -641,79 +560,169 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right: sticky search + chips, then Pinterest-style project grid with content gate */}
-        <div className="flex-1 relative overflow-hidden bg-[#f7f4f0] flex flex-col" style={{ minHeight: '300px' }}>
+        {/* Right: single featured pin */}
+        <div
+          className="flex-1 flex items-center justify-center bg-[#f7f4f0] relative overflow-hidden"
+          style={{ padding: 'clamp(32px,5vw,80px)' }}
+        >
+          {/* Left fade edge */}
           <div
-            className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
+            className="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(90deg, #f7f4f0 0%, transparent 100%)' }}
           />
-
-          {/* Sticky search bar + category chips */}
-          <div className="sticky top-0 z-20 px-4 pt-4 pb-3 bg-[#f7f4f0]/95 backdrop-blur-sm flex-shrink-0">
-            <div className="relative mb-2.5">
-              <svg
-                width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9b958a" strokeWidth="2" strokeLinecap="round"
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-              >
-                <circle cx="11" cy="11" r="7.5" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="¿Qué material o acabado te interesa?"
-                className="w-full rounded-full bg-[#E9E9E9] text-sm text-zinc-800 placeholder-zinc-500 pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-zinc-300 transition-shadow"
-              />
-            </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                    activeCategory === cat
-                      ? 'bg-zinc-900 text-white'
-                      : 'bg-white text-zinc-600 border border-zinc-200 hover:border-zinc-400'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Preview feed */}
-          <div className="flex-1 relative overflow-hidden">
-            <PinterestGrid cards={filteredCards} visible={gridVisible} onExpand={openLightbox} />
-
-            {/* Content gate — fade + CTA, no login state on this landing */}
-            <div className="absolute left-0 right-0 bottom-0 pointer-events-none">
-              <div
-                className="h-28"
-                style={{ background: 'linear-gradient(180deg, transparent 0%, #f7f4f0 75%)' }}
-              />
-              <div className="bg-[#f7f4f0] px-4 pb-5 pt-1 text-center pointer-events-auto">
-                <p className="text-sm font-semibold text-zinc-800 mb-3">Seguí explorando en Realmood</p>
-                <div className="flex items-center justify-center gap-2.5 flex-wrap">
-                  <a
-                    href="/app.html#inicio"
-                    className="px-5 py-2 rounded-full text-xs font-semibold border border-zinc-300 text-zinc-800 bg-white hover:border-zinc-900 hover:text-zinc-900 transition-colors"
-                  >
-                    Iniciar sesión
-                  </a>
-                  <a
-                    href="/app.html#inicio"
-                    className="px-5 py-2 rounded-full text-xs font-semibold bg-zinc-900 text-white shadow-sm hover:bg-zinc-700 transition-colors"
-                  >
-                    Crear cuenta
-                  </a>
-                </div>
-              </div>
-            </div>
+          <div
+            style={{
+              width: 'min(380px, calc(100% - 48px))',
+              position: 'relative',
+              zIndex: 1,
+              opacity: gridVisible ? 1 : 0,
+              transform: gridVisible ? 'translateY(0)' : 'translateY(16px)',
+              transition: 'opacity 0.35s ease, transform 0.35s ease',
+            }}
+          >
+            <FeaturedHeroPin card={displayedCards[0]} onExpand={openLightbox} />
           </div>
         </div>
       </main>
+
+      {/* ── Blurred pins preview — full width ── */}
+      <section
+        className="relative overflow-hidden"
+        style={{ height: 'clamp(480px, 55vh, 640px)' }}
+        aria-hidden="true"
+      >
+        {/* Top gradient: blends hero into the preview */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '80px',
+            background: 'linear-gradient(180deg, #fff 0%, transparent 100%)',
+            zIndex: 6,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Blurred pin grid */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: '-32px',
+            filter: 'blur(6px)',
+          }}
+        >
+          <div
+            style={{
+              columns: '160px',
+              columnGap: '10px',
+              padding: '40px 50px',
+            }}
+          >
+            {previewCards.map((card, i) => (
+              <div
+                key={`prev-${i}`}
+                style={{ breakInside: 'avoid', marginBottom: '10px', display: 'inline-block', width: '100%' }}
+              >
+                <div style={{ borderRadius: '16px', overflow: 'hidden', aspectRatio: card.aspectRatio }}>
+                  <img
+                    src={card.img}
+                    alt=""
+                    loading="lazy"
+                    style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Semi-transparent overlay to soften the blur */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(255,255,255,0.28)',
+            zIndex: 2,
+          }}
+        />
+
+        {/* CTA centered on top */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10,
+            padding: '24px',
+          }}
+        >
+          <p
+            style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: '#1A1A18',
+              marginBottom: '8px',
+              textAlign: 'center',
+              textShadow: '0 1px 12px rgba(255,255,255,0.9)',
+            }}
+          >
+            Seguí explorando en Realmood
+          </p>
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#5a554f',
+              marginBottom: '22px',
+              textAlign: 'center',
+              textShadow: '0 1px 8px rgba(255,255,255,0.85)',
+            }}
+          >
+            Accedé al feed completo de proyectos e inspiración
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <a
+              href="/app.html#inicio"
+              style={{
+                display: 'inline-block',
+                padding: '12px 28px',
+                borderRadius: '9999px',
+                fontSize: '14px',
+                fontWeight: 600,
+                border: '1.5px solid rgba(26,26,24,0.7)',
+                color: '#1A1A18',
+                textDecoration: 'none',
+                background: 'rgba(255,255,255,0.85)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+              }}
+            >
+              Iniciar sesión
+            </a>
+            <a
+              href="/app.html#inicio"
+              style={{
+                display: 'inline-block',
+                padding: '12px 28px',
+                borderRadius: '9999px',
+                fontSize: '14px',
+                fontWeight: 600,
+                background: '#1A1A18',
+                color: '#fff',
+                textDecoration: 'none',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.22)',
+              }}
+            >
+              Crear cuenta
+            </a>
+          </div>
+        </div>
+      </section>
 
       <footer className="px-8 py-5 border-t border-zinc-100 text-center text-sm text-zinc-400 flex-shrink-0">
         © {new Date().getFullYear()} Instone. Todos los derechos reservados.
