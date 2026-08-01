@@ -95,7 +95,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: '#F4F1EB',
+        background: '#ffffff',
         display: 'flex',
         alignItems: 'stretch',
         overflow: 'hidden',
@@ -578,13 +578,13 @@ export default function Home() {
 
         {/* Right: single featured pin */}
         <div
-          className="flex-1 flex items-center justify-center bg-[#f7f4f0] relative overflow-hidden"
+          className="flex-1 flex items-center justify-center bg-white relative overflow-hidden"
           style={{ padding: 'clamp(32px,5vw,80px)' }}
         >
           {/* Left fade edge */}
           <div
             className="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(90deg, #f7f4f0 0%, transparent 100%)' }}
+            style={{ background: 'linear-gradient(90deg, #fff 0%, transparent 100%)' }}
           />
           <div
             style={{
