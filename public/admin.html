@@ -6,12 +6,9 @@
   <title>Admin · Realmood</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
-<script src="/firebase-config.js"></script>
-<script src="/firebase-adapter.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -550,10 +547,20 @@
 
 <script>
 // ── Config ─────────────────────────────────────────────────────────
-// Read access to benefit_requests is restricted to ADMIN_EMAIL — see the
-// `benefit_requests` match block in firestore.rules.
+// CONFIGURAR: reemplazá estos valores con los de tu proyecto en Firebase Console
+const FIREBASE_CONFIG = {
+  apiKey:            'REPLACE_WITH_YOUR_FIREBASE_API_KEY',
+  authDomain:        'REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com',
+  projectId:         'REPLACE_WITH_YOUR_PROJECT_ID',
+  storageBucket:     'REPLACE_WITH_YOUR_PROJECT_ID.appspot.com',
+  messagingSenderId: 'REPLACE_WITH_YOUR_MESSAGING_SENDER_ID',
+  appId:             'REPLACE_WITH_YOUR_APP_ID',
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const db     = firebase.firestore();
+const fbAuth = firebase.auth();
+
 const ADMIN_EMAIL = 'ignacio.miranda@mi.unc.edu.ar';
-// `sb` is defined by /firebase-adapter.js (loaded in <head>).
 
 let _providers = [];       // loaded from user_profiles
 let currentFilter = 'all';
@@ -561,14 +568,8 @@ let currentFilter = 'all';
 // ── Auth ─────────────────────────────────────────────────────────
 async function init() {
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session && session.user) {
-      onSignedIn(session.user);
-    } else {
-      showScreen('auth');
-    }
-    sb.auth.onAuthStateChange((_ev, session) => {
-      if (session && session.user) onSignedIn(session.user);
+    fbAuth.onAuthStateChanged(user => {
+      if (user) onSignedIn(user);
       else showScreen('auth');
     });
   } catch (e) {
@@ -598,15 +599,15 @@ async function doLogin(e) {
   errEl.style.display = 'none';
 
   try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
-    if (error) throw error;
-    // onAuthStateChange will handle the rest
+    await fbAuth.signInWithEmailAndPassword(email, pwd);
+    // onAuthStateChanged will handle the rest
   } catch (err) {
     const map = {
-      'Invalid login credentials': 'Email o contraseña incorrectos.',
-      'Email not confirmed': 'Confirmá tu email antes de ingresar.',
+      'auth/user-not-found':     'Email o contraseña incorrectos.',
+      'auth/wrong-password':     'Email o contraseña incorrectos.',
+      'auth/invalid-credential': 'Email o contraseña incorrectos.',
     };
-    errEl.textContent = map[err.message] || ('Error: ' + err.message);
+    errEl.textContent = map[err.code] || ('Error: ' + err.message);
     errEl.style.display = 'block';
   } finally {
     btn.disabled = false;
@@ -615,7 +616,7 @@ async function doLogin(e) {
 }
 
 async function doSignOut() {
-  await sb.auth.signOut();
+  await fbAuth.signOut();
   showScreen('auth');
 }
 
@@ -661,27 +662,21 @@ async function loadData() {
 
   try {
     // Load providers from user_profiles and benefit_requests in parallel
-    const [provRes, reqRes] = await Promise.all([
-      sb.from('user_profiles').select('id, nombre, rubro, benefit_type').eq('role', 'proveedor').order('nombre'),
-      (() => {
-        let q = sb.from('benefit_requests').select('provider_id, created_at');
-        const from = filterStart();
-        if (from) q = q.gte('created_at', from);
-        return q.order('created_at', { ascending: false });
-      })(),
+    let reqQuery = db.collection('benefit_requests').orderBy('created_at', 'desc');
+    const from = filterStart();
+    if (from) reqQuery = reqQuery.where('created_at', '>=', from);
+
+    const [provSnap, reqSnap] = await Promise.all([
+      db.collection('user_profiles').where('role','==','proveedor').orderBy('nombre').get(),
+      reqQuery.get(),
     ]);
 
-    if (provRes.error) throw provRes.error;
-    if (reqRes.error)  throw reqRes.error;
+    _providers = provSnap.docs.map(d => {
+      const p = d.data();
+      return { id: d.id, name: p.nombre || '(sin nombre)', role: p.rubro || 'Proveedor', benefit: p.benefit_type || null };
+    });
 
-    _providers = (provRes.data || []).map(p => ({
-      id:      p.id,
-      name:    p.nombre  || '(sin nombre)',
-      role:    p.rubro   || 'Proveedor',
-      benefit: p.benefit_type || null,
-    }));
-
-    renderTable(reqRes.data || []);
+    renderTable(reqSnap.docs.map(d => ({id:d.id,...d.data()})));
   } catch (err) {
     tbody.innerHTML = '<tr><td colspan="4" class="state-msg" style="color:#C04030">Error al cargar datos: ' + escHtml(err.message) + '</td></tr>';
   }
@@ -754,7 +749,7 @@ async function addProvider() {
   msg.style.display = 'none';
 
   try {
-    const { error } = await sb.from('user_profiles').insert({
+    await db.collection('user_profiles').add({
       role:                'proveedor',
       nombre,
       rubro:               rubro  || null,
@@ -764,11 +759,9 @@ async function addProvider() {
       benefit_type:        benefitType,
       benefit_description: benefitDesc || null,
       creador_terrazzo:    creadorTerrazzo,
-      // Explicit null (not omitted) so the "claim on first login" query
-      // (.eq('email',...).is('user_id', null)) can match this row later.
       user_id:             null,
+      created_at:          new Date().toISOString(),
     });
-    if (error) throw error;
 
     showMsg('¡Proveedor guardado!', '#27AE60');
     ['ap-nombre','ap-rubro','ap-ciudad','ap-wa','ap-email','ap-benefit-desc'].forEach(id => {

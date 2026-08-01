@@ -7,7 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden}
@@ -890,13 +891,17 @@ function toggleMobMenu(){
 </div>
 
 <script>
-// ── Supabase Auth ─────────────────────────────────────────────
-// CONFIGURAR: reemplazá estos dos valores con los de tu proyecto en supabase.com
-// Settings > API > Project URL y Project API Keys > anon public
-const SUPABASE_URL = 'https://xzatiewlgmoalpzsnicz.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ── Firebase ─────────────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey:            'REPLACE_WITH_YOUR_FIREBASE_API_KEY',
+  authDomain:        'REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com',
+  projectId:         'REPLACE_WITH_YOUR_PROJECT_ID',
+  storageBucket:     'REPLACE_WITH_YOUR_PROJECT_ID.appspot.com',
+  messagingSenderId: 'REPLACE_WITH_YOUR_MESSAGING_SENDER_ID',
+  appId:             'REPLACE_WITH_YOUR_APP_ID',
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const fbAuth = firebase.auth();
 let _authMode = 'login';
 let _currentUser = null;
 
@@ -920,10 +925,8 @@ function _onUser(user) {
 
 async function _initAuth() {
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    _onUser(session ? session.user : null);
-    sb.auth.onAuthStateChange((_ev, session) => _onUser(session ? session.user : null));
-  } catch (e) { /* Supabase no configurado aún */ }
+    fbAuth.onAuthStateChanged(user => _onUser(user));
+  } catch (e) { /* Firebase no configurado aún */ }
 }
 
 function handleAvatarClick() {
@@ -989,27 +992,23 @@ async function handleAuthSubmit(e) {
   errEl.style.display = 'none'; okEl.style.display = 'none';
 
   try {
-    const result = login
-      ? await sb.auth.signInWithPassword({ email, password })
-      : await sb.auth.signUp({ email, password });
-
-    if (result.error) throw result.error;
-
-    if (!login && result.data.user && !result.data.session) {
-      okEl.textContent = '¡Listo! Revisá tu email para confirmar la cuenta.';
-      okEl.style.display = 'block';
+    if (login) {
+      await fbAuth.signInWithEmailAndPassword(email, password);
     } else {
-      closeAuthModal();
-      if (typeof toast === 'function') toast('¡Bienvenido/a!');
+      await fbAuth.createUserWithEmailAndPassword(email, password);
     }
+    closeAuthModal();
+    if (typeof toast === 'function') toast('¡Bienvenido/a!');
   } catch (err) {
     const map = {
-      'Invalid login credentials': 'Email o contraseña incorrectos.',
-      'Email not confirmed': 'Confirmá tu email antes de ingresar.',
-      'User already registered': 'Ya existe una cuenta con ese email.',
-      'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+      'auth/user-not-found':       'Email o contraseña incorrectos.',
+      'auth/wrong-password':       'Email o contraseña incorrectos.',
+      'auth/invalid-credential':   'Email o contraseña incorrectos.',
+      'auth/email-already-in-use': 'Ya existe una cuenta con ese email.',
+      'auth/weak-password':        'La contraseña debe tener al menos 6 caracteres.',
+      'auth/invalid-email':        'El email ingresado no es válido.',
     };
-    errEl.textContent = map[err.message] || ('Error: ' + err.message);
+    errEl.textContent = map[err.code] || ('Error: ' + err.message);
     errEl.style.display = 'block';
   } finally {
     btn.textContent = login ? 'Ingresar' : 'Crear cuenta';
@@ -1018,7 +1017,7 @@ async function handleAuthSubmit(e) {
 }
 
 async function authSignOut() {
-  await sb.auth.signOut();
+  await fbAuth.signOut();
   document.getElementById('auth-user-menu').style.display = 'none';
   if (typeof toast === 'function') toast('Sesión cerrada');
 }

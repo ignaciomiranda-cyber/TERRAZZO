@@ -7,12 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
-<script src="/firebase-config.js"></script>
-<script src="/firebase-adapter.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -1010,13 +1007,14 @@ async function requestBenefit(){
   const prov=window._currentProv;
   if(!prov||!prov.benefit)return;
   const projectTitle=window._currentProjectTitle;
-  // Track in Supabase (fire-and-forget; never blocks the UX)
+  // Track in Firestore (fire-and-forget; never blocks the UX)
   try{
-    await sb.from('benefit_requests').insert({
+    await db.collection('benefit_requests').add({
       provider_id:prov.id,
       provider_name:prov.full||prov.name,
       user_email:(_currentUser&&_currentUser.email)||null,
-      project_title:projectTitle||null
+      project_title:projectTitle||null,
+      created_at:new Date().toISOString()
     });
   }catch(e){console.warn('benefit_requests insert failed',e);}
   // Toast confirmation
@@ -1078,8 +1076,19 @@ function toggleMobMenu(){
 </div>
 
 <script>
-// ── Firebase Auth/Firestore ──────────────────────────────────────
-// `sb` is defined by /firebase-adapter.js (loaded in <head>).
+// ── Firebase ─────────────────────────────────────────────────
+// CONFIGURAR: reemplazá estos valores con los de tu proyecto en Firebase Console
+const FIREBASE_CONFIG = {
+  apiKey:            'REPLACE_WITH_YOUR_FIREBASE_API_KEY',
+  authDomain:        'REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com',
+  projectId:         'REPLACE_WITH_YOUR_PROJECT_ID',
+  storageBucket:     'REPLACE_WITH_YOUR_PROJECT_ID.appspot.com',
+  messagingSenderId: 'REPLACE_WITH_YOUR_MESSAGING_SENDER_ID',
+  appId:             'REPLACE_WITH_YOUR_APP_ID',
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const db     = firebase.firestore();
+const fbAuth = firebase.auth();
 let _authMode = 'login';
 let _currentUser = null;
 
@@ -1103,9 +1112,7 @@ function _onUser(user) {
 
 async function _initAuth() {
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    _onUser(session ? session.user : null);
-    sb.auth.onAuthStateChange((_ev, session) => _onUser(session ? session.user : null));
+    fbAuth.onAuthStateChanged(user => _onUser(user));
   } catch (e) { /* Firebase no configurado aún */ }
 }
 
@@ -1172,27 +1179,23 @@ async function handleAuthSubmit(e) {
   errEl.style.display = 'none'; okEl.style.display = 'none';
 
   try {
-    const result = login
-      ? await sb.auth.signInWithPassword({ email, password })
-      : await sb.auth.signUp({ email, password });
-
-    if (result.error) throw result.error;
-
-    if (!login && result.data.user && !result.data.session) {
-      okEl.textContent = '¡Listo! Revisá tu email para confirmar la cuenta.';
-      okEl.style.display = 'block';
+    if (login) {
+      await fbAuth.signInWithEmailAndPassword(email, password);
     } else {
-      closeAuthModal();
-      if (typeof toast === 'function') toast('¡Bienvenido/a!');
+      await fbAuth.createUserWithEmailAndPassword(email, password);
     }
+    closeAuthModal();
+    if (typeof toast === 'function') toast('¡Bienvenido/a!');
   } catch (err) {
     const map = {
-      'Invalid login credentials': 'Email o contraseña incorrectos.',
-      'Email not confirmed': 'Confirmá tu email antes de ingresar.',
-      'User already registered': 'Ya existe una cuenta con ese email.',
-      'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+      'auth/user-not-found':       'Email o contraseña incorrectos.',
+      'auth/wrong-password':       'Email o contraseña incorrectos.',
+      'auth/invalid-credential':   'Email o contraseña incorrectos.',
+      'auth/email-already-in-use': 'Ya existe una cuenta con ese email.',
+      'auth/weak-password':        'La contraseña debe tener al menos 6 caracteres.',
+      'auth/invalid-email':        'El email ingresado no es válido.',
     };
-    errEl.textContent = map[err.message] || ('Error: ' + err.message);
+    errEl.textContent = map[err.code] || ('Error: ' + err.message);
     errEl.style.display = 'block';
   } finally {
     btn.textContent = login ? 'Ingresar' : 'Crear cuenta';
@@ -1201,7 +1204,7 @@ async function handleAuthSubmit(e) {
 }
 
 async function authSignOut() {
-  await sb.auth.signOut();
+  await fbAuth.signOut();
   document.getElementById('auth-user-menu').style.display = 'none';
   if (typeof toast === 'function') toast('Sesión cerrada');
 }

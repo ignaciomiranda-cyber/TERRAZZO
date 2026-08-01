@@ -10,12 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
-<script src="/firebase-config.js"></script>
-<script src="/firebase-adapter.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden}
@@ -28,12 +26,12 @@ body{background:#fff}
 #rm-nav{overflow:visible;z-index:10}
 #rm-nav .rm-logo-text{display:none}
 #rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
-#rm-nav [data-view],#rm-nav .rm-nav-item{justify-content:center!important;padding:5px 0!important;width:48px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
-#rm-nav [data-view] span,#rm-nav .rm-nav-item span{display:none!important}
-#rm-nav [data-view]::after,#rm-nav .rm-nav-item::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
-#rm-nav [data-view]:hover::after,#rm-nav .rm-nav-item:hover::after{opacity:1}
-#rm-nav [data-view]:hover,#rm-nav .rm-nav-item:hover{z-index:301}
-#rm-nav .rm-cfg-btn{justify-content:center!important;padding:5px 0!important;width:48px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav [data-view]{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav [data-view] span{display:none!important}
+#rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
+#rm-nav [data-view]:hover::after{opacity:1}
+#rm-nav [data-view]:hover{z-index:301}
+#rm-nav .rm-cfg-btn{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav .rm-cfg-btn span{display:none!important}
 #rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav .rm-cfg-btn:hover::after{opacity:1}
@@ -51,9 +49,9 @@ body{background:#fff}
   .rm-wrap{overflow-x:hidden}
   main{width:100%;min-width:0;max-width:100%}
   #rm-nav.rm-open [data-goto="inicio"]{justify-content:flex-start!important;padding:8px 12px 22px!important}
-  #rm-nav.rm-open [data-view],#rm-nav.rm-open .rm-nav-item{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
-  #rm-nav.rm-open [data-view] span,#rm-nav.rm-open .rm-nav-item span{display:inline!important}
-  #rm-nav.rm-open [data-view]::after,#rm-nav.rm-open .rm-nav-item::after{display:none}
+  #rm-nav.rm-open [data-view]{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
+  #rm-nav.rm-open [data-view] span{display:inline!important}
+  #rm-nav.rm-open [data-view]::after{display:none}
   #rm-nav.rm-open .rm-logo-text{display:inline!important}
   #rm-nav.rm-open .rm-cfg-btn{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
   #rm-nav.rm-open .rm-cfg-btn span{display:inline!important}
@@ -92,7 +90,7 @@ body{background:#fff}
 .pm-col-r{padding:28px 32px;display:flex;flex-direction:column}
 .pm-main{width:100%;flex:1;display:flex;align-items:center;justify-content:center}
 .pm-main img,.pm-main canvas{display:block;width:100%;height:100%;min-height:480px;object-fit:cover}
-.pm-save-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#A8895A;color:#fff;border:none;border-radius:100px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:10px;align-self:flex-start;flex-shrink:0}
+.pm-save-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#E60023;color:#fff;border:none;border-radius:100px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:-.01em;transition:opacity .15s;margin-bottom:10px;align-self:flex-start;flex-shrink:0}
 #pm-board-panel{display:none;border:1.5px solid #E4DFD5;border-radius:14px;overflow:hidden;margin-bottom:16px;background:#fff;max-height:320px;overflow-y:auto}
 .pm-brd-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border:none;border-bottom:1px solid #F0EDE8;width:100%;background:transparent;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s}
 .pm-brd-row:last-of-type{border-bottom:none}
@@ -163,7 +161,7 @@ body{background:#fff}
 .brd-create-input:focus{border-color:#1A1A18}
 .brd-create-row{display:flex;gap:8px;margin-top:10px}
 .brd-create-cancel{flex:1;padding:10px;border:1px solid #D7D1C6;border-radius:100px;background:transparent;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer}
-.brd-create-save{flex:1;padding:10px;border:none;border-radius:100px;background:#1A1A18;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.brd-create-save{flex:1;padding:10px;border:none;border-radius:100px;background:#E60023;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
 .brd-create-save:hover{opacity:.88}
 /* ── Pinterest aesthetic refinements ─────────────────── */
 /* Topbar: search bar toma protagonismo */
@@ -182,7 +180,7 @@ body{background:#fff}
 /* Board selector en pin detail: siempre visible, estilo limpio */
 .pm-board-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239b958a' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px!important}
 /* Save-row en pin: botón Guardar más prominente */
-.pm-save-btn{font-size:14px!important;padding:11px 22px!important;box-shadow:0 2px 8px rgba(168,137,90,.25)!important}
+.pm-save-btn{font-size:14px!important;padding:11px 22px!important;box-shadow:0 2px 8px rgba(230,0,35,.25)!important}
 .pm-save-btn.saved{box-shadow:none!important}
 /* Board modal: header border más suave */
 .brd-header{border-bottom-color:#F0EDE8}
@@ -265,13 +263,13 @@ body{background:#fff}
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function(){
+(function(){
   if(sessionStorage.getItem('rm-auth')==='1'){
     document.getElementById('rm-gate').style.display='none';
     document.getElementById('rm-discover').style.display='block';
     if(typeof window._buildDiscoverGrid==='function')window._buildDiscoverGrid();
   }
-});
+})();
 
 function rmGateSubmit(){
   var v=document.getElementById('rm-gate-pwd').value;
@@ -319,50 +317,47 @@ function rmGateSubmit(){
 
 <div class="rm-wrap" style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
 
-  <aside id="rm-nav" style="width:68px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
+  <aside id="rm-nav" style="width:62px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
     <button type="button" data-goto="inicio" style="display:flex;align-items:center;gap:10px;padding:8px 12px 22px;border:none;background:transparent;cursor:pointer;font-family:inherit;width:100%;text-align:left">
       <img src="Realmood-IG-blanco-y-negro-fondo-blanco.jpg" alt="realmood" style="width:80px;height:80px;object-fit:contain;flex:none;display:block">
       <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
     </button>
 
     <button type="button" data-view="inicio" data-label="Inspirate" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;width:100%;text-align:left;background:#EFEBE3;color:#1A1A18;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.5 3.5c.6 4 1.9 5.3 5.9 5.9-4 .6-5.3 1.9-5.9 5.9-.6-4-1.9-5.3-5.9-5.9 4-.6 5.3-1.9 5.9-5.9z"></path><circle cx="17.6" cy="17.6" r="1.6"></circle></svg>
       <span>Inspirate</span>
     </button>
     <button type="button" data-view="explorar" data-label="Explorar" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10z"></path><circle cx="12" cy="11" r="2.3"></circle></svg>
       <span>Explorar</span>
     </button>
     <button type="button" data-view="mood" data-label="Tus realmood" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><rect x="6.5" y="7.5" width="5" height="5" rx="1"></rect><circle cx="16" cy="9.6" r="2"></circle><rect x="9" y="14" width="8" height="2.6" rx="1.1"></rect></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><rect x="6.5" y="7.5" width="5" height="5" rx="1"></rect><circle cx="16" cy="9.6" r="2"></circle><rect x="9" y="14" width="8" height="2.6" rx="1.1"></rect></svg>
       <span>Tus realmood</span>
     </button>
 
     <div class="rm-divider" style="height:1px;background:#ECE8E0;margin:10px 12px"></div>
 
     <button type="button" data-view="mis-proyectos" data-label="Mis proyectos" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
       <span>Mis proyectos</span>
     </button>
     <button type="button" data-view="crear" data-label="Crear" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.2 20.8 12 12 20.8 3.2 12z"></path><path d="M12 9v6M9 12h6"></path></svg>
       <span>Crear</span>
     </button>
     <button type="button" data-view="mensajes" data-label="Mensajes" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
       <span>Mensajes</span>
     </button>
-    <button type="button" class="rm-nav-item" data-label="Notificaciones" onclick="toast('Sin notificaciones nuevas');toggleMobMenu()" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span>Notificaciones</span>
-    </button>
-    <button type="button" class="rm-nav-item" id="rm-nav-account-btn" data-label="Mi cuenta" onclick="toggleMobMenu();handleAvatarClick()" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <span id="rm-mob-account-label">Iniciar sesión</span>
+
+    <button id="rm-admin-btn" type="button" data-view="admin" data-label="Admin" style="display:none;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Admin</span>
     </button>
 
     <button type="button" class="rm-cfg-btn" data-view="config" data-label="Configuración" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>Configuración</span>
     </button>
   </aside>
@@ -370,16 +365,16 @@ function rmGateSubmit(){
   <main style="flex:1;min-width:0;display:flex;flex-direction:column">
     <div id="rm-topbar" style="position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #ECE8E0;padding:13px 26px;display:flex;align-items:center;gap:16px">
       <button id="rm-mob-btn" onclick="toggleMobMenu()" aria-label="Menú">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div style="position:relative;flex:1;max-width:none">
         <span style="position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#9b958a;pointer-events:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
         <input id="ins-search" type="search" placeholder="Buscar terrazzo, materiales o proyectos…" style="width:100%;padding:13px 18px 13px 46px;border:none;border-radius:100px;font-size:14px;font-family:inherit;background:#EFEBE3;color:#1A1A18;outline:none">
       </div>
-      <button type="button" class="rm-top-chat" data-goto="mensajes" style="width:42px;height:42px;border-radius:50%;border:none;background:#EFEBE3;color:#1A1A18;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"></path></svg></button>
-      <button type="button" class="rm-top-notif" onclick="toast('Sin notificaciones nuevas')" style="width:42px;height:42px;border-radius:50%;border:none;background:#EFEBE3;color:#1A1A18;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span style="position:absolute;top:9px;right:9px;width:7px;height:7px;border-radius:50%;background:#E74C3C;border:1.5px solid #fff"></span></button>
+      <button type="button" class="rm-top-chat" data-goto="mensajes" style="width:42px;height:42px;border-radius:50%;border:none;background:#EFEBE3;color:#1A1A18;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"></path></svg></button>
+      <button type="button" class="rm-top-notif" onclick="toast('Sin notificaciones nuevas')" style="width:42px;height:42px;border-radius:50%;border:none;background:#EFEBE3;color:#1A1A18;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span style="position:absolute;top:9px;right:9px;width:7px;height:7px;border-radius:50%;background:#E74C3C;border:1.5px solid #fff"></span></button>
       <div style="position:relative;flex:none">
-        <span id="rm-top-avatar" class="rm-top-avatar" onclick="handleAvatarClick()" style="width:42px;height:42px;border-radius:50%;background:#9b958a;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;user-select:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+        <span id="rm-top-avatar" class="rm-top-avatar" onclick="handleAvatarClick()" style="width:42px;height:42px;border-radius:50%;background:#9b958a;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;user-select:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
         <div id="auth-user-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #E4DFD5;border-radius:14px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.13);min-width:200px;z-index:100">
           <p id="auth-user-email" style="margin:0 0 4px;padding:8px 10px;font-size:12px;color:#9b958a;border-bottom:1px solid #ECE8E0;word-break:break-all"></p>
           <button onclick="authSignOut()" style="width:100%;text-align:left;padding:8px 10px;background:transparent;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:#C0392B;border-radius:8px;margin-top:4px">Cerrar sesión</button>
@@ -433,6 +428,7 @@ function rmGateSubmit(){
       <section id="view-mood" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
+      <section id="view-admin" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-config" style="display:none;animation:vIn .35s ease;padding:32px 26px;max-width:600px;margin:0 auto"></section>
 
       <!-- Pin detail page (full view, like Pinterest) -->
@@ -485,6 +481,7 @@ function rmGateSubmit(){
           </div>
           <p id="vp-bio" style="font-size:14px;line-height:1.75;color:#6F6A60;text-align:left;margin:0 0 22px;background:#FAFAF8;border-radius:16px;padding:18px 22px;border:1px solid #ECE8E0"></p>
           <div id="vp-tags" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:28px"></div>
+          <div id="vp-benefit" style="display:none;margin-bottom:28px;text-align:left"></div>
           <h2 style="font-size:14px;font-weight:700;color:#1A1A18;text-align:left;margin:0 0 12px;letter-spacing:-.01em">Portfolio</h2>
           <div id="vp-portfolio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px;text-align:left"></div>
           <a id="vp-cta" href="#" style="display:none"></a>
@@ -533,9 +530,6 @@ function rmGateSubmit(){
 <div id="ins-toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A18;color:#fff;padding:11px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap">—</div>
 
 <script>
-// Escapa texto de usuario antes de insertarlo en innerHTML (evita XSS almacenado).
-// Global a propósito: se usa dentro y fuera de los closures de DOMContentLoaded.
-function _esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 document.addEventListener('DOMContentLoaded', function() {
     const $=id=>document.getElementById(id);
 
@@ -921,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Save button (right) — saves directly to selected board or opens picker
       const save=document.createElement('button');
       save.type='button';save.textContent=opts.saveLabel||'Guardar';
-      save.style.cssText='background:#1A1A18;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.22);transition:opacity .15s;';
+      save.style.cssText='background:#E60023;color:#fff;border:none;border-radius:100px;font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.22);transition:opacity .15s;';
       save.addEventListener('click',e=>{
         e.stopPropagation();
         const bds=getBoards();const lbId=getLastBoardId();const lb=lbId?bds.find(b=>b.id===lbId):null;
@@ -947,8 +941,8 @@ document.addEventListener('DOMContentLoaded', function() {
         inner.appendChild(row);
         inner._row=row;
       }
-      // Título como overlay en hover (reemplaza la caption debajo, solo si no hay caption fija)
-      if(title&&opts.captionBelow===false){
+      // Título como overlay en hover (reemplaza la caption debajo)
+      if(title){
         const titleOv=document.createElement('div');
         titleOv.style.cssText='position:absolute;bottom:0;left:0;right:0;padding:32px 12px 12px;background:linear-gradient(0deg,rgba(26,26,24,.72) 0%,transparent 100%);opacity:0;transition:opacity .18s;pointer-events:none';
         titleOv.innerHTML='<div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,.4)">'+title+'</div>'+(tag?'<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">'+tag+'</div>':'');
@@ -975,8 +969,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if(title&&opts.captionBelow!==false){
         const cap=document.createElement('div');
         cap.style.cssText='padding:8px 8px 6px';
-        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(title)+'</div>'
-          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(tag)+'</div>':'');
+        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'
+          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+tag+'</div>':'');
         card.appendChild(cap);
       }
       return card;
@@ -1046,7 +1040,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate discover landing grid — deferred so it doesn't block initial parse
     window._buildDiscoverGrid=function(){
       const dg=$('rm-discover-grid');if(!dg||dg._built)return;dg._built=true;
-      const tile=(media,title,tag,autor)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 7px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(title)+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+_esc(tag)+'</div>':'');d.appendChild(cap);}if(autor){const ini=autor.replace(/^(Arq\.|Studio|Estudio|Equipo)\s*/,'').charAt(0).toUpperCase();const att=document.createElement('div');att.style.cssText='padding:5px 11px 10px;display:flex;align-items:center;gap:7px;border-top:1px solid #f0ece4';att.innerHTML='<div style="width:20px;height:20px;border-radius:50%;background:#E8E3DA;display:flex;align-items:center;justify-content:center;flex:none;font-size:9px;font-weight:800;color:#7a7468;line-height:1">'+_esc(ini)+'</div><span style="font-size:10px;color:#7a7468;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(autor)+'</span>';d.appendChild(att);}return d;};
+      const tile=(media,title,tag,autor)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 7px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+tag+'</div>':'');d.appendChild(cap);}if(autor){const ini=autor.replace(/^(Arq\.|Studio|Estudio|Equipo)\s*/,'').charAt(0).toUpperCase();const att=document.createElement('div');att.style.cssText='padding:5px 11px 10px;display:flex;align-items:center;gap:7px;border-top:1px solid #f0ece4';att.innerHTML='<div style="width:20px;height:20px;border-radius:50%;background:#E8E3DA;display:flex;align-items:center;justify-content:center;flex:none;font-size:9px;font-weight:800;color:#7a7468;line-height:1">'+ini+'</div><span style="font-size:10px;color:#7a7468;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+autor+'</span>';d.appendChild(att);}return d;};
       const items=[];
       PROJECTS.forEach(p=>{let m;if(p.img)m=photoMedia(p.img);else if(p.slab)m=slabMedia({...p.slab,r:16/9});else m=terrMedia({...p.terr,r:16/9});items.push(tile(m,p.name,p.barrio+' · '+p.tag,p.autor));});
       TERR.forEach(t=>items.push(tile(terrMedia({...t,r:4/3}),t.title,'Terrazzo · Instone','Instone')));
@@ -1064,6 +1058,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const mat=p.terr?p.terr.stones.map(s=>s.name).join(', '):p.slab?p.slab.name:'Fotografía de obra';
       const card=mkCard(media,p.name,p.barrio+' · '+p.tag,{
         filter:p.tag,search:p.barrio,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.name,
+        captionBelow:false,
         overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.name},{label:'Usar materiales',msg:'Cargando materiales de '+p.name}],
         detail:{
           title:p.name,subtitle:p.barrio+' · '+p.tag,
@@ -1134,23 +1129,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const tipHtml='<div style="font-family:Inter,sans-serif;width:180px;padding:0">'
           +'<div style="height:80px;background:'+bg+';border-radius:8px 8px 0 0"></div>'
           +'<div style="padding:10px 12px 12px">'
-          +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px">'+_esc(p.name)+'</div>'
-          +'<div style="font-size:11px;color:#9b958a">'+_esc(p.barrio)+' · '+_esc(p.tag)+'</div>'
+          +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px">'+p.name+'</div>'
+          +'<div style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</div>'
           +'</div></div>';
         const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
           .bindTooltip(tipHtml,{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]})
-          .bindPopup('<div style="font-family:Inter,sans-serif;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+_esc(p.name)+'</strong><br><span style="font-size:11px;color:#9b958a">'+_esc(p.barrio)+' · '+_esc(p.tag)+'</span></div>');
+          .bindPopup('<div style="font-family:Inter,sans-serif;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+p.name+'</strong><br><span style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</span></div>');
         markerData.push({marker,proj:p});
       });
       window._explorarMapRef=map;
       window._explorarMarkerData=markerData;
       // Add map pins for any Supabase projects loaded before map initialized
       (window._explorarSbData||[]).forEach(({p,card,pinIdx})=>{
-        const c=(p.lat!=null&&p.lng!=null)?[p.lat,p.lng]:BC[p.ubicacion];if(!c)return;
-        const off=(p.lat!=null&&p.lng!=null)?[0,0]:[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
+        const c=BC[p.ubicacion];if(!c)return;
+        const off=[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
         const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
         const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
-          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
         window._explorarMarkerData.push({marker,proj:card._rmProject});
       });
       map.on('moveend zoomend',updateMapBelow);
@@ -1434,7 +1429,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','perfil','pin','config'];
+    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','admin','perfil','pin','config'];
     window._provPrevView='inicio';
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
@@ -1447,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='mood')loadMoodList();
       if(v==='saved')loadBoardsView();
       if(v==='mis-proyectos')loadMisProyectos();
+      if(v==='admin')loadAdminView();
       if(v==='config')loadConfigView();
       if(v==='explorar'){if(!window._explorarMapRef)initExplorarMap();setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
@@ -1520,7 +1516,7 @@ document.addEventListener('DOMContentLoaded', function() {
       _contactsSource.forEach(c=>{
         const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:stretch;margin-bottom:8px';
         const btn=document.createElement('button');btn.type='button';btn.className='pm-cb';btn.style.marginBottom='0';btn.style.flex='1';
-        btn.innerHTML='<span class="pm-cb-dot" style="background:'+_esc(c.color)+'"></span><span><span class="pm-cb-role">'+_esc(c.role)+'</span><span class="pm-cb-name">'+_esc(c.name)+'</span></span>'
+        btn.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
           +'<svg style="margin-left:auto;flex:none;opacity:.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
         btn.addEventListener('click',()=>openProfOverlay(c,data.title));
         row.appendChild(btn);cc.appendChild(row);
@@ -1699,7 +1695,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.documentElement.scrollTop=0;
     };
 
-    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes'];
+    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes','admin'];
     const _hashView=window.location.hash.replace('#','');
     setView(_validViews.includes(_hashView)?_hashView:'inicio');
 
@@ -1712,8 +1708,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if(typeof sb!=='undefined'){
           const userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
           if(userEmail){
-            const{data,error}=await sb.from('projects').select('*').eq('arquitecto_email',userEmail).order('created_at',{ascending:false});
-            if(!error&&data)list=data;
+            const _pqSnap=await db.collection('projects').where('arquitecto_email','==',userEmail).orderBy('created_at','desc').get();
+            list=_pqSnap.docs.map(d=>({id:d.id,...d.data()}));
           }
         }
       }catch(e){console.warn('loadMisProyectos Supabase error',e);}
@@ -1737,18 +1733,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       let grid='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">';
       list.forEach(p=>{
-        const cover=p.portada_url?'<img src="'+_esc(p.portada_url)+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
-        const provNames=(p.proveedores&&p.proveedores.length)?(window._PM_CONTACTS||[]).filter(c=>p.proveedores.includes(c.id)).map(c=>c.name):[];
-        const provFreeNames=(p.proveedores_libres||[]).map(f=>f.name).filter(Boolean);
-        const provList=provNames.concat(provFreeNames).join(', ');
+        const cover=p.portada_url?'<img src="'+p.portada_url+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+        const provList=(p.proveedores&&p.proveedores.length)?(window._PM_CONTACTS||[]).filter(c=>p.proveedores.includes(c.id)).map(c=>c.name).join(', '):'';
         grid+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">'
           +'<div style="height:140px;overflow:hidden;background:#F5F3EF">'+cover+'</div>'
           +'<div style="padding:14px 16px">'
-          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+_esc(p.tipo)+'</div>'
-          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(p.titulo)+'</div>'
-          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+_esc(p.ubicacion)+'</div>'
-          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+_esc(provList)+'</div>':'<div style="margin-bottom:12px"></div>')
-          +'<button onclick="deleteMyProject(\''+p.id+'\')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
+          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+p.tipo+'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.titulo+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.ubicacion+'</div>'
+          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+provList+'</div>':'<div style="margin-bottom:12px"></div>')
+          +'<button onclick="deleteMyProject('+p.id+')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
           +'</div></div>';
       });
       vm.innerHTML=header+grid+'</div>';
@@ -1758,31 +1752,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── Load real projects from Supabase into Explorar ────────
     const BC_COORDS={'Nueva Córdoba':[-31.4285,-64.1843],'Centro':[-31.4135,-64.1894],'General Paz':[-31.4040,-64.2024],'Cerro de las Rosas':[-31.3808,-64.2065],'Cofico':[-31.3960,-64.1856],'Güemes':[-31.4216,-64.1843],'Villa Belgrano':[-31.3702,-64.2180],'Alberdi':[-31.4064,-64.1973]};
-    // Coordenadas de un proyecto: preferimos lat/lng reales (elegidas en el
-    // wizard de carga); si no las tiene (proyectos migrados viejos), caemos
-    // al centro aproximado del barrio como antes.
-    function _projectCoords(p){
-      if(p.lat!=null&&p.lng!=null)return [p.lat,p.lng];
-      const c=BC_COORDS[p.ubicacion];
-      return c||null;
-    }
-    const placeholderMedia=(ar)=>{const d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;aspect-ratio:'+(ar||'4/3')+';background:linear-gradient(135deg,#E8E4DC,#D4CFC6)';d.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A8895A" stroke-width="1.6" opacity=".55"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="font-size:11px;font-weight:600;color:#8f8574;letter-spacing:.01em">Sin fotos aún</div>';return d;};
     window._loadSupabaseProjects=async function(){
       try{
         if(typeof sb==='undefined')return;
         // Dedup guard: skip projects already rendered in a previous call
         if(!window._explorarLoadedSbIds)window._explorarLoadedSbIds=new Set();
         if(!window._explorarSbData)window._explorarSbData=[];
-        const{data,error}=await sb.from('projects').select('*').order('created_at',{ascending:false});
-        if(error||!data||!data.length)return;
-        data.forEach((p,idx)=>{
+        const _fsnap=await db.collection('projects').orderBy('created_at','desc').get();
+        if(_fsnap.empty)return;
+        _fsnap.docs.forEach((doc,idx)=>{const p={id:doc.id,...doc.data()};
           if(window._explorarLoadedSbIds.has(p.id))return;
           window._explorarLoadedSbIds.add(p.id);
-          const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):(()=>placeholderMedia('1/1'));
-          const media=p.portada_url?photoMedia(p.portada_url,'4/3'):placeholderMedia('4/3');
+          const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):null;
+          if(!makeMain)return;
+          const media=photoMedia(p.portada_url,'4/3');
           const provIds=p.proveedores||[];
           const card=mkCard(media,p.titulo,p.ubicacion+' · '+p.tipo,{
             filter:p.tipo,search:p.ubicacion,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.titulo,
+            captionBelow:false,
             overlayBtns:[{label:'Ver proyecto',primary:true,msg:'Abriendo '+p.titulo}],
             detail:{
               title:p.titulo,subtitle:p.ubicacion+' · '+p.tipo,
@@ -1799,12 +1786,11 @@ document.addEventListener('DOMContentLoaded', function() {
           window._explorarSbData.push(sbEntry);
           // Add to map if map is already initialized; otherwise deferred to initExplorarMap
           if(window._explorarMapRef&&window._explorarMarkerData){
-            const c=_projectCoords(p);if(!c)return;
-            const exact=p.lat!=null&&p.lng!=null;
-            const off=exact?[0,0]:[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
+            const c=BC_COORDS[p.ubicacion];if(!c)return;
+            const off=[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
             const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
             const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(window._explorarMapRef)
-              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
             window._explorarMarkerData.push({marker,proj:card._rmProject});
           }
         });
@@ -1818,32 +1804,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── Upload wizard (global — outside DOMContentLoaded) ─────────
-var _uploadStep=1,_uploadTotalSteps=5;
-var _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:'',lat:null,lng:null,location_privacy:'exact'},photos:[],providers:[{id:'',name:'',role:''}]};
-var _STEP_LABELS=['Datos','Ubicación','Fotos','Proveedores','Revisión'];
-
-// Punto aleatorio dentro de un radio de `radiusM` metros — usado para
-// difuminar la ubicación cuando el usuario elige privacidad "aproximada".
-// Se aplica ANTES de guardar en Firestore: como /projects tiene lectura
-// pública, el punto exacto nunca debe llegar a la base si se pidió privacidad.
-function fuzzLatLng(lat,lng,radiusM){
-  var rd=(radiusM||300)/111320; // grados de latitud por metro (aprox.)
-  var u=Math.random(),v=Math.random();
-  var w=rd*Math.sqrt(u);
-  var t=2*Math.PI*v;
-  var dLat=w*Math.sin(t);
-  var dLng=w*Math.cos(t)/Math.cos(lat*Math.PI/180);
-  return {lat:lat+dLat,lng:lng+dLng};
-}
+var _uploadStep=1,_uploadTotalSteps=4;
+var _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:''},photos:[],providers:[{id:'',name:'',role:''}]};
+var _STEP_LABELS=['Datos','Fotos','Proveedores','Revisión'];
 
 function openUploadModal(){
-  if(typeof _currentUser==='undefined'||!_currentUser){
-    window.toast&&toast('Iniciá sesión para subir un proyecto');
-    if(typeof openAuthModal==='function')openAuthModal();
-    return;
-  }
   _uploadStep=1;
-  _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:'',lat:null,lng:null,location_privacy:'exact'},photos:[],providers:[{id:'',name:'',role:''}]};
+  _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:''},photos:[],providers:[{id:'',name:'',role:''}]};
   var ov=document.getElementById('rm-upload-overlay');ov.style.display='flex';
   _renderUpload();
 }
@@ -1851,13 +1818,8 @@ function closeUploadModal(){document.getElementById('rm-upload-overlay').style.d
 function uploadOverlayClick(e){if(e.target===document.getElementById('rm-upload-overlay'))closeUploadModal();}
 
 function _uploadInputStyle(){return 'font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid #E4DFD5;border-radius:10px;color:#1A1A18;background:#fff;outline:none;width:100%;box-sizing:border-box';}
-function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+_esc(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
+function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
 function _uploadSelectField(lbl,id,opts,sel){return '<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><select id="'+id+'" style="'+_uploadInputStyle().replace('font-size:13px','font-size:14px')+'">'+opts.map(o=>'<option'+(o===sel?' selected':'')+'>'+o+'</option>').join('')+'</select></div>';}
-// Barrios de Córdoba + principales ciudades de Argentina — el campo es de
-// texto libre (se puede escribir cualquier cosa), esto solo alimenta el
-// autocompletado del <datalist> para sugerir nombres válidos.
-var _AR_CIUDADES=['Nueva Córdoba','Centro (Córdoba)','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Alta Córdoba','Jardín','Córdoba Capital','Buenos Aires (CABA)','La Plata','Mar del Plata','Rosario','Santa Fe','Paraná','Corrientes','Posadas','Resistencia','Formosa','Salta','San Salvador de Jujuy','San Miguel de Tucumán','Santiago del Estero','Catamarca','La Rioja','San Juan','Mendoza','San Luis','Santa Rosa','Neuquén','Río Negro (Viedma)','Bariloche','Comodoro Rivadavia','Rawson','Río Gallegos','Ushuaia'];
-function _uploadCityField(lbl,id,val,ph){return '<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" list="up-ciudades-ar" placeholder="'+ph+'" value="'+_esc(val||'')+'" style="'+_uploadInputStyle()+'"><datalist id="up-ciudades-ar">'+_AR_CIUDADES.map(o=>'<option value="'+_esc(o)+'">').join('')+'</datalist></div>';}
 function _uploadPhotoPreviews(){
   if(!_uploadData.photos.length)return '';
   return _uploadData.photos.map((ph,i)=>'<div style="position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1"><img src="'+ph.url+'" style="width:100%;height:100%;object-fit:cover;display:block"><button type="button" onclick="removeUploadPhoto('+i+')" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(26,26,24,.75);border:none;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1">×</button></div>').join('');
@@ -1871,123 +1833,49 @@ function _renderUpload(){
   if(nb)nb.textContent=_uploadStep===_uploadTotalSteps?'Publicar ✓':'Siguiente →';
   var c=document.getElementById('upload-step-content');if(!c)return;
   if(_uploadStep===1){
-    var tipoOpts=['Obra nueva','Reforma','Ambiente','Local comercial'];
+    var tipoOpts=['Obra nueva','Reforma','Ambiente'];
+    var ubicOpts=['Nueva Córdoba','Centro','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Otro barrio de Córdoba'];
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Datos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Los datos básicos de la obra</p>'
       +_uploadInputField('Título del proyecto *','up-titulo',_uploadData.project.titulo,'Ej: Residencia en Nueva Córdoba')
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Tipo','up-tipo',tipoOpts,_uploadData.project.tipo)+_uploadCityField('Barrio / Ciudad','up-ubicacion',_uploadData.project.ubicacion,'Ej: Nueva Córdoba, Córdoba')+'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Tipo','up-tipo',tipoOpts,_uploadData.project.tipo)+_uploadSelectField('Barrio / Ciudad','up-ubicacion',ubicOpts,_uploadData.project.ubicacion)+'</div>'
       +'<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">Descripción corta</label><textarea id="up-desc" placeholder="Describí el proyecto, el espacio, los materiales destacados..." style="'+_uploadInputStyle()+';resize:vertical;min-height:80px">'+(_uploadData.project.descripcion||'')+'</textarea></div>';
   } else if(_uploadStep===2){
-    var privExact=_uploadData.project.location_privacy!=='approx';
-    var hasLoc=_uploadData.project.lat!=null&&_uploadData.project.lng!=null;
-    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Ubicación</h2><p style="font-size:13px;color:#9b958a;margin:0 0 16px">Buscá una dirección o hacé click en el mapa para marcar el punto — es opcional, pero alimenta el mapa de Explorar</p>'
-      +'<div style="display:flex;gap:8px;margin-bottom:10px">'
-      +'<input id="up-loc-search" type="text" placeholder="Buscar dirección o barrio…" style="'+_uploadInputStyle()+'" onkeydown="if(event.key===\'Enter\'){event.preventDefault();_searchUploadLocation();}">'
-      +'<button type="button" onclick="_searchUploadLocation()" style="font-family:inherit;font-size:13px;font-weight:600;padding:0 18px;border-radius:10px;border:1px solid #E4DFD5;background:#fff;color:#1A1A18;cursor:pointer;white-space:nowrap">Buscar</button>'
-      +'</div>'
-      +'<div id="up-loc-map" style="width:100%;height:240px;border-radius:12px;overflow:hidden;border:1px solid #E4DFD5;margin-bottom:8px"></div>'
-      +'<p id="up-loc-status" style="font-size:12px;color:#9b958a;margin:0 0 18px">'+(hasLoc?('Ubicación marcada: '+_uploadData.project.lat.toFixed(5)+', '+_uploadData.project.lng.toFixed(5)):'Sin ubicación marcada todavía')+'</p>'
-      +'<div style="font-size:12px;font-weight:700;color:#6F6A60;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Privacidad de la ubicación</div>'
-      +'<label style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid '+(privExact?'#1A1A18':'#E4DFD5')+';border-radius:12px;cursor:pointer;margin-bottom:8px">'
-      +'<input type="radio" name="up-loc-priv" value="exact"'+(privExact?' checked':'')+' style="margin-top:2px">'
-      +'<span><span style="display:block;font-size:13px;font-weight:700;color:#1A1A18">Exacta</span><span style="display:block;font-size:12px;color:#9b958a;margin-top:1px">Se muestra el punto real en el mapa.</span></span>'
-      +'</label>'
-      +'<label style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid '+(!privExact?'#1A1A18':'#E4DFD5')+';border-radius:12px;cursor:pointer">'
-      +'<input type="radio" name="up-loc-priv" value="approx"'+(!privExact?' checked':'')+' style="margin-top:2px">'
-      +'<span><span style="display:block;font-size:13px;font-weight:700;color:#1A1A18">Aproximada</span><span style="display:block;font-size:12px;color:#9b958a;margin-top:1px">Se muestra dentro de un radio de ~300m — para proteger la privacidad de la vivienda.</span></span>'
-      +'</label>';
-    _initUploadLocationMap();
-  } else if(_uploadStep===3){
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Fotos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Portada + galería — hasta 5 imágenes, se comprimen automáticamente</p>'
       +'<div id="up-photo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'+_uploadPhotoPreviews()+'</div>'
       +'<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px dashed #D7D1C6;border-radius:12px;cursor:pointer;color:#6F6A60;font-size:13px;font-weight:600" onmouseenter="this.style.borderColor=\'#1A1A18\';this.style.color=\'#1A1A18\'" onmouseleave="this.style.borderColor=\'#D7D1C6\';this.style.color=\'#6F6A60\'">'
       +'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Subir fotos'
       +'<input id="up-photo-input" type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)"></label>';
-  } else if(_uploadStep===4){
+  } else if(_uploadStep===3){
     var html3='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Tag de proveedores</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">¿Quiénes participaron? — podés taggear más de uno</p>';
     _uploadData.providers.forEach(function(pv,i){
       html3+='<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:12px;padding:14px 16px;margin-bottom:10px">'
         +'<div style="font-size:10px;font-weight:700;color:#9b958a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Proveedor '+(i+1)+'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +_provAutoHtml(i,pv)
-        +'<input id="up-prov-role-'+i+'" placeholder="Rol (ej: Carpintero, Arquitecto…)" value="'+_esc(pv.role||'')+'" oninput="_uploadData.providers['+i+'].role=this.value" style="'+_uploadInputStyle()+'">'
+        +'<input id="up-prov-role-'+i+'" placeholder="Rol" value="'+(pv.role||'')+'" readonly style="'+_uploadInputStyle()+';background:#F5F3EF;color:#6F6A60;cursor:default">'
         +'</div></div>';
     });
     if(_uploadData.providers.length<6)html3+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
     c.innerHTML=html3;
-  } else if(_uploadStep===5){
+  } else if(_uploadStep===4){
     var provs=_uploadData.providers.filter(function(p){return p.name.trim();});
-    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+_esc(p.name)+'</span><span style="font-size:11px;color:#9b958a">· '+_esc(p.role)+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
+    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+p.name+'</span><span style="font-size:11px;color:#9b958a">· '+p.role+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
     var photoHtml=_uploadData.photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+_uploadData.photos.map(function(ph){return '<img src="'+ph.url+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px">';}).join('')+'</div>':'<p style="font-size:13px;color:#9b958a;margin:4px 0 0">Sin fotos</p>';
-    var locHasPin=_uploadData.project.lat!=null&&_uploadData.project.lng!=null;
-    var locHtml=locHasPin?('Marcada · '+(_uploadData.project.location_privacy==='approx'?'aproximada (~300m)':'exacta')):'Sin marcar en el mapa';
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 20px;letter-spacing:-.01em">Revisión y publicar</h2>'
       +'<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:14px;padding:18px 20px;margin-bottom:16px">'
       +'<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+(_uploadData.project.tipo||'')+'</div>'
-      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+_esc(_uploadData.project.titulo||'Sin título')+'</div>'
+      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+(_uploadData.project.titulo||'Sin título')+'</div>'
       +'<div style="font-size:12px;color:#9b958a;margin-bottom:'+((_uploadData.project.descripcion)?'12px':'0')+'">'+(_uploadData.project.ubicacion||'')+'</div>'
       +(_uploadData.project.descripcion?'<p style="font-size:13px;color:#6F6A60;margin:0;line-height:1.55">'+_uploadData.project.descripcion+'</p>':'')
       +'</div>'
-      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Ubicación en el mapa</div><p style="font-size:13px;color:#6F6A60;margin:0">'+locHtml+'</p></div>'
       +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Fotos</div>'+photoHtml+'</div>'
       +'<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Proveedores taggeados</div>'+provHtml+'</div>';
   }
 }
 
-var _uploadLocMapRef=null,_uploadLocMarker=null;
-function _initUploadLocationMap(){
-  if(_uploadLocMapRef){try{_uploadLocMapRef.remove();}catch(e){}_uploadLocMapRef=null;_uploadLocMarker=null;}
-  var el=document.getElementById('up-loc-map');if(!el||typeof L==='undefined')return;
-  var hasLoc=_uploadData.project.lat!=null&&_uploadData.project.lng!=null;
-  var startLat=hasLoc?_uploadData.project.lat:-31.4201;
-  var startLng=hasLoc?_uploadData.project.lng:-64.1888;
-  var map=L.map('up-loc-map').setView([startLat,startLng],hasLoc?15:12);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',subdomains:'abcd',maxZoom:20}).addTo(map);
-  function placeMarker(lat,lng){
-    _uploadData.project.lat=lat;_uploadData.project.lng=lng;
-    if(_uploadLocMarker)_uploadLocMarker.setLatLng([lat,lng]);
-    else{
-      _uploadLocMarker=L.marker([lat,lng],{draggable:true}).addTo(map);
-      _uploadLocMarker.on('dragend',function(){var p=_uploadLocMarker.getLatLng();placeMarker(p.lat,p.lng);});
-    }
-    var st=document.getElementById('up-loc-status');
-    if(st)st.textContent='Ubicación marcada: '+lat.toFixed(5)+', '+lng.toFixed(5);
-  }
-  if(hasLoc)placeMarker(startLat,startLng);
-  map.on('click',function(e){placeMarker(e.latlng.lat,e.latlng.lng);});
-  _uploadLocMapRef=map;
-  setTimeout(function(){map.invalidateSize();},150);
-}
-async function _geocodeAr(q){
-  var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ar&q='+encodeURIComponent(q),{headers:{'Accept-Language':'es'}});
-  var data=await res.json();
-  return (data&&data.length)?data[0]:null;
-}
-async function _searchUploadLocation(){
-  var input=document.getElementById('up-loc-search');
-  var q=input?input.value.trim():'';
-  if(!q)return;
-  var ubic=(_uploadData.project.ubicacion||'').trim();
-  var btn=document.querySelector('button[onclick="_searchUploadLocation()"]');
-  if(btn){btn.disabled=true;btn.textContent='Buscando…';}
-  try{
-    // 1º intento: la dirección tal cual la escribió + Argentina.
-    var hit=await _geocodeAr(q+', Argentina');
-    // 2º intento: si no hubo resultado y el texto no menciona ya la ciudad
-    // elegida en el paso anterior, se la agregamos (ej: sólo puso "Av. Colón 123").
-    if(!hit&&ubic&&q.toLowerCase().indexOf(ubic.toLowerCase())===-1){
-      hit=await _geocodeAr(q+', '+ubic+', Argentina');
-    }
-    if(!hit){window.toast&&toast('No se encontró esa dirección — probá marcarla directo en el mapa');return;}
-    var lat=parseFloat(hit.lat),lng=parseFloat(hit.lon);
-    if(_uploadLocMapRef){_uploadLocMapRef.setView([lat,lng],16);_uploadLocMapRef.fire('click',{latlng:{lat:lat,lng:lng}});}
-  }catch(e){window.toast&&toast('No se pudo buscar la dirección — probá marcarla directo en el mapa');}
-  finally{if(btn){btn.disabled=false;btn.textContent='Buscar';}}
-}
-
 function _saveUploadStepData(){
   var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
   if(_uploadStep===1){_uploadData.project.titulo=g('up-titulo');_uploadData.project.tipo=g('up-tipo');_uploadData.project.ubicacion=g('up-ubicacion');_uploadData.project.descripcion=g('up-desc');}
-  if(_uploadStep===2){var pr=document.querySelector('input[name="up-loc-priv"]:checked');_uploadData.project.location_privacy=pr?pr.value:'exact';}
 }
 
 function uploadNext(){
@@ -2026,28 +1914,25 @@ function _provAutoHtml(i,pv){
   var s=_uploadInputStyle();
   var n=pv.name||'';
   return '<div style="position:relative">'
-    +'<input type="text" id="up-prov-name-'+i+'" placeholder="Buscar o escribir proveedor…" autocomplete="off" value="'+_esc(n)+'" '
+    +'<input type="text" id="up-prov-name-'+i+'" placeholder="Buscar proveedor…" autocomplete="off" value="'+n+'" '
     +'oninput="_provInput('+i+',this.value)" onfocus="_provInput('+i+',this.value)" onblur="_provBlur('+i+')" '
     +'style="'+s+'">'
     +'<div id="up-prov-dd-'+i+'" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1px solid #E4DFD5;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:901;max-height:200px;overflow-y:auto"></div>'
     +'</div>';
 }
 async function _provInput(i,val){
-  // Guarda siempre lo tipeado — así no se pierde si el usuario escribe
-  // libremente en vez de elegir una sugerencia del autocompletado.
-  _uploadData.providers[i].name=val;
-  _uploadData.providers[i].id='';
   var dd=document.getElementById('up-prov-dd-'+i);if(!dd)return;
+  _uploadData.providers[i].id='';
   var q=(val||'').toLowerCase().trim();
   if(!q){dd.style.display='none';return;}
   if(!_providersLoaded)await _initProviders();
-  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0;});
+  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.benefit&&(c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0);});
   if(!m.length){dd.style.display='none';return;}
   dd.style.display='block';
   dd.innerHTML=m.map(function(c){
     return '<div onmousedown="_provSelect('+i+',\''+c.id+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #F0ECE6" onmouseover="this.style.background=\'#F8F6F2\'" onmouseout="this.style.background=\'#fff\'">'
-      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(c.name)+'</div>'
-      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+_esc(c.role)+'</div>'
+      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+c.name+'</div>'
+      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+c.role+'</div>'
       +'</div>';
   }).join('');
 }
@@ -2061,42 +1946,31 @@ function _provSelect(i,id){
   var dd=document.getElementById('up-prov-dd-'+i);if(dd)dd.style.display='none';
 }
 function _provBlur(i){
-  // Solo cierra el desplegable de sugerencias — el nombre tipeado a mano
-  // (sin elegir un proveedor existente) se conserva tal cual.
   setTimeout(function(){
     var dd=document.getElementById('up-prov-dd-'+i);if(dd)dd.style.display='none';
+    if(!_uploadData.providers[i].id&&(_uploadData.providers[i].name||'').trim()){
+      _uploadData.providers[i].name='';
+      var ni=document.getElementById('up-prov-name-'+i);if(ni)ni.value='';
+    }
   },160);
 }
 async function deleteMyProject(id){
   if(!confirm('¿Eliminar este proyecto?'))return;
   try{
     if(typeof sb!=='undefined'){
-      var{error}=await sb.from('projects').delete().eq('id',id);
-      if(error)throw error;
+      await db.collection('projects').doc(String(id)).delete();
     }
   }catch(e){console.warn('delete project error',e);}
   if(window._loadMisProyectos)window._loadMisProyectos();
   window.toast&&toast('Proyecto eliminado');
 }
-function _timeoutAfter(ms,msg){return new Promise(function(_,reject){setTimeout(function(){reject(new Error(msg));},ms);});}
 async function _uploadPhotoToStorage(dataUrl,fname){
   var blob=await fetch(dataUrl).then(function(r){return r.blob();});
   var path=Date.now()+'-'+fname;
-  // Firebase Storage puede reintentar solo internamente si el bucket no
-  // responde (por ejemplo si nunca se activó en la consola) y dejar la
-  // promesa colgada — por eso se corre contra un timeout explícito en vez
-  // de esperarla indefinidamente.
-  var upRes=await Promise.race([
-    sb.storage.from('project-images').upload(path,blob,{contentType:'image/jpeg',upsert:false}),
-    _timeoutAfter(15000,'Tiempo de espera agotado subiendo la imagen')
-  ]);
-  if(upRes.error)throw upRes.error;
-  var pubRes=await Promise.race([
-    sb.storage.from('project-images').getPublicUrl(upRes.data.path),
-    _timeoutAfter(15000,'Tiempo de espera agotado obteniendo la URL de la imagen')
-  ]);
-  if(pubRes.error)throw pubRes.error;
-  return pubRes.data.publicUrl;
+  var _sRef=storage.ref('project-images/'+path);
+  await _sRef.put(blob,{contentType:'image/jpeg'});
+  var publicUrl=await _sRef.getDownloadURL();
+  return publicUrl;
 }
 async function _submitUploadProject(){
   _saveUploadStepData();
@@ -2114,33 +1988,14 @@ async function _submitUploadProject(){
       }catch(storErr){
         console.warn('Storage upload failed, storing first photo as data URL',storErr);
         if(_uploadData.photos.length>0)portadaUrl=_uploadData.photos[0].url;
-        window.toast&&toast('El alojamiento de fotos está temporalmente desactivado — tu proyecto se guardó igual, pero con una foto de menor calidad.');
       }
     }else if(_uploadData.photos.length>0){
       portadaUrl=_uploadData.photos[0].url;
     }
-    // Proveedores tageados: los que se eligieron del autocompletado (tienen id)
-    // van en `proveedores`; los escritos a mano (sin id, ej. proveedores que
-    // todavía no tienen perfil en realmood) se guardan en `proveedores_libres`
-    // para no perderlos.
-    var provsFilled=_uploadData.providers.filter(function(p){return (p.name||'').trim();});
-    var provIds=provsFilled.filter(function(p){return p.id;}).map(function(p){return p.id;});
-    var provFree=provsFilled.filter(function(p){return !p.id;}).map(function(p){return {name:p.name.trim(),role:(p.role||'').trim()};});
+    var provIds=_uploadData.providers.filter(function(p){return p.id;}).map(function(p){return p.id;});
     var userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
-    var userId=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.id:null;
-    // Privacidad de ubicación: si es "aproximada", el punto se difumina ACÁ,
-    // antes de escribir a Firestore — /projects tiene lectura pública, así
-    // que el punto exacto nunca debe llegar a la base si se pidió privacidad.
-    var finalLat=null,finalLng=null;
-    if(_uploadData.project.lat!=null&&_uploadData.project.lng!=null){
-      if(_uploadData.project.location_privacy==='approx'){
-        var fz=fuzzLatLng(_uploadData.project.lat,_uploadData.project.lng,300);
-        finalLat=fz.lat;finalLng=fz.lng;
-      }else{
-        finalLat=_uploadData.project.lat;finalLng=_uploadData.project.lng;
-      }
-    }
-    var{error:insErr}=await sb.from('projects').insert({
+    var userId=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.uid:null;
+    await db.collection('projects').add({
       titulo:_uploadData.project.titulo,
       tipo:_uploadData.project.tipo,
       ubicacion:_uploadData.project.ubicacion,
@@ -2148,14 +2003,10 @@ async function _submitUploadProject(){
       portada_url:portadaUrl,
       galeria_urls:galeriaUrls.length?galeriaUrls:null,
       proveedores:provIds.length?provIds:null,
-      proveedores_libres:provFree.length?provFree:null,
       arquitecto_email:userEmail,
       arquitecto_id:userId,
-      lat:finalLat,
-      lng:finalLng,
-      location_privacy:finalLat!=null?_uploadData.project.location_privacy:null
+      created_at:new Date().toISOString()
     });
-    if(insErr)throw insErr;
     closeUploadModal();
     window.toast&&toast('¡Proyecto publicado! Revisalo en Mis proyectos →');
     if(window._loadMisProyectos)window._loadMisProyectos();
@@ -2168,33 +2019,49 @@ async function _submitUploadProject(){
   }
 }
 // ── Provider data & profile overlay ──────────────────────────
-// Providers are loaded from Supabase (user_profiles where role='proveedor').
+// Providers are loaded from Firestore (user_profiles where role='proveedor').
 // window._PM_CONTACTS is populated by _initProviders() on auth init.
 window._PM_CONTACTS = [];
 let _providersLoaded = false;
 
 async function _initProviders() {
   try {
-    if (typeof sb === 'undefined') return;
-    const { data } = await sb.from('user_profiles')
-      .select('id,nombre,rubro,ciudad,wa')
-      .eq('role', 'proveedor');
-    if (data && data.length) {
-      window._PM_CONTACTS = data.map(p => ({
-        id:       p.id,
-        name:     p.nombre || '',
-        role:     p.rubro  || 'Proveedor',
-        full:     p.nombre || '',
-        color:    '#1A1A18',
-        location: p.ciudad || 'Córdoba, Argentina',
-        bio:      '',
-        tags:     [],
-        portfolio:[],
-        wa:       p.wa || '',
-      }));
+    const _pSnap = await db.collection('user_profiles').where('role','==','proveedor').get();
+    if (!_pSnap.empty) {
+      window._PM_CONTACTS = _pSnap.docs.map(d => {
+        const p = d.data();
+        return {
+          id:       d.id,
+          name:     p.nombre || '',
+          role:     p.rubro  || 'Proveedor',
+          full:     p.nombre || '',
+          color:    '#1A1A18',
+          location: p.ciudad || 'Córdoba, Argentina',
+          bio:      '',
+          tags:     [],
+          portfolio:[],
+          wa:       p.wa || '',
+          benefit:  (p.benefit_type && p.benefit_description)
+                      ? { type: p.benefit_type, description: p.benefit_description }
+                      : null,
+        };
+      });
     }
     _providersLoaded = true;
-  } catch (e) { /* ignore if table doesn't exist yet */ }
+  } catch (e) { /* ignore if collection doesn't exist yet */ }
+}
+
+async function recordBenefitRequest(prov,pinData){
+  try{
+    await db.collection('benefit_requests').add({
+      provider_id:prov.id,
+      provider_name:prov.name,
+      benefit_type:prov.benefit?prov.benefit.type:null,
+      project_title:pinData?pinData.title:null,
+      user_email:typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null,
+      created_at:new Date().toISOString()
+    });
+  }catch(e){}
 }
 
 function openProfOverlay(prov,projectTitle){
@@ -2220,6 +2087,32 @@ function openProfOverlay(prov,projectTitle){
   // Tags
   const tg=document.getElementById('vp-tags');tg.innerHTML='';
   (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.style.cssText='font-size:11px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:100px;background:#F1ECE2;color:#6F6A60';s.textContent=t;tg.appendChild(s);});
+  // Benefit card
+  const benEl=document.getElementById('vp-benefit');
+  if(prov.benefit){
+    const typeIcon={'muestra gratis':'🎁','descuento':'💰','prioridad de entrega':'⚡'};
+    const icon=typeIcon[prov.benefit.type]||'✦';
+    benEl.style.display='';
+    benEl.innerHTML='<div style="background:linear-gradient(135deg,#F5F3EF,#EDE8DF);border:1px solid #D9D3C6;border-radius:16px;padding:20px 22px">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      +'<span style="font-size:18px">'+icon+'</span>'
+      +'<span style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9b958a">Beneficio exclusivo</span>'
+      +'</div>'
+      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+prov.benefit.description+'</p>'
+      +'<button id="vp-benefit-btn" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s">Solicitar beneficio →</button>'
+      +'</div>';
+    document.getElementById('vp-benefit-btn').addEventListener('click',async()=>{
+      const btn=document.getElementById('vp-benefit-btn');
+      btn.disabled=true;btn.style.opacity='.6';btn.textContent='Procesando…';
+      await recordBenefitRequest(prov,window._lastPmData);
+      const waMsg=encodeURIComponent('Hola '+prov.name+'! Vi tu beneficio en Realmood ("'+prov.benefit.description+'") y me gustaría solicitarlo para mi proyecto.');
+      window.open('https://wa.me/'+prov.wa+'?text='+waMsg,'_blank');
+      btn.textContent='¡Solicitado! ✓';btn.style.background='#27AE60';btn.style.opacity='1';
+      if(typeof toast==='function')toast('¡Beneficio solicitado! Te contactamos por WhatsApp.');
+    });
+  }else{
+    benEl.style.display='none';
+  }
   // Portfolio
   const po=document.getElementById('vp-portfolio');po.innerHTML='';
   (prov.portfolio||[]).forEach(src=>{
@@ -2333,7 +2226,7 @@ async function rmAiSend(){
       <h2 id="auth-title" style="margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:-.01em;color:#1A1A18">Iniciá sesión</h2>
       <p id="auth-subtitle" style="margin:0;font-size:14px;color:#6F6A60">Accedé a tus proyectos guardados</p>
     </div>
-    <button type="button" id="auth-google-btn" onclick="signInWithGoogle()" style="width:100%;margin-bottom:16px;padding:13px 16px;border:1.5px solid #E4DFD5;border-radius:12px;background:#fff;font-family:inherit;font-size:14px;font-weight:600;color:#1A1A18;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .15s,box-shadow .15s" onmouseenter="this.style.borderColor='#1A1A18';this.style.boxShadow='0 2px 8px rgba(0,0,0,.08)'" onmouseleave="this.style.borderColor='#E4DFD5';this.style.boxShadow='none'">
+    <button type="button" onclick="signInWithGoogle()" style="width:100%;margin-bottom:16px;padding:13px 16px;border:1.5px solid #E4DFD5;border-radius:12px;background:#fff;font-family:inherit;font-size:14px;font-weight:600;color:#1A1A18;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .15s,box-shadow .15s" onmouseenter="this.style.borderColor='#1A1A18';this.style.boxShadow='0 2px 8px rgba(0,0,0,.08)'" onmouseleave="this.style.borderColor='#E4DFD5';this.style.boxShadow='none'">
       <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Continuar con Google
     </button>
@@ -2363,12 +2256,24 @@ async function rmAiSend(){
 </div>
 
 <script>
-// ── Firebase Auth/Firestore/Storage ─────────────────────────────
-// `sb` is defined by /firebase-adapter.js (loaded in <head>), backed by the
-// Firebase project configured in /firebase-config.js. See firestore.rules
-// and storage.rules at the repo root for the access-control policy.
+// ── Firebase ─────────────────────────────────────────────────
+// CONFIGURAR: reemplazá estos valores con los de tu proyecto en Firebase Console
+// Project Settings > General > Your apps > Web app > SDK setup and configuration
+const FIREBASE_CONFIG = {
+  apiKey:            'REPLACE_WITH_YOUR_FIREBASE_API_KEY',
+  authDomain:        'REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com',
+  projectId:         'REPLACE_WITH_YOUR_PROJECT_ID',
+  storageBucket:     'REPLACE_WITH_YOUR_PROJECT_ID.appspot.com',
+  messagingSenderId: 'REPLACE_WITH_YOUR_MESSAGING_SENDER_ID',
+  appId:             'REPLACE_WITH_YOUR_APP_ID',
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const db      = firebase.firestore();
+const fbAuth  = firebase.auth();
+const storage = firebase.storage();
 let _authMode = 'login';
 let _currentUser = null;
+const ADMIN_EMAILS = ['ignacio.miranda@mi.unc.edu.ar'];
 
 function _onUser(user) {
   _currentUser = user;
@@ -2380,16 +2285,75 @@ function _onUser(user) {
     av.title = user.email;
     av.style.background = '#3F5953';
   } else {
-    av.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+    av.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
     av.title = 'Iniciar sesión';
     av.style.background = '#9b958a';
   }
   const emailEl = document.getElementById('auth-user-email');
   if (emailEl) emailEl.textContent = user ? user.email : '';
-  const mobAccountLabel = document.getElementById('rm-mob-account-label');
-  if (mobAccountLabel) mobAccountLabel.textContent = user ? 'Mi cuenta' : 'Iniciar sesión';
-  const navAccountBtn = document.getElementById('rm-nav-account-btn');
-  if (navAccountBtn) navAccountBtn.setAttribute('data-label', user ? 'Mi cuenta' : 'Iniciar sesión');
+  const adminBtn = document.getElementById('rm-admin-btn');
+  if (adminBtn) adminBtn.style.display = (user && ADMIN_EMAILS.includes(user.email)) ? 'flex' : 'none';
+}
+
+async function loadAdminView() {
+  const vm = document.getElementById('view-admin');
+  if (!vm) return;
+  if (!_currentUser) {
+    vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">Iniciá sesión para acceder al panel de administración.</p></div>';
+    return;
+  }
+  if (!ADMIN_EMAILS.includes(_currentUser.email)) {
+    vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">No tenés permiso para acceder a esta sección.</p></div>';
+    return;
+  }
+  vm.innerHTML = '<div style="max-width:860px;margin:0 auto">'
+    + '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em">Panel de administración</h1>'
+    + '<p style="font-size:13px;color:#9b958a;margin:0 0 28px">Solicitudes de beneficio por proveedor</p>'
+    + '<div id="admin-loading" style="text-align:center;color:#9b958a;padding:40px">Cargando datos…</div>'
+    + '</div>';
+  try {
+    if (!_providersLoaded) await _initProviders();
+    const _brSnap = await db.collection('benefit_requests').orderBy('created_at','desc').get();
+    const data = _brSnap.docs.map(d => ({id:d.id,...d.data()}));
+    const byProvider = {};
+    (window._PM_CONTACTS || []).forEach(c => { byProvider[c.id] = { ...c, requests: [] }; });
+    (data || []).forEach(r => { if (byProvider[r.provider_id]) byProvider[r.provider_id].requests.push(r); });
+    const rows = Object.values(byProvider).sort((a, b) => b.requests.length - a.requests.length);
+    const tbl = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      + '<thead><tr style="border-bottom:2px solid #E4DFD5">'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proveedor</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Beneficio</th>'
+      + '<th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Solicitudes</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Último contacto</th>'
+      + '</tr></thead><tbody>'
+      + rows.map(p => '<tr style="border-bottom:1px solid #F0EDE8">'
+        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + p.name + '</div><div style="font-size:11px;color:#9b958a">' + p.role + '</div></td>'
+        + '<td style="padding:12px 14px;color:#6F6A60">' + (p.benefit ? p.benefit.type : '—') + '</td>'
+        + '<td style="padding:12px 14px;text-align:center"><span style="font-size:18px;font-weight:800;color:' + (p.requests.length > 0 ? '#1A1A18' : '#C8C3B8') + '">' + p.requests.length + '</span></td>'
+        + '<td style="padding:12px 14px;font-size:11px;color:#9b958a">' + (p.requests.length ? new Date(p.requests[0].created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—') + '</td>'
+        + '</tr>').join('')
+      + '</tbody></table>';
+    const recent = (data || []).slice(0, 10).map(r => '<tr style="border-bottom:1px solid #F0EDE8">'
+      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + (r.provider_name || r.provider_id) + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + (r.benefit_type || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.project_title || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + (r.user_email || 'anónimo') + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + new Date(r.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>'
+      + '</tr>').join('');
+    vm.querySelector('#admin-loading').outerHTML = tbl
+      + '<h2 style="font-size:15px;font-weight:700;margin:36px 0 14px;letter-spacing:-.01em">Últimas solicitudes</h2>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      + '<thead><tr style="border-bottom:2px solid #E4DFD5">'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proveedor</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Beneficio</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proyecto</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Email</th>'
+      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Fecha</th>'
+      + '</tr></thead><tbody>' + (recent || '<tr><td colspan="5" style="padding:20px 14px;text-align:center;color:#9b958a">Sin solicitudes aún</td></tr>') + '</tbody></table>';
+  } catch (e) {
+    const loadEl = vm.querySelector('#admin-loading');
+    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + (e.message || 'colección aún no creada en Firestore') + '</p>';
+  }
 }
 
 function _hideDiscover() {
@@ -2404,43 +2368,37 @@ function _hideDiscover() {
 async function _initAuth() {
   try {
     _initProviders(); // fire-and-forget; populates window._PM_CONTACTS
-    const { data: { session } } = await sb.auth.getSession();
-    if (session && session.user) _hideDiscover();
-    _onUser(session ? session.user : null);
-    sb.auth.onAuthStateChange((_ev, session) => {
-      if (session && session.user) _hideDiscover();
-      _onUser(session ? session.user : null);
-      if (_ev === 'SIGNED_IN' && session && session.user) _checkFirstLogin(session.user);
+    let _fbAuthReady = false;
+    fbAuth.onAuthStateChanged(user => {
+      if (user) _hideDiscover();
+      _onUser(user);
+      if (_fbAuthReady && user) _checkFirstLogin(user);
+      _fbAuthReady = true;
     });
   } catch (e) { /* Firebase no configurado aún */ }
 }
 
 async function _checkFirstLogin(user) {
   try {
-    // 1. Check for profile created via auth signup (id = auth uid)
-    const { data: byId } = await sb.from('user_profiles').select('id').eq('id', user.id).maybeSingle();
-    if (byId) return;
+    // 1. Check for profile created via auth signup (doc id = auth uid)
+    const byDocId = await db.collection('user_profiles').doc(user.uid).get();
+    if (byDocId.exists) return;
 
-    // 2. Check for already-claimed provider profile (user_id = auth uid)
-    const { data: byUserId } = await sb.from('user_profiles').select('id').eq('user_id', user.id).maybeSingle();
-    if (byUserId) return;
+    // 2. Check for already-claimed provider profile (user_id field = auth uid)
+    const byUserId = await db.collection('user_profiles').where('user_id','==',user.uid).limit(1).get();
+    if (!byUserId.empty) return;
 
     // 3. Check for unclaimed manually-added provider with matching email
-    const { data: toClaim } = await sb.from('user_profiles')
-      .select('id')
-      .eq('email', user.email)
-      .is('user_id', null)
-      .maybeSingle();
-    if (toClaim) {
-      // Link auth account to existing provider profile
-      await sb.from('user_profiles').update({ user_id: user.id }).eq('id', toClaim.id);
-      _initProviders(); // refresh provider cache after claim
+    const toClaim = await db.collection('user_profiles').where('email','==',user.email).where('user_id','==',null).limit(1).get();
+    if (!toClaim.empty) {
+      await db.collection('user_profiles').doc(toClaim.docs[0].id).update({ user_id: user.uid });
+      _initProviders();
       return;
     }
 
     // 4. Truly new user — ask for role
     showRoleModal();
-  } catch (e) { /* user_profiles table may not exist yet */ }
+  } catch (e) { /* user_profiles collection may not exist yet */ }
 }
 
 function showRoleModal() {
@@ -2455,9 +2413,9 @@ async function selectRole(role) {
   closeRoleModal();
   if (!_currentUser) return;
   try {
-    await sb.from('user_profiles').upsert(
-      { id: _currentUser.id, email: _currentUser.email, role, user_id: _currentUser.id },
-      { onConflict: 'id' }
+    await db.collection('user_profiles').doc(_currentUser.uid).set(
+      { id: _currentUser.uid, email: _currentUser.email, role, user_id: _currentUser.uid },
+      { merge: true }
     );
   } catch (e) { /* ignore */ }
   if (window.setView) window.setView('config');
@@ -2474,12 +2432,16 @@ async function loadConfigView() {
   vm.innerHTML = '<p style="font-size:13px;color:#9b958a;text-align:center;padding:40px">Cargando perfil…</p>';
   let profile = null;
   try {
-    const { data } = await sb.from('user_profiles').select('*')
-      .or(`id.eq.${_currentUser.id},user_id.eq.${_currentUser.id}`)
-      .maybeSingle();
-    profile = data;
+    const byDocId = await db.collection('user_profiles').doc(_currentUser.uid).get();
+    if (byDocId.exists) {
+      profile = { id: byDocId.id, ...byDocId.data() };
+    } else {
+      const byUid = await db.collection('user_profiles').where('user_id','==',_currentUser.uid).limit(1).get();
+      if (!byUid.empty) { const d = byUid.docs[0]; profile = { id: d.id, ...d.data() }; }
+    }
   } catch (e) { /* ignore */ }
   const role = profile ? profile.role : null;
+  const benefitTypes = ['descuento', 'muestra gratis', 'prioridad de entrega'];
   const fieldRow = (label, id, val, placeholder, type) =>
     '<div style="margin-bottom:16px">'
     + '<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">' + label + '</label>'
@@ -2496,7 +2458,13 @@ async function loadConfigView() {
     + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text');
   const provFields = fieldRow('Nombre de marca', 'nombre', profile && profile.nombre, 'Ej: Mi Proveeduría', 'text')
     + fieldRow('Rubro', 'rubro', profile && profile.rubro, 'Ej: Materiales de construcción', 'text')
-    + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text');
+    + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text')
+    + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
+    + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
+    + '<option value="">— Sin beneficio —</option>'
+    + benefitTypes.map(t => '<option value="' + t + '"' + (profile && profile.benefit_type === t ? ' selected' : '') + '>' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
+    + '</select></div>'
+    + fieldRow('Descripción del beneficio', 'benefit_description', profile && profile.benefit_description, 'Ej: 10% de descuento en primera compra', 'text');
   vm.innerHTML = '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em">Configuración</h1>'
     + '<p style="font-size:13px;color:#9b958a;margin:0 0 28px">Tu perfil en realmood</p>'
     + roleSelect
@@ -2523,7 +2491,13 @@ function setCfgRole(r) {
   if (r === 'proveedor') {
     fieldsEl.innerHTML = fieldRow('Nombre de marca', 'nombre', '', 'Ej: Mi Proveeduría')
       + fieldRow('Rubro', 'rubro', '', 'Ej: Materiales de construcción')
-      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba');
+      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba')
+      + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
+      + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
+      + '<option value="">— Sin beneficio —</option>'
+      + ['descuento','muestra gratis','prioridad de entrega'].map(t => '<option value="' + t + '">' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
+      + '</select></div>'
+      + fieldRow('Descripción del beneficio', 'benefit_description', '', 'Ej: 10% de descuento en primera compra');
   } else {
     fieldsEl.innerHTML = fieldRow('Nombre / Estudio', 'nombre', '', 'Ej: Estudio Pérez & Co.')
       + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba');
@@ -2535,19 +2509,22 @@ async function saveCfgProfile() {
   const role = window._cfgCurrentRole || 'arquitecto';
   const get = id => { const el = document.getElementById('cfg-' + id); return el ? el.value.trim() : ''; };
   const payload = { email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), user_id: _currentUser.id, updated_at: new Date().toISOString() };
-  if (role === 'proveedor') { payload.rubro = get('rubro'); }
+  if (role === 'proveedor') { payload.rubro = get('rubro'); payload.benefit_type = get('benefit_type') || null; payload.benefit_description = get('benefit_description') || null; }
   try {
-    // Find the profile row to update (may be a claimed row with id ≠ auth uid)
-    const { data: existing } = await sb.from('user_profiles').select('id')
-      .or(`id.eq.${_currentUser.id},user_id.eq.${_currentUser.id}`)
-      .maybeSingle();
-    let error;
-    if (existing) {
-      ({ error } = await sb.from('user_profiles').update(payload).eq('id', existing.id));
+    // Find the profile doc to update (may be a claimed doc with id ≠ auth uid)
+    const byDocId = await db.collection('user_profiles').doc(_currentUser.uid).get();
+    let existingId = null;
+    if (byDocId.exists) {
+      existingId = byDocId.id;
     } else {
-      ({ error } = await sb.from('user_profiles').insert({ id: _currentUser.id, ...payload }));
+      const byUid = await db.collection('user_profiles').where('user_id','==',_currentUser.uid).limit(1).get();
+      if (!byUid.empty) existingId = byUid.docs[0].id;
     }
-    if (error) throw error;
+    if (existingId) {
+      await db.collection('user_profiles').doc(existingId).update(payload);
+    } else {
+      await db.collection('user_profiles').doc(_currentUser.uid).set({ id: _currentUser.uid, ...payload });
+    }
     _initProviders(); // refresh provider cache in case a proveedor updated their own profile
     const msg = document.getElementById('cfg-msg');
     if (msg) { msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
@@ -2617,27 +2594,23 @@ async function handleAuthSubmit(e) {
   errEl.style.display = 'none'; okEl.style.display = 'none';
 
   try {
-    const result = login
-      ? await sb.auth.signInWithPassword({ email, password })
-      : await sb.auth.signUp({ email, password });
-
-    if (result.error) throw result.error;
-
-    if (!login && result.data.user && !result.data.session) {
-      okEl.textContent = '¡Listo! Revisá tu email para confirmar la cuenta.';
-      okEl.style.display = 'block';
+    if (login) {
+      await fbAuth.signInWithEmailAndPassword(email, password);
     } else {
-      closeAuthModal();
-      if (typeof toast === 'function') toast('¡Bienvenido/a!');
+      await fbAuth.createUserWithEmailAndPassword(email, password);
     }
+    closeAuthModal();
+    if (typeof toast === 'function') toast('¡Bienvenido/a!');
   } catch (err) {
     const map = {
-      'Invalid login credentials': 'Email o contraseña incorrectos.',
-      'Email not confirmed': 'Confirmá tu email antes de ingresar.',
-      'User already registered': 'Ya existe una cuenta con ese email.',
-      'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+      'auth/user-not-found':       'Email o contraseña incorrectos.',
+      'auth/wrong-password':       'Email o contraseña incorrectos.',
+      'auth/invalid-credential':   'Email o contraseña incorrectos.',
+      'auth/email-already-in-use': 'Ya existe una cuenta con ese email.',
+      'auth/weak-password':        'La contraseña debe tener al menos 6 caracteres.',
+      'auth/invalid-email':        'El email ingresado no es válido.',
     };
-    errEl.textContent = map[err.message] || ('Error: ' + err.message);
+    errEl.textContent = map[err.code] || ('Error: ' + err.message);
     errEl.style.display = 'block';
   } finally {
     btn.textContent = login ? 'Ingresar' : 'Crear cuenta';
@@ -2646,34 +2619,18 @@ async function handleAuthSubmit(e) {
 }
 
 async function signInWithGoogle() {
-  const btn = document.getElementById('auth-google-btn');
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.55'; }
   try {
-    const { error } = await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin + window.location.pathname }
-    });
-    if (error) throw error;
-    // signInWithOAuth usa un popup (ver firebase-adapter.js) — si llega hasta
-    // acá sin error, el login ya fue exitoso, así que cerramos el modal como
-    // hace handleAuthSubmit con email/contraseña. Antes esto no pasaba y
-    // quedaba la pantalla de login abierta aunque el usuario ya estuviera logueado.
-    closeAuthModal();
-    if (typeof toast === 'function') toast('¡Bienvenido/a!');
+    const _gProvider = new firebase.auth.GoogleAuthProvider();
+    await fbAuth.signInWithPopup(_gProvider);
   } catch (err) {
-    // Si el usuario cierra el popup de Google, Firebase tira
-    // auth/popup-closed-by-user — no es un error real, no hace falta mostrar nada.
-    if (err && err.code === 'auth/popup-closed-by-user') return;
     const errEl = document.getElementById('auth-error');
     errEl.textContent = 'Error al conectar con Google. Intentá con email y contraseña.';
     errEl.style.display = 'block';
-  } finally {
-    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
   }
 }
 
 async function authSignOut() {
-  await sb.auth.signOut();
+  await fbAuth.signOut();
   document.getElementById('auth-user-menu').style.display = 'none';
   if (typeof toast === 'function') toast('Sesión cerrada');
 }
@@ -2697,7 +2654,7 @@ document.addEventListener('DOMContentLoaded', _initAuth);
       </button>
       <button type="button" onclick="selectRole('proveedor')" style="width:100%;padding:18px 20px;border-radius:14px;border:1.5px solid #E4DFD5;background:#fff;font-family:inherit;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s" onmouseenter="this.style.borderColor='#1A1A18';this.style.boxShadow='0 2px 8px rgba(0,0,0,.08)'" onmouseleave="this.style.borderColor='#E4DFD5';this.style.boxShadow='none'">
         <div style="font-size:15px;font-weight:700;color:#1A1A18;margin-bottom:3px">Proveedor</div>
-        <div style="font-size:13px;color:#9b958a">Publicá tu empresa y conectá con arquitectos de la red.</div>
+        <div style="font-size:13px;color:#9b958a">Publicá tu empresa y ofrecé beneficios a arquitectos de la red.</div>
       </button>
     </div>
   </div>
