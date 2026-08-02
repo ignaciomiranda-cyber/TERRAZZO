@@ -265,13 +265,13 @@ body{background:#fff}
 </style>
 
 <script>
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   if(sessionStorage.getItem('rm-auth')==='1'){
     document.getElementById('rm-gate').style.display='none';
     document.getElementById('rm-discover').style.display='block';
     if(typeof window._buildDiscoverGrid==='function')window._buildDiscoverGrid();
   }
-})();
+});
 
 function rmGateSubmit(){
   var v=document.getElementById('rm-gate-pwd').value;
