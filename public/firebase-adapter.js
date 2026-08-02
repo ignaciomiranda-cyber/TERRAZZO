@@ -1,3 +1,6 @@
+/* eslint-disable no-this-alias -- `var self = this` is used deliberately
+   throughout this file to capture the query/mutation builder instance for
+   use inside nested Promise callbacks (ES5 `function` style, no arrows). */
 // ═══════════════════════════════════════════════════════════════
 // Realmood — Supabase → Firebase compatibility adapter
 //
