@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Legacy/vendor files
     "support.js",
     "public/support.js",
+    // Supabase-compat shim: intentional ES5 `var self = this` closures
+    "public/firebase-adapter.js",
   ]),
 ]);
 
