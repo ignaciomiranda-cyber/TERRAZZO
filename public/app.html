@@ -10,7 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="/firebase-adapter.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden}
@@ -1739,7 +1744,7 @@ document.addEventListener('DOMContentLoaded', function() {
           +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.titulo+'</div>'
           +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.ubicacion+'</div>'
           +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+provList+'</div>':'<div style="margin-bottom:12px"></div>')
-          +'<button onclick="deleteMyProject('+p.id+')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
+          +'<button onclick="deleteMyProject(\''+p.id+'\')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
           +'</div></div>';
       });
       vm.innerHTML=header+grid+'</div>';
@@ -1967,7 +1972,7 @@ async function _uploadPhotoToStorage(dataUrl,fname){
   var path=Date.now()+'-'+fname;
   var{data:upData,error:upErr}=await sb.storage.from('project-images').upload(path,blob,{contentType:'image/jpeg',upsert:false});
   if(upErr)throw upErr;
-  var{data:{publicUrl}}=sb.storage.from('project-images').getPublicUrl(upData.path);
+  var{data:{publicUrl}}=await sb.storage.from('project-images').getPublicUrl(upData.path);
   return publicUrl;
 }
 async function _submitUploadProject(){
@@ -1986,6 +1991,7 @@ async function _submitUploadProject(){
       }catch(storErr){
         console.warn('Storage upload failed, storing first photo as data URL',storErr);
         if(_uploadData.photos.length>0)portadaUrl=_uploadData.photos[0].url;
+        window.toast&&toast('El alojamiento de fotos está temporalmente desactivado — tu proyecto se guardó igual, pero con una foto de menor calidad.');
       }
     }else if(_uploadData.photos.length>0){
       portadaUrl=_uploadData.photos[0].url;
@@ -2049,10 +2055,8 @@ async function _initProviders() {
   } catch (e) { /* ignore if table doesn't exist yet */ }
 }
 
-// SQL para crear la tabla en Supabase:
-// CREATE TABLE benefit_requests (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), provider_id text, provider_name text, benefit_type text, project_title text, user_email text, created_at timestamptz DEFAULT now());
-// ALTER TABLE benefit_requests ENABLE ROW LEVEL SECURITY;
-// CREATE POLICY "allow anon insert" ON benefit_requests FOR INSERT WITH CHECK (true);
+// benefit_requests: anyone can create a request; only the admin account can read
+// the collection. See the `benefit_requests` match block in firestore.rules.
 async function recordBenefitRequest(prov,pinData){
   try{
     await sb.from('benefit_requests').insert({
@@ -2062,7 +2066,7 @@ async function recordBenefitRequest(prov,pinData){
       project_title:pinData?pinData.title:null,
       user_email:typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null
     });
-  }catch(e){/* tabla aún no creada en Supabase — correr SQL de arriba */}
+  }catch(e){/* colección aún no existe en Firestore o las reglas la bloquean */}
 }
 
 function openProfOverlay(prov,projectTitle){
@@ -2257,13 +2261,10 @@ async function rmAiSend(){
 </div>
 
 <script>
-// ── Supabase Auth ─────────────────────────────────────────────
-// CONFIGURAR: reemplazá estos dos valores con los de tu proyecto en supabase.com
-// Settings > API > Project URL y Project API Keys > anon public
-const SUPABASE_URL = 'https://xzatiewlgmoalpzsnicz.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ── Firebase Auth/Firestore/Storage ─────────────────────────────
+// `sb` is defined by /firebase-adapter.js (loaded in <head>), backed by the
+// Firebase project configured in /firebase-config.js. See firestore.rules
+// and storage.rules at the repo root for the access-control policy.
 let _authMode = 'login';
 let _currentUser = null;
 const ADMIN_EMAILS = ['ignacio.miranda@mi.unc.edu.ar'];
@@ -2345,8 +2346,7 @@ async function loadAdminView() {
       + '</tr></thead><tbody>' + (recent || '<tr><td colspan="5" style="padding:20px 14px;text-align:center;color:#9b958a">Sin solicitudes aún</td></tr>') + '</tbody></table>';
   } catch (e) {
     const loadEl = vm.querySelector('#admin-loading');
-    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + (e.message || 'tabla aún no creada en Supabase') + '</p>'
-      + '<pre style="font-size:11px;color:#6F6A60;background:#F5F3EF;padding:16px;border-radius:12px;text-align:left;overflow-x:auto">CREATE TABLE benefit_requests (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  provider_id text, provider_name text, benefit_type text,\n  project_title text, user_email text,\n  created_at timestamptz DEFAULT now()\n);\nALTER TABLE benefit_requests ENABLE ROW LEVEL SECURITY;\nCREATE POLICY "allow anon insert" ON benefit_requests FOR INSERT WITH CHECK (true);\nCREATE POLICY "allow auth select" ON benefit_requests FOR SELECT USING (auth.role() = \'authenticated\');</pre>';
+    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + (e.message || 'revisá firestore.rules y que la colección benefit_requests exista') + '</p>';
   }
 }
 
@@ -2370,7 +2370,7 @@ async function _initAuth() {
       _onUser(session ? session.user : null);
       if (_ev === 'SIGNED_IN' && session && session.user) _checkFirstLogin(session.user);
     });
-  } catch (e) { /* Supabase no configurado aún */ }
+  } catch (e) { /* Firebase no configurado aún */ }
 }
 
 async function _checkFirstLogin(user) {

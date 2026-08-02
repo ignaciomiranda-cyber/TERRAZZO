@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// ═══════════════════════════════════════════════════════════════
+// Realmood — Firestore security rules
+// Mirrors the RLS policies in supabase-setup.sql 1:1. If you change
+// access rules, update both this file and that comment for the record.
+// ═══════════════════════════════════════════════════════════════
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'ignacio.miranda@mi.unc.edu.ar';
+    }
+
+    // ── projects ────────────────────────────────────────────────
+    // public select | auth insert (own arquitecto_id) | owner update/delete
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+                    && request.resource.data.arquitecto_id == request.auth.uid;
+      allow update, delete: if isSignedIn()
+                    && resource.data.arquitecto_id == request.auth.uid;
+    }
+
+    // ── user_profiles ──────────────────────────────────────────
+    // Doc id == auth uid for self-created profiles. Admin-added provider
+    // rows get an auto-generated id and user_id: null until claimed
+    // (see _checkFirstLogin in app.html).
+    match /user_profiles/{profileId} {
+      allow read: if resource.data.role == 'proveedor'
+                  || (isSignedIn() && (request.auth.uid == profileId
+                                        || request.auth.uid == resource.data.user_id));
+
+      allow create: if isSignedIn()
+                    && (request.auth.uid == profileId || isAdmin());
+
+      // Self-update, or claiming an admin-added unclaimed row that matches
+      // your email (mirrors the "claim own provider profile" SQL policy).
+      allow update: if isSignedIn() && (
+                      request.auth.uid == profileId ||
+                      request.auth.uid == resource.data.user_id ||
+                      (resource.data.user_id == null
+                        && resource.data.email == request.auth.token.email
+                        && request.resource.data.user_id == request.auth.uid)
+                    );
+    }
+
+    // ── benefit_requests ────────────────────────────────────────
+    // anyone can create (anonymous benefit requests) | admin-only read (INS-49)
+    match /benefit_requests/{requestId} {
+      allow create: if true;
+      allow read: if isAdmin();
+    }
+  }
+}

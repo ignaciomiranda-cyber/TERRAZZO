@@ -6,7 +6,12 @@
   <title>Admin · Realmood</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="/firebase-adapter.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -545,16 +550,10 @@
 
 <script>
 // ── Config ─────────────────────────────────────────────────────────
-// SQL para habilitar SELECT en Supabase (correr una sola vez en SQL Editor):
-// CREATE POLICY "admin select benefit_requests"
-//   ON benefit_requests FOR SELECT
-//   USING (auth.jwt()->>'email' = 'ignacio.miranda@mi.unc.edu.ar');
-
-const SUPABASE_URL    = 'https://xzatiewlgmoalpzsnicz.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
-const ADMIN_EMAIL     = 'ignacio.miranda@mi.unc.edu.ar';
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Read access to benefit_requests is restricted to ADMIN_EMAIL — see the
+// `benefit_requests` match block in firestore.rules.
+const ADMIN_EMAIL = 'ignacio.miranda@mi.unc.edu.ar';
+// `sb` is defined by /firebase-adapter.js (loaded in <head>).
 
 let _providers = [];       // loaded from user_profiles
 let currentFilter = 'all';
@@ -765,6 +764,9 @@ async function addProvider() {
       benefit_type:        benefitType,
       benefit_description: benefitDesc || null,
       creador_terrazzo:    creadorTerrazzo,
+      // Explicit null (not omitted) so the "claim on first login" query
+      // (.eq('email',...).is('user_id', null)) can match this row later.
+      user_id:             null,
     });
     if (error) throw error;
 

@@ -7,7 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="/firebase-adapter.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -1073,13 +1078,8 @@ function toggleMobMenu(){
 </div>
 
 <script>
-// ── Supabase Auth ─────────────────────────────────────────────
-// CONFIGURAR: reemplazá estos dos valores con los de tu proyecto en supabase.com
-// Settings > API > Project URL y Project API Keys > anon public
-const SUPABASE_URL = 'https://xzatiewlgmoalpzsnicz.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_aLFzAbtDXlPy_VnyMPLZnQ_maAGTPOq';
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ── Firebase Auth/Firestore ──────────────────────────────────────
+// `sb` is defined by /firebase-adapter.js (loaded in <head>).
 let _authMode = 'login';
 let _currentUser = null;
 
@@ -1106,7 +1106,7 @@ async function _initAuth() {
     const { data: { session } } = await sb.auth.getSession();
     _onUser(session ? session.user : null);
     sb.auth.onAuthStateChange((_ev, session) => _onUser(session ? session.user : null));
-  } catch (e) { /* Supabase no configurado aún */ }
+  } catch (e) { /* Firebase no configurado aún */ }
 }
 
 function handleAvatarClick() {
