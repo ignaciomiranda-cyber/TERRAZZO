@@ -1147,8 +1147,8 @@ document.addEventListener('DOMContentLoaded', function() {
       window._explorarMarkerData=markerData;
       // Add map pins for any Supabase projects loaded before map initialized
       (window._explorarSbData||[]).forEach(({p,card,pinIdx})=>{
-        const c=BC[p.ubicacion];if(!c)return;
-        const off=[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
+        const c=(p.lat!=null&&p.lng!=null)?[p.lat,p.lng]:BC[p.ubicacion];if(!c)return;
+        const off=(p.lat!=null&&p.lng!=null)?[0,0]:[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
         const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
         const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
           .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
@@ -1757,6 +1757,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ── Load real projects from Supabase into Explorar ────────
     const BC_COORDS={'Nueva Córdoba':[-31.4285,-64.1843],'Centro':[-31.4135,-64.1894],'General Paz':[-31.4040,-64.2024],'Cerro de las Rosas':[-31.3808,-64.2065],'Cofico':[-31.3960,-64.1856],'Güemes':[-31.4216,-64.1843],'Villa Belgrano':[-31.3702,-64.2180],'Alberdi':[-31.4064,-64.1973]};
+    // Coordenadas de un proyecto: preferimos lat/lng reales (elegidas en el
+    // wizard de carga); si no las tiene (proyectos migrados viejos), caemos
+    // al centro aproximado del barrio como antes.
+    function _projectCoords(p){
+      if(p.lat!=null&&p.lng!=null)return [p.lat,p.lng];
+      const c=BC_COORDS[p.ubicacion];
+      return c||null;
+    }
+    const placeholderMedia=(ar)=>{const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:'+(ar||'4/3')+';background:#E8E4DC';d.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';return d;};
     window._loadSupabaseProjects=async function(){
       try{
         if(typeof sb==='undefined')return;
@@ -1768,9 +1777,8 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach((p,idx)=>{
           if(window._explorarLoadedSbIds.has(p.id))return;
           window._explorarLoadedSbIds.add(p.id);
-          const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):null;
-          if(!makeMain)return;
-          const media=photoMedia(p.portada_url,'4/3');
+          const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):(()=>placeholderMedia('1/1'));
+          const media=p.portada_url?photoMedia(p.portada_url,'4/3'):placeholderMedia('4/3');
           const provIds=p.proveedores||[];
           const card=mkCard(media,p.titulo,p.ubicacion+' · '+p.tipo,{
             filter:p.tipo,search:p.ubicacion,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.titulo,
@@ -1791,8 +1799,9 @@ document.addEventListener('DOMContentLoaded', function() {
           window._explorarSbData.push(sbEntry);
           // Add to map if map is already initialized; otherwise deferred to initExplorarMap
           if(window._explorarMapRef&&window._explorarMarkerData){
-            const c=BC_COORDS[p.ubicacion];if(!c)return;
-            const off=[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
+            const c=_projectCoords(p);if(!c)return;
+            const exact=p.lat!=null&&p.lng!=null;
+            const off=exact?[0,0]:[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
             const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
             const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(window._explorarMapRef)
               .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
@@ -1809,13 +1818,27 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── Upload wizard (global — outside DOMContentLoaded) ─────────
-var _uploadStep=1,_uploadTotalSteps=4;
-var _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:''},photos:[],providers:[{id:'',name:'',role:''}]};
-var _STEP_LABELS=['Datos','Fotos','Proveedores','Revisión'];
+var _uploadStep=1,_uploadTotalSteps=5;
+var _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:'',lat:null,lng:null,location_privacy:'exact'},photos:[],providers:[{id:'',name:'',role:''}]};
+var _STEP_LABELS=['Datos','Ubicación','Fotos','Proveedores','Revisión'];
+
+// Punto aleatorio dentro de un radio de `radiusM` metros — usado para
+// difuminar la ubicación cuando el usuario elige privacidad "aproximada".
+// Se aplica ANTES de guardar en Firestore: como /projects tiene lectura
+// pública, el punto exacto nunca debe llegar a la base si se pidió privacidad.
+function fuzzLatLng(lat,lng,radiusM){
+  var rd=(radiusM||300)/111320; // grados de latitud por metro (aprox.)
+  var u=Math.random(),v=Math.random();
+  var w=rd*Math.sqrt(u);
+  var t=2*Math.PI*v;
+  var dLat=w*Math.sin(t);
+  var dLng=w*Math.cos(t)/Math.cos(lat*Math.PI/180);
+  return {lat:lat+dLat,lng:lng+dLng};
+}
 
 function openUploadModal(){
   _uploadStep=1;
-  _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:''},photos:[],providers:[{id:'',name:'',role:''}]};
+  _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:'',lat:null,lng:null,location_privacy:'exact'},photos:[],providers:[{id:'',name:'',role:''}]};
   var ov=document.getElementById('rm-upload-overlay');ov.style.display='flex';
   _renderUpload();
 }
@@ -1845,12 +1868,32 @@ function _renderUpload(){
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Tipo','up-tipo',tipoOpts,_uploadData.project.tipo)+_uploadSelectField('Barrio / Ciudad','up-ubicacion',ubicOpts,_uploadData.project.ubicacion)+'</div>'
       +'<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">Descripción corta</label><textarea id="up-desc" placeholder="Describí el proyecto, el espacio, los materiales destacados..." style="'+_uploadInputStyle()+';resize:vertical;min-height:80px">'+(_uploadData.project.descripcion||'')+'</textarea></div>';
   } else if(_uploadStep===2){
+    var privExact=_uploadData.project.location_privacy!=='approx';
+    var hasLoc=_uploadData.project.lat!=null&&_uploadData.project.lng!=null;
+    c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Ubicación</h2><p style="font-size:13px;color:#9b958a;margin:0 0 16px">Buscá una dirección o hacé click en el mapa para marcar el punto — es opcional, pero alimenta el mapa de Explorar</p>'
+      +'<div style="display:flex;gap:8px;margin-bottom:10px">'
+      +'<input id="up-loc-search" type="text" placeholder="Buscar dirección o barrio…" style="'+_uploadInputStyle()+'" onkeydown="if(event.key===\'Enter\'){event.preventDefault();_searchUploadLocation();}">'
+      +'<button type="button" onclick="_searchUploadLocation()" style="font-family:inherit;font-size:13px;font-weight:600;padding:0 18px;border-radius:10px;border:1px solid #E4DFD5;background:#fff;color:#1A1A18;cursor:pointer;white-space:nowrap">Buscar</button>'
+      +'</div>'
+      +'<div id="up-loc-map" style="width:100%;height:240px;border-radius:12px;overflow:hidden;border:1px solid #E4DFD5;margin-bottom:8px"></div>'
+      +'<p id="up-loc-status" style="font-size:12px;color:#9b958a;margin:0 0 18px">'+(hasLoc?('Ubicación marcada: '+_uploadData.project.lat.toFixed(5)+', '+_uploadData.project.lng.toFixed(5)):'Sin ubicación marcada todavía')+'</p>'
+      +'<div style="font-size:12px;font-weight:700;color:#6F6A60;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Privacidad de la ubicación</div>'
+      +'<label style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid '+(privExact?'#1A1A18':'#E4DFD5')+';border-radius:12px;cursor:pointer;margin-bottom:8px">'
+      +'<input type="radio" name="up-loc-priv" value="exact"'+(privExact?' checked':'')+' style="margin-top:2px">'
+      +'<span><span style="display:block;font-size:13px;font-weight:700;color:#1A1A18">Exacta</span><span style="display:block;font-size:12px;color:#9b958a;margin-top:1px">Se muestra el punto real en el mapa.</span></span>'
+      +'</label>'
+      +'<label style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid '+(!privExact?'#1A1A18':'#E4DFD5')+';border-radius:12px;cursor:pointer">'
+      +'<input type="radio" name="up-loc-priv" value="approx"'+(!privExact?' checked':'')+' style="margin-top:2px">'
+      +'<span><span style="display:block;font-size:13px;font-weight:700;color:#1A1A18">Aproximada</span><span style="display:block;font-size:12px;color:#9b958a;margin-top:1px">Se muestra dentro de un radio de ~300m — para proteger la privacidad de la vivienda.</span></span>'
+      +'</label>';
+    _initUploadLocationMap();
+  } else if(_uploadStep===3){
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Fotos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">Portada + galería — hasta 5 imágenes, se comprimen automáticamente</p>'
       +'<div id="up-photo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'+_uploadPhotoPreviews()+'</div>'
       +'<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px dashed #D7D1C6;border-radius:12px;cursor:pointer;color:#6F6A60;font-size:13px;font-weight:600" onmouseenter="this.style.borderColor=\'#1A1A18\';this.style.color=\'#1A1A18\'" onmouseleave="this.style.borderColor=\'#D7D1C6\';this.style.color=\'#6F6A60\'">'
       +'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Subir fotos'
       +'<input id="up-photo-input" type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)"></label>';
-  } else if(_uploadStep===3){
+  } else if(_uploadStep===4){
     var html3='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Tag de proveedores</h2><p style="font-size:13px;color:#9b958a;margin:0 0 18px">¿Quiénes participaron? — podés taggear más de uno</p>';
     _uploadData.providers.forEach(function(pv,i){
       html3+='<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:12px;padding:14px 16px;margin-bottom:10px">'
@@ -1862,10 +1905,12 @@ function _renderUpload(){
     });
     if(_uploadData.providers.length<6)html3+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
     c.innerHTML=html3;
-  } else if(_uploadStep===4){
+  } else if(_uploadStep===5){
     var provs=_uploadData.providers.filter(function(p){return p.name.trim();});
     var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+_esc(p.name)+'</span><span style="font-size:11px;color:#9b958a">· '+_esc(p.role)+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
     var photoHtml=_uploadData.photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+_uploadData.photos.map(function(ph){return '<img src="'+ph.url+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px">';}).join('')+'</div>':'<p style="font-size:13px;color:#9b958a;margin:4px 0 0">Sin fotos</p>';
+    var locHasPin=_uploadData.project.lat!=null&&_uploadData.project.lng!=null;
+    var locHtml=locHasPin?('Marcada · '+(_uploadData.project.location_privacy==='approx'?'aproximada (~300m)':'exacta')):'Sin marcar en el mapa';
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 20px;letter-spacing:-.01em">Revisión y publicar</h2>'
       +'<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:14px;padding:18px 20px;margin-bottom:16px">'
       +'<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+(_uploadData.project.tipo||'')+'</div>'
@@ -1873,14 +1918,53 @@ function _renderUpload(){
       +'<div style="font-size:12px;color:#9b958a;margin-bottom:'+((_uploadData.project.descripcion)?'12px':'0')+'">'+(_uploadData.project.ubicacion||'')+'</div>'
       +(_uploadData.project.descripcion?'<p style="font-size:13px;color:#6F6A60;margin:0;line-height:1.55">'+_uploadData.project.descripcion+'</p>':'')
       +'</div>'
+      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Ubicación en el mapa</div><p style="font-size:13px;color:#6F6A60;margin:0">'+locHtml+'</p></div>'
       +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Fotos</div>'+photoHtml+'</div>'
       +'<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Proveedores taggeados</div>'+provHtml+'</div>';
   }
 }
 
+var _uploadLocMapRef=null,_uploadLocMarker=null;
+function _initUploadLocationMap(){
+  if(_uploadLocMapRef){try{_uploadLocMapRef.remove();}catch(e){}_uploadLocMapRef=null;_uploadLocMarker=null;}
+  var el=document.getElementById('up-loc-map');if(!el||typeof L==='undefined')return;
+  var hasLoc=_uploadData.project.lat!=null&&_uploadData.project.lng!=null;
+  var startLat=hasLoc?_uploadData.project.lat:-31.4201;
+  var startLng=hasLoc?_uploadData.project.lng:-64.1888;
+  var map=L.map('up-loc-map').setView([startLat,startLng],hasLoc?15:12);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',subdomains:'abcd',maxZoom:20}).addTo(map);
+  function placeMarker(lat,lng){
+    _uploadData.project.lat=lat;_uploadData.project.lng=lng;
+    if(_uploadLocMarker)_uploadLocMarker.setLatLng([lat,lng]);
+    else{
+      _uploadLocMarker=L.marker([lat,lng],{draggable:true}).addTo(map);
+      _uploadLocMarker.on('dragend',function(){var p=_uploadLocMarker.getLatLng();placeMarker(p.lat,p.lng);});
+    }
+    var st=document.getElementById('up-loc-status');
+    if(st)st.textContent='Ubicación marcada: '+lat.toFixed(5)+', '+lng.toFixed(5);
+  }
+  if(hasLoc)placeMarker(startLat,startLng);
+  map.on('click',function(e){placeMarker(e.latlng.lat,e.latlng.lng);});
+  _uploadLocMapRef=map;
+  setTimeout(function(){map.invalidateSize();},150);
+}
+async function _searchUploadLocation(){
+  var input=document.getElementById('up-loc-search');
+  var q=input?input.value.trim():'';
+  if(!q)return;
+  try{
+    var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ar&q='+encodeURIComponent(q+', Córdoba, Argentina'));
+    var data=await res.json();
+    if(!data||!data.length){window.toast&&toast('No se encontró esa dirección');return;}
+    var lat=parseFloat(data[0].lat),lng=parseFloat(data[0].lon);
+    if(_uploadLocMapRef){_uploadLocMapRef.setView([lat,lng],16);_uploadLocMapRef.fire('click',{latlng:{lat:lat,lng:lng}});}
+  }catch(e){window.toast&&toast('No se pudo buscar la dirección — probá marcarla directo en el mapa');}
+}
+
 function _saveUploadStepData(){
   var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
   if(_uploadStep===1){_uploadData.project.titulo=g('up-titulo');_uploadData.project.tipo=g('up-tipo');_uploadData.project.ubicacion=g('up-ubicacion');_uploadData.project.descripcion=g('up-desc');}
+  if(_uploadStep===2){var pr=document.querySelector('input[name="up-loc-priv"]:checked');_uploadData.project.location_privacy=pr?pr.value:'exact';}
 }
 
 function uploadNext(){
@@ -2002,6 +2086,18 @@ async function _submitUploadProject(){
     var provIds=_uploadData.providers.filter(function(p){return p.id;}).map(function(p){return p.id;});
     var userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
     var userId=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.id:null;
+    // Privacidad de ubicación: si es "aproximada", el punto se difumina ACÁ,
+    // antes de escribir a Firestore — /projects tiene lectura pública, así
+    // que el punto exacto nunca debe llegar a la base si se pidió privacidad.
+    var finalLat=null,finalLng=null;
+    if(_uploadData.project.lat!=null&&_uploadData.project.lng!=null){
+      if(_uploadData.project.location_privacy==='approx'){
+        var fz=fuzzLatLng(_uploadData.project.lat,_uploadData.project.lng,300);
+        finalLat=fz.lat;finalLng=fz.lng;
+      }else{
+        finalLat=_uploadData.project.lat;finalLng=_uploadData.project.lng;
+      }
+    }
     var{error:insErr}=await sb.from('projects').insert({
       titulo:_uploadData.project.titulo,
       tipo:_uploadData.project.tipo,
@@ -2011,7 +2107,10 @@ async function _submitUploadProject(){
       galeria_urls:galeriaUrls.length?galeriaUrls:null,
       proveedores:provIds.length?provIds:null,
       arquitecto_email:userEmail,
-      arquitecto_id:userId
+      arquitecto_id:userId,
+      lat:finalLat,
+      lng:finalLng,
+      location_privacy:finalLat!=null?_uploadData.project.location_privacy:null
     });
     if(insErr)throw insErr;
     closeUploadModal();
