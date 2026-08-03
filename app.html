@@ -361,11 +361,6 @@ function rmGateSubmit(){
       <span id="rm-mob-account-label">Iniciar sesión</span>
     </button>
 
-    <button id="rm-admin-btn" type="button" data-view="admin" data-label="Admin" style="display:none;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      <span>Admin</span>
-    </button>
-
     <button type="button" class="rm-cfg-btn" data-view="config" data-label="Configuración" style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>Configuración</span>
@@ -438,7 +433,6 @@ function rmGateSubmit(){
       <section id="view-mood" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-saved" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-mensajes" style="display:none;animation:vIn .35s ease"></section>
-      <section id="view-admin" style="display:none;animation:vIn .35s ease"></section>
       <section id="view-config" style="display:none;animation:vIn .35s ease;padding:32px 26px;max-width:600px;margin:0 auto"></section>
 
       <!-- Pin detail page (full view, like Pinterest) -->
@@ -491,7 +485,6 @@ function rmGateSubmit(){
           </div>
           <p id="vp-bio" style="font-size:14px;line-height:1.75;color:#6F6A60;text-align:left;margin:0 0 22px;background:#FAFAF8;border-radius:16px;padding:18px 22px;border:1px solid #ECE8E0"></p>
           <div id="vp-tags" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:28px"></div>
-          <div id="vp-benefit" style="display:none;margin-bottom:28px;text-align:left"></div>
           <h2 style="font-size:14px;font-weight:700;color:#1A1A18;text-align:left;margin:0 0 12px;letter-spacing:-.01em">Portfolio</h2>
           <div id="vp-portfolio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px;text-align:left"></div>
           <a id="vp-cta" href="#" style="display:none"></a>
@@ -1442,7 +1435,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('view-mensajes').innerHTML=placeholder('<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-11.6 7.1L4 20.5l1.9-5.3A8 8 0 1 1 21 11.5z"/></svg>','Mensajes','Acá vas a poder hablar con el equipo de Instone sobre tus diseños y cotizaciones.',null);
 
     // ── view switching ────────────────────────────────────────
-    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','admin','perfil','pin','config'];
+    const VIEWS=['inicio','explorar','mis-proyectos','crear','mood','saved','mensajes','perfil','pin','config'];
     window._provPrevView='inicio';
     window._pinPrevView='inicio';
     const navBtns=Array.from(document.querySelectorAll('aside [data-view]'));
@@ -1455,7 +1448,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if(v==='mood')loadMoodList();
       if(v==='saved')loadBoardsView();
       if(v==='mis-proyectos')loadMisProyectos();
-      if(v==='admin')loadAdminView();
       if(v==='config')loadConfigView();
       if(v==='explorar'){if(!window._explorarMapRef)initExplorarMap();setTimeout(()=>{if(window._explorarMapRef)window._explorarMapRef.invalidateSize();updateMapBelow();},200);}
       $('ins-search').value='';doSearch('');
@@ -1708,7 +1700,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.documentElement.scrollTop=0;
     };
 
-    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes','admin'];
+    const _validViews=['inicio','explorar','mood','mis-proyectos','crear','saved','mensajes'];
     const _hashView=window.location.hash.replace('#','');
     setView(_validViews.includes(_hashView)?_hashView:'inicio');
 
@@ -1939,13 +1931,13 @@ async function _provInput(i,val){
   var q=(val||'').toLowerCase().trim();
   if(!q){dd.style.display='none';return;}
   if(!_providersLoaded)await _initProviders();
-  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.benefit&&(c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0);});
+  var m=(window._PM_CONTACTS||[]).filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||c.role.toLowerCase().indexOf(q)>=0;});
   if(!m.length){dd.style.display='none';return;}
   dd.style.display='block';
   dd.innerHTML=m.map(function(c){
     return '<div onmousedown="_provSelect('+i+',\''+c.id+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #F0ECE6" onmouseover="this.style.background=\'#F8F6F2\'" onmouseout="this.style.background=\'#fff\'">'
-      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+c.name+'</div>'
-      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+c.role+'</div>'
+      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(c.name)+'</div>'
+      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+_esc(c.role)+'</div>'
       +'</div>';
   }).join('');
 }
@@ -2043,7 +2035,7 @@ async function _initProviders() {
   try {
     if (typeof sb === 'undefined') return;
     const { data } = await sb.from('user_profiles')
-      .select('id,nombre,rubro,ciudad,wa,benefit_type,benefit_description')
+      .select('id,nombre,rubro,ciudad,wa')
       .eq('role', 'proveedor');
     if (data && data.length) {
       window._PM_CONTACTS = data.map(p => ({
@@ -2057,27 +2049,10 @@ async function _initProviders() {
         tags:     [],
         portfolio:[],
         wa:       p.wa || '',
-        benefit:  (p.benefit_type && p.benefit_description)
-                    ? { type: p.benefit_type, description: p.benefit_description }
-                    : null,
       }));
     }
     _providersLoaded = true;
   } catch (e) { /* ignore if table doesn't exist yet */ }
-}
-
-// benefit_requests: anyone can create a request; only the admin account can read
-// the collection. See the `benefit_requests` match block in firestore.rules.
-async function recordBenefitRequest(prov,pinData){
-  try{
-    await sb.from('benefit_requests').insert({
-      provider_id:prov.id,
-      provider_name:prov.name,
-      benefit_type:prov.benefit?prov.benefit.type:null,
-      project_title:pinData?pinData.title:null,
-      user_email:typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null
-    });
-  }catch(e){/* colección aún no existe en Firestore o las reglas la bloquean */}
 }
 
 function openProfOverlay(prov,projectTitle){
@@ -2103,32 +2078,6 @@ function openProfOverlay(prov,projectTitle){
   // Tags
   const tg=document.getElementById('vp-tags');tg.innerHTML='';
   (prov.tags||[]).forEach(t=>{const s=document.createElement('span');s.style.cssText='font-size:11px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:100px;background:#F1ECE2;color:#6F6A60';s.textContent=t;tg.appendChild(s);});
-  // Benefit card
-  const benEl=document.getElementById('vp-benefit');
-  if(prov.benefit){
-    const typeIcon={'muestra gratis':'🎁','descuento':'💰','prioridad de entrega':'⚡'};
-    const icon=typeIcon[prov.benefit.type]||'✦';
-    benEl.style.display='';
-    benEl.innerHTML='<div style="background:linear-gradient(135deg,#F5F3EF,#EDE8DF);border:1px solid #D9D3C6;border-radius:16px;padding:20px 22px">'
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-      +'<span style="font-size:18px">'+icon+'</span>'
-      +'<span style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9b958a">Beneficio exclusivo</span>'
-      +'</div>'
-      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+_esc(prov.benefit.description)+'</p>'
-      +'<button id="vp-benefit-btn" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s">Solicitar beneficio →</button>'
-      +'</div>';
-    document.getElementById('vp-benefit-btn').addEventListener('click',async()=>{
-      const btn=document.getElementById('vp-benefit-btn');
-      btn.disabled=true;btn.style.opacity='.6';btn.textContent='Procesando…';
-      await recordBenefitRequest(prov,window._lastPmData);
-      const waMsg=encodeURIComponent('Hola '+prov.name+'! Vi tu beneficio en Realmood ("'+prov.benefit.description+'") y me gustaría solicitarlo para mi proyecto.');
-      window.open('https://wa.me/'+prov.wa+'?text='+waMsg,'_blank');
-      btn.textContent='¡Solicitado! ✓';btn.style.background='#27AE60';btn.style.opacity='1';
-      if(typeof toast==='function')toast('¡Beneficio solicitado! Te contactamos por WhatsApp.');
-    });
-  }else{
-    benEl.style.display='none';
-  }
   // Portfolio
   const po=document.getElementById('vp-portfolio');po.innerHTML='';
   (prov.portfolio||[]).forEach(src=>{
@@ -2278,7 +2227,6 @@ async function rmAiSend(){
 // and storage.rules at the repo root for the access-control policy.
 let _authMode = 'login';
 let _currentUser = null;
-const ADMIN_EMAILS = ['ignacio.miranda@mi.unc.edu.ar'];
 
 function _onUser(user) {
   _currentUser = user;
@@ -2298,69 +2246,6 @@ function _onUser(user) {
   if (emailEl) emailEl.textContent = user ? user.email : '';
   const mobAccountLabel = document.getElementById('rm-mob-account-label');
   if (mobAccountLabel) mobAccountLabel.textContent = user ? 'Mi cuenta' : 'Iniciar sesión';
-  const adminBtn = document.getElementById('rm-admin-btn');
-  if (adminBtn) adminBtn.style.display = (user && ADMIN_EMAILS.includes(user.email)) ? 'flex' : 'none';
-}
-
-async function loadAdminView() {
-  const vm = document.getElementById('view-admin');
-  if (!vm) return;
-  if (!_currentUser) {
-    vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">Iniciá sesión para acceder al panel de administración.</p></div>';
-    return;
-  }
-  if (!ADMIN_EMAILS.includes(_currentUser.email)) {
-    vm.innerHTML = '<div style="max-width:480px;margin:80px auto;text-align:center;padding:40px;border:1.5px dashed #D7D1C6;border-radius:20px"><p style="font-size:14px;color:#9b958a">No tenés permiso para acceder a esta sección.</p></div>';
-    return;
-  }
-  vm.innerHTML = '<div style="max-width:860px;margin:0 auto">'
-    + '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em">Panel de administración</h1>'
-    + '<p style="font-size:13px;color:#9b958a;margin:0 0 28px">Solicitudes de beneficio por proveedor</p>'
-    + '<div id="admin-loading" style="text-align:center;color:#9b958a;padding:40px">Cargando datos…</div>'
-    + '</div>';
-  try {
-    if (!_providersLoaded) await _initProviders();
-    const { data, error } = await sb.from('benefit_requests').select('*').order('created_at', { ascending: false });
-    if (error) throw error;
-    const byProvider = {};
-    (window._PM_CONTACTS || []).forEach(c => { byProvider[c.id] = { ...c, requests: [] }; });
-    (data || []).forEach(r => { if (byProvider[r.provider_id]) byProvider[r.provider_id].requests.push(r); });
-    const rows = Object.values(byProvider).sort((a, b) => b.requests.length - a.requests.length);
-    const tbl = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
-      + '<thead><tr style="border-bottom:2px solid #E4DFD5">'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proveedor</th>'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Beneficio</th>'
-      + '<th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Solicitudes</th>'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Último contacto</th>'
-      + '</tr></thead><tbody>'
-      + rows.map(p => '<tr style="border-bottom:1px solid #F0EDE8">'
-        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + _esc(p.name) + '</div><div style="font-size:11px;color:#9b958a">' + _esc(p.role) + '</div></td>'
-        + '<td style="padding:12px 14px;color:#6F6A60">' + (p.benefit ? _esc(p.benefit.type) : '—') + '</td>'
-        + '<td style="padding:12px 14px;text-align:center"><span style="font-size:18px;font-weight:800;color:' + (p.requests.length > 0 ? '#1A1A18' : '#C8C3B8') + '">' + p.requests.length + '</span></td>'
-        + '<td style="padding:12px 14px;font-size:11px;color:#9b958a">' + (p.requests.length ? new Date(p.requests[0].created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—') + '</td>'
-        + '</tr>').join('')
-      + '</tbody></table>';
-    const recent = (data || []).slice(0, 10).map(r => '<tr style="border-bottom:1px solid #F0EDE8">'
-      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + _esc(r.provider_name || r.provider_id) + '</td>'
-      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + _esc(r.benefit_type || '—') + '</td>'
-      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(r.project_title || '—') + '</td>'
-      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + _esc(r.user_email || 'anónimo') + '</td>'
-      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + new Date(r.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>'
-      + '</tr>').join('');
-    vm.querySelector('#admin-loading').outerHTML = tbl
-      + '<h2 style="font-size:15px;font-weight:700;margin:36px 0 14px;letter-spacing:-.01em">Últimas solicitudes</h2>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:13px">'
-      + '<thead><tr style="border-bottom:2px solid #E4DFD5">'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proveedor</th>'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Beneficio</th>'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Proyecto</th>'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Email</th>'
-      + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Fecha</th>'
-      + '</tr></thead><tbody>' + (recent || '<tr><td colspan="5" style="padding:20px 14px;text-align:center;color:#9b958a">Sin solicitudes aún</td></tr>') + '</tbody></table>';
-  } catch (e) {
-    const loadEl = vm.querySelector('#admin-loading');
-    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + (e.message || 'revisá firestore.rules y que la colección benefit_requests exista') + '</p>';
-  }
 }
 
 function _hideDiscover() {
@@ -2451,7 +2336,6 @@ async function loadConfigView() {
     profile = data;
   } catch (e) { /* ignore */ }
   const role = profile ? profile.role : null;
-  const benefitTypes = ['descuento', 'muestra gratis', 'prioridad de entrega'];
   const fieldRow = (label, id, val, placeholder, type) =>
     '<div style="margin-bottom:16px">'
     + '<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">' + label + '</label>'
@@ -2468,13 +2352,7 @@ async function loadConfigView() {
     + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text');
   const provFields = fieldRow('Nombre de marca', 'nombre', profile && profile.nombre, 'Ej: Mi Proveeduría', 'text')
     + fieldRow('Rubro', 'rubro', profile && profile.rubro, 'Ej: Materiales de construcción', 'text')
-    + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text')
-    + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
-    + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
-    + '<option value="">— Sin beneficio —</option>'
-    + benefitTypes.map(t => '<option value="' + t + '"' + (profile && profile.benefit_type === t ? ' selected' : '') + '>' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
-    + '</select></div>'
-    + fieldRow('Descripción del beneficio', 'benefit_description', profile && profile.benefit_description, 'Ej: 10% de descuento en primera compra', 'text');
+    + fieldRow('Ciudad', 'ciudad', profile && profile.ciudad, 'Ej: Córdoba', 'text');
   vm.innerHTML = '<h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em">Configuración</h1>'
     + '<p style="font-size:13px;color:#9b958a;margin:0 0 28px">Tu perfil en realmood</p>'
     + roleSelect
@@ -2501,13 +2379,7 @@ function setCfgRole(r) {
   if (r === 'proveedor') {
     fieldsEl.innerHTML = fieldRow('Nombre de marca', 'nombre', '', 'Ej: Mi Proveeduría')
       + fieldRow('Rubro', 'rubro', '', 'Ej: Materiales de construcción')
-      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba')
-      + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
-      + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
-      + '<option value="">— Sin beneficio —</option>'
-      + ['descuento','muestra gratis','prioridad de entrega'].map(t => '<option value="' + t + '">' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
-      + '</select></div>'
-      + fieldRow('Descripción del beneficio', 'benefit_description', '', 'Ej: 10% de descuento en primera compra');
+      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba');
   } else {
     fieldsEl.innerHTML = fieldRow('Nombre / Estudio', 'nombre', '', 'Ej: Estudio Pérez & Co.')
       + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba');
@@ -2519,7 +2391,7 @@ async function saveCfgProfile() {
   const role = window._cfgCurrentRole || 'arquitecto';
   const get = id => { const el = document.getElementById('cfg-' + id); return el ? el.value.trim() : ''; };
   const payload = { email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), user_id: _currentUser.id, updated_at: new Date().toISOString() };
-  if (role === 'proveedor') { payload.rubro = get('rubro'); payload.benefit_type = get('benefit_type') || null; payload.benefit_description = get('benefit_description') || null; }
+  if (role === 'proveedor') { payload.rubro = get('rubro'); }
   try {
     // Find the profile row to update (may be a claimed row with id ≠ auth uid)
     const { data: existing } = await sb.from('user_profiles').select('id')
