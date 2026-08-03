@@ -540,6 +540,9 @@ function rmGateSubmit(){
 <div id="ins-toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A18;color:#fff;padding:11px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:200;white-space:nowrap">—</div>
 
 <script>
+// Escapa texto de usuario antes de insertarlo en innerHTML (evita XSS almacenado).
+// Global a propósito: se usa dentro y fuera de los closures de DOMContentLoaded.
+function _esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 document.addEventListener('DOMContentLoaded', function() {
     const $=id=>document.getElementById(id);
 
@@ -979,8 +982,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if(title&&opts.captionBelow!==false){
         const cap=document.createElement('div');
         cap.style.cssText='padding:8px 8px 6px';
-        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'
-          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+tag+'</div>':'');
+        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(title)+'</div>'
+          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(tag)+'</div>':'');
         card.appendChild(cap);
       }
       return card;
@@ -1050,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate discover landing grid — deferred so it doesn't block initial parse
     window._buildDiscoverGrid=function(){
       const dg=$('rm-discover-grid');if(!dg||dg._built)return;dg._built=true;
-      const tile=(media,title,tag,autor)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 7px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+tag+'</div>':'');d.appendChild(cap);}if(autor){const ini=autor.replace(/^(Arq\.|Studio|Estudio|Equipo)\s*/,'').charAt(0).toUpperCase();const att=document.createElement('div');att.style.cssText='padding:5px 11px 10px;display:flex;align-items:center;gap:7px;border-top:1px solid #f0ece4';att.innerHTML='<div style="width:20px;height:20px;border-radius:50%;background:#E8E3DA;display:flex;align-items:center;justify-content:center;flex:none;font-size:9px;font-weight:800;color:#7a7468;line-height:1">'+ini+'</div><span style="font-size:10px;color:#7a7468;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+autor+'</span>';d.appendChild(att);}return d;};
+      const tile=(media,title,tag,autor)=>{const d=document.createElement('div');d.style.cssText='break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)';d.appendChild(media);if(title){const cap=document.createElement('div');cap.style.cssText='padding:9px 11px 7px';cap.innerHTML='<div style="font-size:11px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(title)+'</div>'+(tag?'<div style="font-size:10px;color:#9b958a;margin-top:1px">'+_esc(tag)+'</div>':'');d.appendChild(cap);}if(autor){const ini=autor.replace(/^(Arq\.|Studio|Estudio|Equipo)\s*/,'').charAt(0).toUpperCase();const att=document.createElement('div');att.style.cssText='padding:5px 11px 10px;display:flex;align-items:center;gap:7px;border-top:1px solid #f0ece4';att.innerHTML='<div style="width:20px;height:20px;border-radius:50%;background:#E8E3DA;display:flex;align-items:center;justify-content:center;flex:none;font-size:9px;font-weight:800;color:#7a7468;line-height:1">'+_esc(ini)+'</div><span style="font-size:10px;color:#7a7468;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(autor)+'</span>';d.appendChild(att);}return d;};
       const items=[];
       PROJECTS.forEach(p=>{let m;if(p.img)m=photoMedia(p.img);else if(p.slab)m=slabMedia({...p.slab,r:16/9});else m=terrMedia({...p.terr,r:16/9});items.push(tile(m,p.name,p.barrio+' · '+p.tag,p.autor));});
       TERR.forEach(t=>items.push(tile(terrMedia({...t,r:4/3}),t.title,'Terrazzo · Instone','Instone')));
@@ -1139,12 +1142,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const tipHtml='<div style="font-family:Inter,sans-serif;width:180px;padding:0">'
           +'<div style="height:80px;background:'+bg+';border-radius:8px 8px 0 0"></div>'
           +'<div style="padding:10px 12px 12px">'
-          +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px">'+p.name+'</div>'
-          +'<div style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</div>'
+          +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px">'+_esc(p.name)+'</div>'
+          +'<div style="font-size:11px;color:#9b958a">'+_esc(p.barrio)+' · '+_esc(p.tag)+'</div>'
           +'</div></div>';
         const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
           .bindTooltip(tipHtml,{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]})
-          .bindPopup('<div style="font-family:Inter,sans-serif;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+p.name+'</strong><br><span style="font-size:11px;color:#9b958a">'+p.barrio+' · '+p.tag+'</span></div>');
+          .bindPopup('<div style="font-family:Inter,sans-serif;padding:2px 0"><strong style="font-size:13px;color:#1A1A18">'+_esc(p.name)+'</strong><br><span style="font-size:11px;color:#9b958a">'+_esc(p.barrio)+' · '+_esc(p.tag)+'</span></div>');
         markerData.push({marker,proj:p});
       });
       window._explorarMapRef=map;
@@ -1155,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const off=[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
         const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
         const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
-          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
         window._explorarMarkerData.push({marker,proj:card._rmProject});
       });
       map.on('moveend zoomend',updateMapBelow);
@@ -1526,7 +1529,7 @@ document.addEventListener('DOMContentLoaded', function() {
       _contactsSource.forEach(c=>{
         const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:stretch;margin-bottom:8px';
         const btn=document.createElement('button');btn.type='button';btn.className='pm-cb';btn.style.marginBottom='0';btn.style.flex='1';
-        btn.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
+        btn.innerHTML='<span class="pm-cb-dot" style="background:'+_esc(c.color)+'"></span><span><span class="pm-cb-role">'+_esc(c.role)+'</span><span class="pm-cb-name">'+_esc(c.name)+'</span></span>'
           +'<svg style="margin-left:auto;flex:none;opacity:.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
         btn.addEventListener('click',()=>openProfOverlay(c,data.title));
         row.appendChild(btn);cc.appendChild(row);
@@ -1743,15 +1746,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       let grid='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">';
       list.forEach(p=>{
-        const cover=p.portada_url?'<img src="'+p.portada_url+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+        const cover=p.portada_url?'<img src="'+_esc(p.portada_url)+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
         const provList=(p.proveedores&&p.proveedores.length)?(window._PM_CONTACTS||[]).filter(c=>p.proveedores.includes(c.id)).map(c=>c.name).join(', '):'';
         grid+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">'
           +'<div style="height:140px;overflow:hidden;background:#F5F3EF">'+cover+'</div>'
           +'<div style="padding:14px 16px">'
-          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+p.tipo+'</div>'
-          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.titulo+'</div>'
-          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.ubicacion+'</div>'
-          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+provList+'</div>':'<div style="margin-bottom:12px"></div>')
+          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+_esc(p.tipo)+'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(p.titulo)+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+_esc(p.ubicacion)+'</div>'
+          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+_esc(provList)+'</div>':'<div style="margin-bottom:12px"></div>')
           +'<button onclick="deleteMyProject(\''+p.id+'\')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
           +'</div></div>';
       });
@@ -1800,7 +1803,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const off=[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
             const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
             const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(window._explorarMapRef)
-              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
             window._explorarMarkerData.push({marker,proj:card._rmProject});
           }
         });
@@ -1828,7 +1831,7 @@ function closeUploadModal(){document.getElementById('rm-upload-overlay').style.d
 function uploadOverlayClick(e){if(e.target===document.getElementById('rm-upload-overlay'))closeUploadModal();}
 
 function _uploadInputStyle(){return 'font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid #E4DFD5;border-radius:10px;color:#1A1A18;background:#fff;outline:none;width:100%;box-sizing:border-box';}
-function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
+function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+_esc(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
 function _uploadSelectField(lbl,id,opts,sel){return '<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><select id="'+id+'" style="'+_uploadInputStyle().replace('font-size:13px','font-size:14px')+'">'+opts.map(o=>'<option'+(o===sel?' selected':'')+'>'+o+'</option>').join('')+'</select></div>';}
 function _uploadPhotoPreviews(){
   if(!_uploadData.photos.length)return '';
@@ -1862,19 +1865,19 @@ function _renderUpload(){
         +'<div style="font-size:10px;font-weight:700;color:#9b958a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Proveedor '+(i+1)+'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +_provAutoHtml(i,pv)
-        +'<input id="up-prov-role-'+i+'" placeholder="Rol" value="'+(pv.role||'')+'" readonly style="'+_uploadInputStyle()+';background:#F5F3EF;color:#6F6A60;cursor:default">'
+        +'<input id="up-prov-role-'+i+'" placeholder="Rol" value="'+_esc(pv.role||'')+'" readonly style="'+_uploadInputStyle()+';background:#F5F3EF;color:#6F6A60;cursor:default">'
         +'</div></div>';
     });
     if(_uploadData.providers.length<6)html3+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
     c.innerHTML=html3;
   } else if(_uploadStep===4){
     var provs=_uploadData.providers.filter(function(p){return p.name.trim();});
-    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+p.name+'</span><span style="font-size:11px;color:#9b958a">· '+p.role+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
+    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+_esc(p.name)+'</span><span style="font-size:11px;color:#9b958a">· '+_esc(p.role)+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
     var photoHtml=_uploadData.photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+_uploadData.photos.map(function(ph){return '<img src="'+ph.url+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px">';}).join('')+'</div>':'<p style="font-size:13px;color:#9b958a;margin:4px 0 0">Sin fotos</p>';
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 20px;letter-spacing:-.01em">Revisión y publicar</h2>'
       +'<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:14px;padding:18px 20px;margin-bottom:16px">'
       +'<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+(_uploadData.project.tipo||'')+'</div>'
-      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+(_uploadData.project.titulo||'Sin título')+'</div>'
+      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+_esc(_uploadData.project.titulo||'Sin título')+'</div>'
       +'<div style="font-size:12px;color:#9b958a;margin-bottom:'+((_uploadData.project.descripcion)?'12px':'0')+'">'+(_uploadData.project.ubicacion||'')+'</div>'
       +(_uploadData.project.descripcion?'<p style="font-size:13px;color:#6F6A60;margin:0;line-height:1.55">'+_uploadData.project.descripcion+'</p>':'')
       +'</div>'
@@ -2111,7 +2114,7 @@ function openProfOverlay(prov,projectTitle){
       +'<span style="font-size:18px">'+icon+'</span>'
       +'<span style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9b958a">Beneficio exclusivo</span>'
       +'</div>'
-      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+prov.benefit.description+'</p>'
+      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+_esc(prov.benefit.description)+'</p>'
       +'<button id="vp-benefit-btn" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s">Solicitar beneficio →</button>'
       +'</div>';
     document.getElementById('vp-benefit-btn').addEventListener('click',async()=>{
@@ -2331,17 +2334,17 @@ async function loadAdminView() {
       + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Último contacto</th>'
       + '</tr></thead><tbody>'
       + rows.map(p => '<tr style="border-bottom:1px solid #F0EDE8">'
-        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + p.name + '</div><div style="font-size:11px;color:#9b958a">' + p.role + '</div></td>'
-        + '<td style="padding:12px 14px;color:#6F6A60">' + (p.benefit ? p.benefit.type : '—') + '</td>'
+        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + _esc(p.name) + '</div><div style="font-size:11px;color:#9b958a">' + _esc(p.role) + '</div></td>'
+        + '<td style="padding:12px 14px;color:#6F6A60">' + (p.benefit ? _esc(p.benefit.type) : '—') + '</td>'
         + '<td style="padding:12px 14px;text-align:center"><span style="font-size:18px;font-weight:800;color:' + (p.requests.length > 0 ? '#1A1A18' : '#C8C3B8') + '">' + p.requests.length + '</span></td>'
         + '<td style="padding:12px 14px;font-size:11px;color:#9b958a">' + (p.requests.length ? new Date(p.requests[0].created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—') + '</td>'
         + '</tr>').join('')
       + '</tbody></table>';
     const recent = (data || []).slice(0, 10).map(r => '<tr style="border-bottom:1px solid #F0EDE8">'
-      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + (r.provider_name || r.provider_id) + '</td>'
-      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + (r.benefit_type || '—') + '</td>'
-      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.project_title || '—') + '</td>'
-      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + (r.user_email || 'anónimo') + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + _esc(r.provider_name || r.provider_id) + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + _esc(r.benefit_type || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(r.project_title || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + _esc(r.user_email || 'anónimo') + '</td>'
       + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + new Date(r.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>'
       + '</tr>').join('');
     vm.querySelector('#admin-loading').outerHTML = tbl
