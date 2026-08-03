@@ -47,12 +47,5 @@ service cloud.firestore {
                         && request.resource.data.user_id == request.auth.uid)
                     );
     }
-
-    // ── benefit_requests ────────────────────────────────────────
-    // anyone can create (anonymous benefit requests) | admin-only read (INS-49)
-    match /benefit_requests/{requestId} {
-      allow create: if true;
-      allow read: if isAdmin();
-    }
   }
 }
