@@ -28,11 +28,11 @@ body{background:#fff}
 #rm-nav{overflow:visible;z-index:10}
 #rm-nav .rm-logo-text{display:none}
 #rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
-#rm-nav [data-view]{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
-#rm-nav [data-view] span{display:none!important}
-#rm-nav [data-view]::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
-#rm-nav [data-view]:hover::after{opacity:1}
-#rm-nav [data-view]:hover{z-index:301}
+#rm-nav [data-view],#rm-nav .rm-nav-item{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav [data-view] span,#rm-nav .rm-nav-item span{display:none!important}
+#rm-nav [data-view]::after,#rm-nav .rm-nav-item::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
+#rm-nav [data-view]:hover::after,#rm-nav .rm-nav-item:hover::after{opacity:1}
+#rm-nav [data-view]:hover,#rm-nav .rm-nav-item:hover{z-index:301}
 #rm-nav .rm-cfg-btn{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav .rm-cfg-btn span{display:none!important}
 #rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
@@ -51,9 +51,9 @@ body{background:#fff}
   .rm-wrap{overflow-x:hidden}
   main{width:100%;min-width:0;max-width:100%}
   #rm-nav.rm-open [data-goto="inicio"]{justify-content:flex-start!important;padding:8px 12px 22px!important}
-  #rm-nav.rm-open [data-view]{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
-  #rm-nav.rm-open [data-view] span{display:inline!important}
-  #rm-nav.rm-open [data-view]::after{display:none}
+  #rm-nav.rm-open [data-view],#rm-nav.rm-open .rm-nav-item{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
+  #rm-nav.rm-open [data-view] span,#rm-nav.rm-open .rm-nav-item span{display:inline!important}
+  #rm-nav.rm-open [data-view]::after,#rm-nav.rm-open .rm-nav-item::after{display:none}
   #rm-nav.rm-open .rm-logo-text{display:inline!important}
   #rm-nav.rm-open .rm-cfg-btn{justify-content:flex-start!important;padding:11px 14px!important;width:100%!important;margin:0!important}
   #rm-nav.rm-open .rm-cfg-btn span{display:inline!important}
@@ -352,11 +352,11 @@ function rmGateSubmit(){
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6.5 5h11a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H10l-3.5 3v-3H6.5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"></path><circle cx="9.5" cy="10.5" r="1"></circle><circle cx="14.5" cy="10.5" r="1"></circle></svg>
       <span>Mensajes</span>
     </button>
-    <button type="button" onclick="toast('Sin notificaciones nuevas');toggleMobMenu()" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" class="rm-nav-item" data-label="Notificaciones" onclick="toast('Sin notificaciones nuevas');toggleMobMenu()" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <span>Notificaciones</span>
     </button>
-    <button type="button" onclick="toggleMobMenu();handleAvatarClick()" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
+    <button type="button" class="rm-nav-item" id="rm-nav-account-btn" data-label="Mi cuenta" onclick="toggleMobMenu();handleAvatarClick()" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;width:100%;text-align:left;background:transparent;color:#3a3733;transition:background .15s,color .15s">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       <span id="rm-mob-account-label">Iniciar sesión</span>
     </button>
@@ -2343,6 +2343,8 @@ function _onUser(user) {
   if (emailEl) emailEl.textContent = user ? user.email : '';
   const mobAccountLabel = document.getElementById('rm-mob-account-label');
   if (mobAccountLabel) mobAccountLabel.textContent = user ? 'Mi cuenta' : 'Iniciar sesión';
+  const navAccountBtn = document.getElementById('rm-nav-account-btn');
+  if (navAccountBtn) navAccountBtn.setAttribute('data-label', user ? 'Mi cuenta' : 'Iniciar sesión');
 }
 
 function _hideDiscover() {
