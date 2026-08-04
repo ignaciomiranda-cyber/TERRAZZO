@@ -28,12 +28,12 @@ body{background:#fff}
 #rm-nav{overflow:visible;z-index:10}
 #rm-nav .rm-logo-text{display:none}
 #rm-nav [data-goto="inicio"]{justify-content:center!important;padding:8px 0 22px!important}
-#rm-nav [data-view],#rm-nav .rm-nav-item{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav [data-view],#rm-nav .rm-nav-item{justify-content:center!important;padding:5px 0!important;width:48px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav [data-view] span,#rm-nav .rm-nav-item span{display:none!important}
 #rm-nav [data-view]::after,#rm-nav .rm-nav-item::after{content:attr(data-label);position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav [data-view]:hover::after,#rm-nav .rm-nav-item:hover::after{opacity:1}
 #rm-nav [data-view]:hover,#rm-nav .rm-nav-item:hover{z-index:301}
-#rm-nav .rm-cfg-btn{justify-content:center!important;padding:5px 0!important;width:44px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
+#rm-nav .rm-cfg-btn{justify-content:center!important;padding:5px 0!important;width:48px!important;margin:0 auto!important;position:relative;overflow:visible;z-index:0}
 #rm-nav .rm-cfg-btn span{display:none!important}
 #rm-nav .rm-cfg-btn::after{content:'Configuración';position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);background:#1A1A18;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:300;font-family:inherit}
 #rm-nav .rm-cfg-btn:hover::after{opacity:1}
@@ -319,7 +319,7 @@ function rmGateSubmit(){
 
 <div class="rm-wrap" style="display:flex;min-height:100vh;font-family:'Inter',-apple-system,sans-serif;color:#1A1A18;background:#fff">
 
-  <aside id="rm-nav" style="width:62px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
+  <aside id="rm-nav" style="width:68px;flex:none;border-right:1px solid #ECE8E0;height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:18px 8px;gap:2px;background:#fff">
     <button type="button" data-goto="inicio" style="display:flex;align-items:center;gap:10px;padding:8px 12px 22px;border:none;background:transparent;cursor:pointer;font-family:inherit;width:100%;text-align:left">
       <img src="Realmood-IG-blanco-y-negro-fondo-blanco.jpg" alt="realmood" style="width:80px;height:80px;object-fit:contain;flex:none;display:block">
       <span class="rm-logo-text" style="font-size:19px;font-weight:700;letter-spacing:.01em;color:#1A1A18">realmood</span>
