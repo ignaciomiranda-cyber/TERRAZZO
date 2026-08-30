@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
           return '<button class="brd-item" onclick="window.saveToBoard(\''+b.id+'\')">'
             +'<div class="brd-cover">'+cov+'</div>'
             +'<div class="brd-item-info">'
-            +'<div class="brd-name">'+b.name+'</div>'
+            +'<div class="brd-name">'+_esc(b.name)+'</div>'
             +'<div class="brd-count">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</div>'
             +'</div></button>';
         }).join('');
@@ -969,8 +969,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if(title&&opts.captionBelow!==false){
         const cap=document.createElement('div');
         cap.style.cssText='padding:8px 8px 6px';
-        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</div>'
-          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+tag+'</div>':'');
+        cap.innerHTML='<div style="font-size:13px;font-weight:600;line-height:1.3;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(title)+'</div>'
+          +(tag?'<div style="font-size:11px;color:#9b958a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(tag)+'</div>':'');
         card.appendChild(cap);
       }
       return card;
@@ -1288,7 +1288,7 @@ document.addEventListener('DOMContentLoaded', function() {
           html+='<div data-brd-id="'+b.id+'" style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden;cursor:pointer;transition:box-shadow .18s" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.12)\'" onmouseout="this.style.boxShadow=\'\'">'
             +mosaic
             +'<div style="padding:14px 16px">'
-            +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.name+'</div>'
+            +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(b.name)+'</div>'
             +'<div style="font-size:11px;color:#9b958a">'+pins.length+' pin'+(pins.length!==1?'s':'')+'</div>'
             +'</div></div>';
         });
@@ -1307,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', function() {
           html+='<div data-rm-id="'+rm.id+'" style="background:#fff;border-radius:16px;border:1px solid #E4DFD5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">'
             +'<div style="height:8px;background:linear-gradient(90deg,#1A1A18,#6f6a60)"></div>'
             +'<div style="padding:18px 18px 14px">'
-            +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rm.name+'</div>'
+            +'<div style="font-size:15px;font-weight:700;color:#1A1A18;letter-spacing:-.01em;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(rm.name)+'</div>'
             +'<div style="font-size:11px;color:#9b958a;margin-bottom:12px">'+tags+'</div>'
             +'<div style="font-size:10px;color:#B3AD9F;margin-bottom:14px">Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>'
             +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
@@ -1356,15 +1356,15 @@ document.addEventListener('DOMContentLoaded', function() {
       let html='<button id="board-back" style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:none;padding:0 0 20px;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer">'
         +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Tus realmood</button>'
         +'<div style="height:6px;border-radius:4px;background:linear-gradient(90deg,#1A1A18,#6f6a60);margin-bottom:18px;border-radius:8px"></div>'
-        +'<h1 style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 6px">'+rm.name+'</h1>'
+        +'<h1 style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#1A1A18;margin:0 0 6px">'+_esc(rm.name)+'</h1>'
         +'<div style="font-size:12px;color:#9b958a;margin-bottom:24px">'+tags+' · Actualizado '+fmtDate(rm.updatedAt||rm.createdAt)+'</div>';
       if(pins.length){
         html+='<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:14px;letter-spacing:-.01em">Pines guardados</div>'
           +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:36px">';
         pins.forEach(p=>{
           html+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:14px;padding:14px 16px;cursor:pointer" onclick="toast(\'Abriendo \'+\''+p.title.replace(/'/g,"\\'")+'\''+'\')">'
-            +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.title+'</div>'
-            +'<div style="font-size:11px;color:#9b958a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+( p.subtitle||'')+'</div>'
+            +'<div style="font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(p.title)+'</div>'
+            +'<div style="font-size:11px;color:#9b958a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(p.subtitle||'')+'</div>'
             +'<div style="font-size:10px;color:#C8C3B8;margin-top:8px">Guardado '+fmtDate(p.savedAt)+'</div>'
             +'</div>';
         });
@@ -1488,8 +1488,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if(data.makeMain){const el=data.makeMain();mn.appendChild(el);}
       // Header
       document.getElementById('pm-hdr').innerHTML=
-        '<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:5px">'+(data.subtitle||'')+'</div>'
-        +'<h2 style="margin:0 0 14px;font-size:21px;font-weight:800;letter-spacing:-.02em;color:#1A1A18">'+(data.title||'')+'</h2>';
+        '<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a;margin-bottom:5px">'+_esc(data.subtitle||'')+'</div>'
+        +'<h2 style="margin:0 0 14px;font-size:21px;font-weight:800;letter-spacing:-.02em;color:#1A1A18">'+_esc(data.title||'')+'</h2>';
       // Detail thumbnails — crops from main image
       const dtEl=document.getElementById('pm-detail-imgs');dtEl.innerHTML='';
       let detailSrc=data.mainImgSrc||null;
@@ -1516,7 +1516,7 @@ document.addEventListener('DOMContentLoaded', function() {
       _contactsSource.forEach(c=>{
         const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:stretch;margin-bottom:8px';
         const btn=document.createElement('button');btn.type='button';btn.className='pm-cb';btn.style.marginBottom='0';btn.style.flex='1';
-        btn.innerHTML='<span class="pm-cb-dot" style="background:'+c.color+'"></span><span><span class="pm-cb-role">'+c.role+'</span><span class="pm-cb-name">'+c.name+'</span></span>'
+        btn.innerHTML='<span class="pm-cb-dot" style="background:'+_esc(c.color)+'"></span><span><span class="pm-cb-role">'+_esc(c.role)+'</span><span class="pm-cb-name">'+_esc(c.name)+'</span></span>'
           +'<svg style="margin-left:auto;flex:none;opacity:.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
         btn.addEventListener('click',()=>openProfOverlay(c,data.title));
         row.appendChild(btn);cc.appendChild(row);
@@ -1643,7 +1643,7 @@ document.addEventListener('DOMContentLoaded', function() {
             h+='<button class="pm-brd-row" onclick="window._pmSaveToBoard(\''+b.id+'\')" style="'+(alreadySaved?'background:#F5F3EF;':'')+'">'+
               '<div class="pm-brd-row-cover">'+cov+'</div>'+
               '<div style="flex:1;min-width:0">'+
-              '<div style="font-size:14px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.name+'</div>'+
+              '<div style="font-size:14px;font-weight:700;color:#1A1A18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(b.name)+'</div>'+
               '<div style="font-size:11px;color:#9b958a">'+bp.length+' pin'+(bp.length!==1?'s':'')+(alreadySaved?' · Guardado':'')+'</div>'+
               '</div>'+
               (alreadySaved?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A18" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>':'')+
@@ -1705,14 +1705,12 @@ document.addEventListener('DOMContentLoaded', function() {
       vm.innerHTML='<div style="padding:40px;text-align:center;color:#9b958a;font-size:13px">Cargando…</div>';
       let list=[];
       try{
-        if(typeof sb!=='undefined'){
-          const userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
-          if(userEmail){
-            const _pqSnap=await db.collection('projects').where('arquitecto_email','==',userEmail).orderBy('created_at','desc').get();
-            list=_pqSnap.docs.map(d=>({id:d.id,...d.data()}));
-          }
+        const userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
+        if(userEmail){
+          const _pqSnap=await db.collection('projects').where('arquitecto_email','==',userEmail).orderBy('created_at','desc').get();
+          list=_pqSnap.docs.map(d=>({id:d.id,...d.data()}));
         }
-      }catch(e){console.warn('loadMisProyectos Supabase error',e);}
+      }catch(e){console.warn('loadMisProyectos error',e);}
       const uploadBtn='<button onclick="openUploadModal()" style="display:flex;align-items:center;gap:8px;font-family:inherit;font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">'
         +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
         +'Cargar proyecto</button>';
@@ -1738,10 +1736,10 @@ document.addEventListener('DOMContentLoaded', function() {
         grid+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">'
           +'<div style="height:140px;overflow:hidden;background:#F5F3EF">'+cover+'</div>'
           +'<div style="padding:14px 16px">'
-          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+p.tipo+'</div>'
-          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.titulo+'</div>'
-          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+p.ubicacion+'</div>'
-          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+provList+'</div>':'<div style="margin-bottom:12px"></div>')
+          +'<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9b958a;margin-bottom:3px">'+_esc(p.tipo)+'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(p.titulo)+'</div>'
+          +'<div style="font-size:11px;color:#9b958a;margin-bottom:6px">'+_esc(p.ubicacion)+'</div>'
+          +(provList?'<div style="font-size:10px;color:#b3ada2;margin-bottom:12px">'+_esc(provList)+'</div>':'<div style="margin-bottom:12px"></div>')
           +'<button onclick="deleteMyProject('+p.id+')" style="font-family:inherit;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;border:1px solid #E4DFD5;background:#fff;color:#9b958a;cursor:pointer">Eliminar</button>'
           +'</div></div>';
       });
@@ -1754,7 +1752,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const BC_COORDS={'Nueva Córdoba':[-31.4285,-64.1843],'Centro':[-31.4135,-64.1894],'General Paz':[-31.4040,-64.2024],'Cerro de las Rosas':[-31.3808,-64.2065],'Cofico':[-31.3960,-64.1856],'Güemes':[-31.4216,-64.1843],'Villa Belgrano':[-31.3702,-64.2180],'Alberdi':[-31.4064,-64.1973]};
     window._loadSupabaseProjects=async function(){
       try{
-        if(typeof sb==='undefined')return;
         // Dedup guard: skip projects already rendered in a previous call
         if(!window._explorarLoadedSbIds)window._explorarLoadedSbIds=new Set();
         if(!window._explorarSbData)window._explorarSbData=[];
@@ -1859,14 +1856,14 @@ function _renderUpload(){
     c.innerHTML=html3;
   } else if(_uploadStep===4){
     var provs=_uploadData.providers.filter(function(p){return p.name.trim();});
-    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+p.name+'</span><span style="font-size:11px;color:#9b958a">· '+p.role+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
+    var provHtml=provs.length?provs.map(function(p){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F0ECE6"><span style="width:10px;height:10px;border-radius:50%;background:#1A1A18;flex:none;display:inline-block"></span><span style="font-size:13px;font-weight:600;color:#1A1A18">'+_esc(p.name)+'</span><span style="font-size:11px;color:#9b958a">· '+_esc(p.role)+'</span></div>';}).join(''):'<p style="font-size:13px;color:#9b958a;margin:0">Ninguno taggeado</p>';
     var photoHtml=_uploadData.photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+_uploadData.photos.map(function(ph){return '<img src="'+ph.url+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px">';}).join('')+'</div>':'<p style="font-size:13px;color:#9b958a;margin:4px 0 0">Sin fotos</p>';
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 20px;letter-spacing:-.01em">Revisión y publicar</h2>'
       +'<div style="background:#FAFAF8;border:1px solid #E4DFD5;border-radius:14px;padding:18px 20px;margin-bottom:16px">'
-      +'<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+(_uploadData.project.tipo||'')+'</div>'
-      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+(_uploadData.project.titulo||'Sin título')+'</div>'
-      +'<div style="font-size:12px;color:#9b958a;margin-bottom:'+((_uploadData.project.descripcion)?'12px':'0')+'">'+(_uploadData.project.ubicacion||'')+'</div>'
-      +(_uploadData.project.descripcion?'<p style="font-size:13px;color:#6F6A60;margin:0;line-height:1.55">'+_uploadData.project.descripcion+'</p>':'')
+      +'<div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9b958a;margin-bottom:4px">'+_esc(_uploadData.project.tipo||'')+'</div>'
+      +'<div style="font-size:17px;font-weight:800;color:#1A1A18;letter-spacing:-.01em;margin-bottom:3px">'+_esc(_uploadData.project.titulo||'Sin título')+'</div>'
+      +'<div style="font-size:12px;color:#9b958a;margin-bottom:'+((_uploadData.project.descripcion)?'12px':'0')+'">'+_esc(_uploadData.project.ubicacion||'')+'</div>'
+      +(_uploadData.project.descripcion?'<p style="font-size:13px;color:#6F6A60;margin:0;line-height:1.55">'+_esc(_uploadData.project.descripcion)+'</p>':'')
       +'</div>'
       +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Fotos</div>'+photoHtml+'</div>'
       +'<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b958a;margin-bottom:6px">Proveedores taggeados</div>'+provHtml+'</div>';
@@ -1930,9 +1927,9 @@ async function _provInput(i,val){
   if(!m.length){dd.style.display='none';return;}
   dd.style.display='block';
   dd.innerHTML=m.map(function(c){
-    return '<div onmousedown="_provSelect('+i+',\''+c.id+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #F0ECE6" onmouseover="this.style.background=\'#F8F6F2\'" onmouseout="this.style.background=\'#fff\'">'
-      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+c.name+'</div>'
-      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+c.role+'</div>'
+    return '<div onmousedown="_provSelect('+i+',\''+_esc(c.id)+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #F0ECE6" onmouseover="this.style.background=\'#F8F6F2\'" onmouseout="this.style.background=\'#fff\'">'
+      +'<div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(c.name)+'</div>'
+      +'<div style="font-size:11px;color:#9b958a;margin-top:2px">'+_esc(c.role)+'</div>'
       +'</div>';
   }).join('');
 }
@@ -1957,9 +1954,19 @@ function _provBlur(i){
 async function deleteMyProject(id){
   if(!confirm('¿Eliminar este proyecto?'))return;
   try{
-    if(typeof sb!=='undefined'){
-      await db.collection('projects').doc(String(id)).delete();
+    const docRef=db.collection('projects').doc(String(id));
+    const snap=await docRef.get();
+    if(snap.exists){
+      const data=snap.data();
+      // Delete Storage files before removing the document
+      const toDelete=[];
+      if(data.portada_url)toDelete.push(data.portada_url);
+      if(data.galeria_urls&&Array.isArray(data.galeria_urls))toDelete.push(...data.galeria_urls);
+      await Promise.allSettled(toDelete.map(url=>{
+        try{return storage.refFromURL(url).delete();}catch(_){return Promise.resolve();}
+      }));
     }
+    await docRef.delete();
   }catch(e){console.warn('delete project error',e);}
   if(window._loadMisProyectos)window._loadMisProyectos();
   window.toast&&toast('Proyecto eliminado');
@@ -1978,7 +1985,7 @@ async function _submitUploadProject(){
   if(nb){nb.disabled=true;nb.textContent='Guardando…';}
   try{
     var portadaUrl=null;var galeriaUrls=[];
-    if(_uploadData.photos.length>0&&typeof sb!=='undefined'){
+    if(_uploadData.photos.length>0){
       try{
         for(var pi=0;pi<_uploadData.photos.length;pi++){
           var ph=_uploadData.photos[pi];
@@ -1989,8 +1996,6 @@ async function _submitUploadProject(){
         console.warn('Storage upload failed, storing first photo as data URL',storErr);
         if(_uploadData.photos.length>0)portadaUrl=_uploadData.photos[0].url;
       }
-    }else if(_uploadData.photos.length>0){
-      portadaUrl=_uploadData.photos[0].url;
     }
     var provIds=_uploadData.providers.filter(function(p){return p.id;}).map(function(p){return p.id;});
     var userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
@@ -2098,7 +2103,7 @@ function openProfOverlay(prov,projectTitle){
       +'<span style="font-size:18px">'+icon+'</span>'
       +'<span style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9b958a">Beneficio exclusivo</span>'
       +'</div>'
-      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+prov.benefit.description+'</p>'
+      +'<p style="font-size:13px;font-weight:600;color:#1A1A18;margin:0 0 14px;line-height:1.5">'+_esc(prov.benefit.description)+'</p>'
       +'<button id="vp-benefit-btn" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer;transition:opacity .15s">Solicitar beneficio →</button>'
       +'</div>';
     document.getElementById('vp-benefit-btn').addEventListener('click',async()=>{
@@ -2274,6 +2279,7 @@ const storage = firebase.storage();
 let _authMode = 'login';
 let _currentUser = null;
 const ADMIN_EMAILS = ['ignacio.miranda@mi.unc.edu.ar'];
+function _esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 function _onUser(user) {
   _currentUser = user;
@@ -2293,6 +2299,13 @@ function _onUser(user) {
   if (emailEl) emailEl.textContent = user ? user.email : '';
   const adminBtn = document.getElementById('rm-admin-btn');
   if (adminBtn) adminBtn.style.display = (user && ADMIN_EMAILS.includes(user.email)) ? 'flex' : 'none';
+  // Re-render auth-dependent views if they're active when auth resolves
+  const AUTH_VIEWS = ['mis-proyectos', 'config', 'admin'];
+  const activeAuth = AUTH_VIEWS.find(v => {
+    const s = document.getElementById('view-' + v);
+    return s && s.style.display !== 'none';
+  });
+  if (activeAuth && window.setView) window.setView(activeAuth);
 }
 
 async function loadAdminView() {
@@ -2482,25 +2495,28 @@ function setCfgRole(r) {
   if (provBtn) { provBtn.style.background = r === 'proveedor' ? '#1A1A18' : '#fff'; provBtn.style.color = r === 'proveedor' ? '#fff' : '#1A1A18'; provBtn.style.borderColor = r === 'proveedor' ? '#1A1A18' : '#E4DFD5'; }
   const fieldsEl = document.getElementById('cfg-fields');
   if (!fieldsEl) return;
+  // Preserve current values before rebuilding so data isn't lost on role switch
+  const getVal = id => { const el = document.getElementById('cfg-' + id); return el ? el.value : ''; };
+  const cur = { nombre: getVal('nombre'), ciudad: getVal('ciudad'), rubro: getVal('rubro'), benefit_type: getVal('benefit_type'), benefit_description: getVal('benefit_description') };
   const fieldRow = (label, id, val, placeholder) =>
     '<div style="margin-bottom:16px">'
     + '<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">' + label + '</label>'
-    + '<input id="cfg-' + id + '" type="text" value="' + (val||'') + '" placeholder="' + placeholder + '" '
+    + '<input id="cfg-' + id + '" type="text" value="' + _esc(val||'') + '" placeholder="' + placeholder + '" '
     + 'style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
     + '</div>';
   if (r === 'proveedor') {
-    fieldsEl.innerHTML = fieldRow('Nombre de marca', 'nombre', '', 'Ej: Mi Proveeduría')
-      + fieldRow('Rubro', 'rubro', '', 'Ej: Materiales de construcción')
-      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba')
+    fieldsEl.innerHTML = fieldRow('Nombre de marca', 'nombre', cur.nombre, 'Ej: Mi Proveeduría')
+      + fieldRow('Rubro', 'rubro', cur.rubro, 'Ej: Materiales de construcción')
+      + fieldRow('Ciudad', 'ciudad', cur.ciudad, 'Ej: Córdoba')
       + '<div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9b958a;margin-bottom:6px">Tipo de beneficio</label>'
       + '<select id="cfg-benefit_type" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid #E4DFD5;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1A18;background:#fff;outline:none">'
       + '<option value="">— Sin beneficio —</option>'
-      + ['descuento','muestra gratis','prioridad de entrega'].map(t => '<option value="' + t + '">' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
+      + ['descuento','muestra gratis','prioridad de entrega'].map(t => '<option value="' + t + '"' + (cur.benefit_type === t ? ' selected' : '') + '>' + t.charAt(0).toUpperCase() + t.slice(1) + '</option>').join('')
       + '</select></div>'
-      + fieldRow('Descripción del beneficio', 'benefit_description', '', 'Ej: 10% de descuento en primera compra');
+      + fieldRow('Descripción del beneficio', 'benefit_description', cur.benefit_description, 'Ej: 10% de descuento en primera compra');
   } else {
-    fieldsEl.innerHTML = fieldRow('Nombre / Estudio', 'nombre', '', 'Ej: Estudio Pérez & Co.')
-      + fieldRow('Ciudad', 'ciudad', '', 'Ej: Córdoba');
+    fieldsEl.innerHTML = fieldRow('Nombre / Estudio', 'nombre', cur.nombre, 'Ej: Estudio Pérez & Co.')
+      + fieldRow('Ciudad', 'ciudad', cur.ciudad, 'Ej: Córdoba');
   }
 }
 
@@ -2508,7 +2524,7 @@ async function saveCfgProfile() {
   if (!_currentUser) return;
   const role = window._cfgCurrentRole || 'arquitecto';
   const get = id => { const el = document.getElementById('cfg-' + id); return el ? el.value.trim() : ''; };
-  const payload = { email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), user_id: _currentUser.id, updated_at: new Date().toISOString() };
+  const payload = { email: _currentUser.email, role, nombre: get('nombre'), ciudad: get('ciudad'), user_id: _currentUser.uid, updated_at: new Date().toISOString() };
   if (role === 'proveedor') { payload.rubro = get('rubro'); payload.benefit_type = get('benefit_type') || null; payload.benefit_description = get('benefit_description') || null; }
   try {
     // Find the profile doc to update (may be a claimed doc with id ≠ auth uid)
