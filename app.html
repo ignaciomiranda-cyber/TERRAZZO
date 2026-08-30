@@ -1738,7 +1738,9 @@ document.addEventListener('DOMContentLoaded', function() {
       let grid='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">';
       list.forEach(p=>{
         const cover=p.portada_url?'<img src="'+_esc(p.portada_url)+'" style="width:100%;height:100%;object-fit:cover;display:block">':'<div style="width:100%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
-        const provList=(p.proveedores&&p.proveedores.length)?(window._PM_CONTACTS||[]).filter(c=>p.proveedores.includes(c.id)).map(c=>c.name).join(', '):'';
+        const provNames=(p.proveedores&&p.proveedores.length)?(window._PM_CONTACTS||[]).filter(c=>p.proveedores.includes(c.id)).map(c=>c.name):[];
+        const provFreeNames=(p.proveedores_libres||[]).map(f=>f.name).filter(Boolean);
+        const provList=provNames.concat(provFreeNames).join(', ');
         grid+='<div style="background:#fff;border:1px solid #E4DFD5;border-radius:16px;overflow:hidden">'
           +'<div style="height:140px;overflow:hidden;background:#F5F3EF">'+cover+'</div>'
           +'<div style="padding:14px 16px">'
@@ -1835,6 +1837,11 @@ function fuzzLatLng(lat,lng,radiusM){
 }
 
 function openUploadModal(){
+  if(typeof _currentUser==='undefined'||!_currentUser){
+    window.toast&&toast('Iniciá sesión para subir un proyecto');
+    if(typeof openAuthModal==='function')openAuthModal();
+    return;
+  }
   _uploadStep=1;
   _uploadData={project:{titulo:'',tipo:'Obra nueva',ubicacion:'Nueva Córdoba',descripcion:'',lat:null,lng:null,location_privacy:'exact'},photos:[],providers:[{id:'',name:'',role:''}]};
   var ov=document.getElementById('rm-upload-overlay');ov.style.display='flex';
@@ -1846,6 +1853,11 @@ function uploadOverlayClick(e){if(e.target===document.getElementById('rm-upload-
 function _uploadInputStyle(){return 'font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid #E4DFD5;border-radius:10px;color:#1A1A18;background:#fff;outline:none;width:100%;box-sizing:border-box';}
 function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+_esc(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
 function _uploadSelectField(lbl,id,opts,sel){return '<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><select id="'+id+'" style="'+_uploadInputStyle().replace('font-size:13px','font-size:14px')+'">'+opts.map(o=>'<option'+(o===sel?' selected':'')+'>'+o+'</option>').join('')+'</select></div>';}
+// Barrios de Córdoba + principales ciudades de Argentina — el campo es de
+// texto libre (se puede escribir cualquier cosa), esto solo alimenta el
+// autocompletado del <datalist> para sugerir nombres válidos.
+var _AR_CIUDADES=['Nueva Córdoba','Centro (Córdoba)','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Alta Córdoba','Jardín','Córdoba Capital','Buenos Aires (CABA)','La Plata','Mar del Plata','Rosario','Santa Fe','Paraná','Corrientes','Posadas','Resistencia','Formosa','Salta','San Salvador de Jujuy','San Miguel de Tucumán','Santiago del Estero','Catamarca','La Rioja','San Juan','Mendoza','San Luis','Santa Rosa','Neuquén','Río Negro (Viedma)','Bariloche','Comodoro Rivadavia','Rawson','Río Gallegos','Ushuaia'];
+function _uploadCityField(lbl,id,val,ph){return '<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" list="up-ciudades-ar" placeholder="'+ph+'" value="'+_esc(val||'')+'" style="'+_uploadInputStyle()+'"><datalist id="up-ciudades-ar">'+_AR_CIUDADES.map(o=>'<option value="'+_esc(o)+'">').join('')+'</datalist></div>';}
 function _uploadPhotoPreviews(){
   if(!_uploadData.photos.length)return '';
   return _uploadData.photos.map((ph,i)=>'<div style="position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1"><img src="'+ph.url+'" style="width:100%;height:100%;object-fit:cover;display:block"><button type="button" onclick="removeUploadPhoto('+i+')" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(26,26,24,.75);border:none;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1">×</button></div>').join('');
@@ -1859,11 +1871,10 @@ function _renderUpload(){
   if(nb)nb.textContent=_uploadStep===_uploadTotalSteps?'Publicar ✓':'Siguiente →';
   var c=document.getElementById('upload-step-content');if(!c)return;
   if(_uploadStep===1){
-    var tipoOpts=['Obra nueva','Reforma','Ambiente'];
-    var ubicOpts=['Nueva Córdoba','Centro','General Paz','Cerro de las Rosas','Cofico','Güemes','Villa Belgrano','Alberdi','Otro barrio de Córdoba'];
+    var tipoOpts=['Obra nueva','Reforma','Ambiente','Local comercial'];
     c.innerHTML='<h2 style="font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em">Datos del proyecto</h2><p style="font-size:13px;color:#9b958a;margin:0 0 22px">Los datos básicos de la obra</p>'
       +_uploadInputField('Título del proyecto *','up-titulo',_uploadData.project.titulo,'Ej: Residencia en Nueva Córdoba')
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Tipo','up-tipo',tipoOpts,_uploadData.project.tipo)+_uploadSelectField('Barrio / Ciudad','up-ubicacion',ubicOpts,_uploadData.project.ubicacion)+'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+_uploadSelectField('Tipo','up-tipo',tipoOpts,_uploadData.project.tipo)+_uploadCityField('Barrio / Ciudad','up-ubicacion',_uploadData.project.ubicacion,'Ej: Nueva Córdoba, Córdoba')+'</div>'
       +'<div><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">Descripción corta</label><textarea id="up-desc" placeholder="Describí el proyecto, el espacio, los materiales destacados..." style="'+_uploadInputStyle()+';resize:vertical;min-height:80px">'+(_uploadData.project.descripcion||'')+'</textarea></div>';
   } else if(_uploadStep===2){
     var privExact=_uploadData.project.location_privacy!=='approx';
@@ -1898,7 +1909,7 @@ function _renderUpload(){
         +'<div style="font-size:10px;font-weight:700;color:#9b958a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Proveedor '+(i+1)+'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +_provAutoHtml(i,pv)
-        +'<input id="up-prov-role-'+i+'" placeholder="Rol" value="'+_esc(pv.role||'')+'" readonly style="'+_uploadInputStyle()+';background:#F5F3EF;color:#6F6A60;cursor:default">'
+        +'<input id="up-prov-role-'+i+'" placeholder="Rol (ej: Carpintero, Arquitecto…)" value="'+_esc(pv.role||'')+'" oninput="_uploadData.providers['+i+'].role=this.value" style="'+_uploadInputStyle()+'">'
         +'</div></div>';
     });
     if(_uploadData.providers.length<6)html3+='<button type="button" onclick="addUploadProvider()" style="font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;border:1px dashed #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">+ Agregar proveedor</button>';
@@ -1946,17 +1957,31 @@ function _initUploadLocationMap(){
   _uploadLocMapRef=map;
   setTimeout(function(){map.invalidateSize();},150);
 }
+async function _geocodeAr(q){
+  var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ar&q='+encodeURIComponent(q),{headers:{'Accept-Language':'es'}});
+  var data=await res.json();
+  return (data&&data.length)?data[0]:null;
+}
 async function _searchUploadLocation(){
   var input=document.getElementById('up-loc-search');
   var q=input?input.value.trim():'';
   if(!q)return;
+  var ubic=(_uploadData.project.ubicacion||'').trim();
+  var btn=document.querySelector('button[onclick="_searchUploadLocation()"]');
+  if(btn){btn.disabled=true;btn.textContent='Buscando…';}
   try{
-    var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ar&q='+encodeURIComponent(q+', Córdoba, Argentina'));
-    var data=await res.json();
-    if(!data||!data.length){window.toast&&toast('No se encontró esa dirección');return;}
-    var lat=parseFloat(data[0].lat),lng=parseFloat(data[0].lon);
+    // 1º intento: la dirección tal cual la escribió + Argentina.
+    var hit=await _geocodeAr(q+', Argentina');
+    // 2º intento: si no hubo resultado y el texto no menciona ya la ciudad
+    // elegida en el paso anterior, se la agregamos (ej: sólo puso "Av. Colón 123").
+    if(!hit&&ubic&&q.toLowerCase().indexOf(ubic.toLowerCase())===-1){
+      hit=await _geocodeAr(q+', '+ubic+', Argentina');
+    }
+    if(!hit){window.toast&&toast('No se encontró esa dirección — probá marcarla directo en el mapa');return;}
+    var lat=parseFloat(hit.lat),lng=parseFloat(hit.lon);
     if(_uploadLocMapRef){_uploadLocMapRef.setView([lat,lng],16);_uploadLocMapRef.fire('click',{latlng:{lat:lat,lng:lng}});}
   }catch(e){window.toast&&toast('No se pudo buscar la dirección — probá marcarla directo en el mapa');}
+  finally{if(btn){btn.disabled=false;btn.textContent='Buscar';}}
 }
 
 function _saveUploadStepData(){
@@ -2001,15 +2026,18 @@ function _provAutoHtml(i,pv){
   var s=_uploadInputStyle();
   var n=pv.name||'';
   return '<div style="position:relative">'
-    +'<input type="text" id="up-prov-name-'+i+'" placeholder="Buscar proveedor…" autocomplete="off" value="'+n+'" '
+    +'<input type="text" id="up-prov-name-'+i+'" placeholder="Buscar o escribir proveedor…" autocomplete="off" value="'+_esc(n)+'" '
     +'oninput="_provInput('+i+',this.value)" onfocus="_provInput('+i+',this.value)" onblur="_provBlur('+i+')" '
     +'style="'+s+'">'
     +'<div id="up-prov-dd-'+i+'" style="display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1px solid #E4DFD5;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:901;max-height:200px;overflow-y:auto"></div>'
     +'</div>';
 }
 async function _provInput(i,val){
-  var dd=document.getElementById('up-prov-dd-'+i);if(!dd)return;
+  // Guarda siempre lo tipeado — así no se pierde si el usuario escribe
+  // libremente en vez de elegir una sugerencia del autocompletado.
+  _uploadData.providers[i].name=val;
   _uploadData.providers[i].id='';
+  var dd=document.getElementById('up-prov-dd-'+i);if(!dd)return;
   var q=(val||'').toLowerCase().trim();
   if(!q){dd.style.display='none';return;}
   if(!_providersLoaded)await _initProviders();
@@ -2033,12 +2061,10 @@ function _provSelect(i,id){
   var dd=document.getElementById('up-prov-dd-'+i);if(dd)dd.style.display='none';
 }
 function _provBlur(i){
+  // Solo cierra el desplegable de sugerencias — el nombre tipeado a mano
+  // (sin elegir un proveedor existente) se conserva tal cual.
   setTimeout(function(){
     var dd=document.getElementById('up-prov-dd-'+i);if(dd)dd.style.display='none';
-    if(!_uploadData.providers[i].id&&(_uploadData.providers[i].name||'').trim()){
-      _uploadData.providers[i].name='';
-      var ni=document.getElementById('up-prov-name-'+i);if(ni)ni.value='';
-    }
   },160);
 }
 async function deleteMyProject(id){
@@ -2052,13 +2078,25 @@ async function deleteMyProject(id){
   if(window._loadMisProyectos)window._loadMisProyectos();
   window.toast&&toast('Proyecto eliminado');
 }
+function _timeoutAfter(ms,msg){return new Promise(function(_,reject){setTimeout(function(){reject(new Error(msg));},ms);});}
 async function _uploadPhotoToStorage(dataUrl,fname){
   var blob=await fetch(dataUrl).then(function(r){return r.blob();});
   var path=Date.now()+'-'+fname;
-  var{data:upData,error:upErr}=await sb.storage.from('project-images').upload(path,blob,{contentType:'image/jpeg',upsert:false});
-  if(upErr)throw upErr;
-  var{data:{publicUrl}}=await sb.storage.from('project-images').getPublicUrl(upData.path);
-  return publicUrl;
+  // Firebase Storage puede reintentar solo internamente si el bucket no
+  // responde (por ejemplo si nunca se activó en la consola) y dejar la
+  // promesa colgada — por eso se corre contra un timeout explícito en vez
+  // de esperarla indefinidamente.
+  var upRes=await Promise.race([
+    sb.storage.from('project-images').upload(path,blob,{contentType:'image/jpeg',upsert:false}),
+    _timeoutAfter(15000,'Tiempo de espera agotado subiendo la imagen')
+  ]);
+  if(upRes.error)throw upRes.error;
+  var pubRes=await Promise.race([
+    sb.storage.from('project-images').getPublicUrl(upRes.data.path),
+    _timeoutAfter(15000,'Tiempo de espera agotado obteniendo la URL de la imagen')
+  ]);
+  if(pubRes.error)throw pubRes.error;
+  return pubRes.data.publicUrl;
 }
 async function _submitUploadProject(){
   _saveUploadStepData();
@@ -2081,7 +2119,13 @@ async function _submitUploadProject(){
     }else if(_uploadData.photos.length>0){
       portadaUrl=_uploadData.photos[0].url;
     }
-    var provIds=_uploadData.providers.filter(function(p){return p.id;}).map(function(p){return p.id;});
+    // Proveedores tageados: los que se eligieron del autocompletado (tienen id)
+    // van en `proveedores`; los escritos a mano (sin id, ej. proveedores que
+    // todavía no tienen perfil en realmood) se guardan en `proveedores_libres`
+    // para no perderlos.
+    var provsFilled=_uploadData.providers.filter(function(p){return (p.name||'').trim();});
+    var provIds=provsFilled.filter(function(p){return p.id;}).map(function(p){return p.id;});
+    var provFree=provsFilled.filter(function(p){return !p.id;}).map(function(p){return {name:p.name.trim(),role:(p.role||'').trim()};});
     var userEmail=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.email:null;
     var userId=typeof _currentUser!=='undefined'&&_currentUser?_currentUser.id:null;
     // Privacidad de ubicación: si es "aproximada", el punto se difumina ACÁ,
@@ -2104,6 +2148,7 @@ async function _submitUploadProject(){
       portada_url:portadaUrl,
       galeria_urls:galeriaUrls.length?galeriaUrls:null,
       proveedores:provIds.length?provIds:null,
+      proveedores_libres:provFree.length?provFree:null,
       arquitecto_email:userEmail,
       arquitecto_id:userId,
       lat:finalLat,
