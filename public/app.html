@@ -498,7 +498,7 @@ function rmGateSubmit(){
 <div id="rm-mob-overlay" onclick="toggleMobMenu()"></div>
 
 <!-- ── Upload project modal ───────────────────────────────── -->
-<div id="rm-upload-overlay" onclick="uploadOverlayClick(event)" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:28px 16px;overflow-y:auto">
+<div id="rm-upload-overlay" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:28px 16px;overflow-y:auto">
   <div onclick="event.stopPropagation()" style="background:#fff;border-radius:24px;max-width:600px;width:100%;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.25);overflow:hidden;font-family:'Inter',-apple-system,sans-serif;margin:auto">
     <div style="padding:24px 28px 0;border-bottom:1px solid #ECE8E0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
@@ -509,8 +509,8 @@ function rmGateSubmit(){
     </div>
     <div id="upload-step-content" style="padding:28px;min-height:300px"></div>
     <div style="padding:0 28px 24px;display:flex;justify-content:space-between;gap:12px;border-top:1px solid #F5F3EF">
-      <button id="upload-btn-back" onclick="uploadPrev()" style="font-family:inherit;font-size:13px;font-weight:600;padding:11px 20px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">Cancelar</button>
-      <button id="upload-btn-next" onclick="uploadNext()" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Siguiente →</button>
+      <button type="button" id="upload-btn-back" onclick="uploadPrev()" style="font-family:inherit;font-size:13px;font-weight:600;padding:11px 20px;border-radius:100px;border:1px solid #D7D1C6;background:transparent;color:#6F6A60;cursor:pointer">Cancelar</button>
+      <button type="button" id="upload-btn-next" onclick="uploadNext()" style="font-family:inherit;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;border:none;background:#1A1A18;color:#fff;cursor:pointer">Siguiente →</button>
     </div>
   </div>
 </div>
@@ -1812,7 +1812,7 @@ function openUploadModal(){
   _renderUpload();
 }
 function closeUploadModal(){document.getElementById('rm-upload-overlay').style.display='none';}
-function uploadOverlayClick(e){if(e.target===document.getElementById('rm-upload-overlay'))closeUploadModal();}
+
 
 function _uploadInputStyle(){return 'font-family:inherit;font-size:13px;padding:10px 12px;border:1px solid #E4DFD5;border-radius:10px;color:#1A1A18;background:#fff;outline:none;width:100%;box-sizing:border-box';}
 function _uploadInputField(lbl,id,val,ph){return '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:#6F6A60;display:block;margin-bottom:6px">'+lbl+'</label><input id="'+id+'" type="text" placeholder="'+ph+'" value="'+(val||'')+'" style="'+_uploadInputStyle()+'"></div>';}
