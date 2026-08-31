@@ -1761,9 +1761,10 @@ document.addEventListener('DOMContentLoaded', function() {
         _fsnap.docs.forEach((doc,idx)=>{const p={id:doc.id,...doc.data()};
           if(window._explorarLoadedSbIds.has(p.id))return;
           window._explorarLoadedSbIds.add(p.id);
-          const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):null;
-          if(!makeMain)return;
-          const media=photoMedia(p.portada_url,'4/3');
+          const makeMain=p.portada_url
+            ?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;})
+            :(()=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;aspect-ratio:4/3;background:#E8E4DC;display:flex;align-items:center;justify-content:center';d.innerHTML='<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';return d;});
+          const media=p.portada_url?photoMedia(p.portada_url,'4/3'):(()=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;aspect-ratio:4/3;background:#E8E4DC';return d;})();
           const provIds=p.proveedores||[];
           const card=mkCard(media,p.titulo,p.ubicacion+' · '+p.tipo,{
             filter:p.tipo,search:p.ubicacion,saveLabel:'Guardar',saveMsg:'Proyecto guardado · '+p.titulo,
@@ -1879,6 +1880,7 @@ function _saveUploadStepData(){
 function uploadNext(){
   _saveUploadStepData();
   if(_uploadStep===1&&!_uploadData.project.titulo.trim()){window.toast&&toast('Ingresá el título del proyecto');return;}
+  if(_uploadStep===2&&!_uploadData.photos.length){window.toast&&toast('Agregá al menos una foto del proyecto');return;}
   if(_uploadStep===_uploadTotalSteps){_submitUploadProject();return;}
   _uploadStep++;_renderUpload();
 }
