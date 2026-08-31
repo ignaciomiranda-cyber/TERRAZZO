@@ -164,6 +164,22 @@ body{background:#fff}
 .brd-create-cancel{flex:1;padding:10px;border:1px solid #D7D1C6;border-radius:100px;background:transparent;font-family:inherit;font-size:13px;font-weight:600;color:#6F6A60;cursor:pointer}
 .brd-create-save{flex:1;padding:10px;border:none;border-radius:100px;background:#E60023;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
 .brd-create-save:hover{opacity:.88}
+/* ── Admin panel responsive ──────────────────────────── */
+#view-admin table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}
+@media(max-width:768px){
+  #view-admin{padding:0!important}
+  #view-admin>div{max-width:100%!important;margin:0!important}
+  #view-admin h1{font-size:18px!important}
+}
+/* ── Config view responsive ──────────────────────────── */
+@media(max-width:600px){
+  #view-config{padding:16px!important;max-width:100%!important;margin:0!important}
+}
+/* ── Provider profile page: hero negative margin matches content padding ── */
+@media(max-width:768px){
+  #vp-hero{margin:-16px -14px 0!important}
+  #view-perfil>div{padding-left:14px!important;padding-right:14px!important}
+}
 /* ── Pinterest aesthetic refinements ─────────────────── */
 /* Topbar: search bar toma protagonismo */
 #rm-topbar{gap:12px}
@@ -946,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(title){
         const titleOv=document.createElement('div');
         titleOv.style.cssText='position:absolute;bottom:0;left:0;right:0;padding:32px 12px 12px;background:linear-gradient(0deg,rgba(26,26,24,.72) 0%,transparent 100%);opacity:0;transition:opacity .18s;pointer-events:none';
-        titleOv.innerHTML='<div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,.4)">'+title+'</div>'+(tag?'<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">'+tag+'</div>':'');
+        titleOv.innerHTML='<div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,.4)">'+_esc(title)+'</div>'+(tag?'<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">'+_esc(tag)+'</div>':'');
         inner.appendChild(titleOv);
         inner._titleOv=titleOv;
       }
@@ -1146,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const off=[0.0004*((pinIdx%5)-2),0.0004*((pinIdx%3)-1)];
         const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
         const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(map)
-          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+          .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
         window._explorarMarkerData.push({marker,proj:card._rmProject});
       });
       map.on('moveend zoomend',updateMapBelow);
@@ -1789,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const off=[0.0004*((idx%5)-2),0.0004*((idx%3)-1)];
             const ico=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:#1A1A18;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
             const marker=L.marker([c[0]+off[0],c[1]+off[1]],{icon:ico}).addTo(window._explorarMapRef)
-              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+p.titulo+'</div><div style="font-size:11px;color:#9b958a">'+p.ubicacion+' · '+p.tipo+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
+              .bindTooltip('<div style="font-family:Inter,sans-serif;width:160px;padding:6px 10px"><div style="font-size:13px;font-weight:700;color:#1A1A18">'+_esc(p.titulo)+'</div><div style="font-size:11px;color:#9b958a">'+_esc(p.ubicacion)+' · '+_esc(p.tipo)+'</div></div>',{permanent:false,direction:'top',className:'rm-map-tip',offset:[0,-10]});
             window._explorarMarkerData.push({marker,proj:card._rmProject});
           }
         });
@@ -1976,7 +1992,8 @@ async function deleteMyProject(id){
 }
 async function _uploadPhotoToStorage(dataUrl,fname){
   var blob=await fetch(dataUrl).then(function(r){return r.blob();});
-  var path=Date.now()+'-'+fname;
+  var uid=(_currentUser&&_currentUser.uid)||'anon';
+  var path=uid+'/'+Date.now()+'-'+fname;
   var _sRef=storage.ref('project-images/'+path);
   await _sRef.put(blob,{contentType:'image/jpeg'});
   var publicUrl=await _sRef.getDownloadURL();
@@ -2333,17 +2350,17 @@ async function loadAdminView() {
       + '<th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9b958a">Último contacto</th>'
       + '</tr></thead><tbody>'
       + rows.map(p => '<tr style="border-bottom:1px solid #F0EDE8">'
-        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + p.name + '</div><div style="font-size:11px;color:#9b958a">' + p.role + '</div></td>'
-        + '<td style="padding:12px 14px;color:#6F6A60">' + (p.benefit ? p.benefit.type : '—') + '</td>'
+        + '<td style="padding:12px 14px"><div style="font-weight:700;color:#1A1A18">' + _esc(p.name) + '</div><div style="font-size:11px;color:#9b958a">' + _esc(p.role) + '</div></td>'
+        + '<td style="padding:12px 14px;color:#6F6A60">' + _esc(p.benefit ? p.benefit.type : '—') + '</td>'
         + '<td style="padding:12px 14px;text-align:center"><span style="font-size:18px;font-weight:800;color:' + (p.requests.length > 0 ? '#1A1A18' : '#C8C3B8') + '">' + p.requests.length + '</span></td>'
         + '<td style="padding:12px 14px;font-size:11px;color:#9b958a">' + (p.requests.length ? new Date(p.requests[0].created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—') + '</td>'
         + '</tr>').join('')
       + '</tbody></table>';
     const recent = (data || []).slice(0, 10).map(r => '<tr style="border-bottom:1px solid #F0EDE8">'
-      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + (r.provider_name || r.provider_id) + '</td>'
-      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + (r.benefit_type || '—') + '</td>'
-      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.project_title || '—') + '</td>'
-      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + (r.user_email || 'anónimo') + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;font-weight:600;color:#1A1A18">' + _esc(r.provider_name || r.provider_id) + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60">' + _esc(r.benefit_type || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px;color:#6F6A60;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(r.project_title || '—') + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + _esc(r.user_email || 'anónimo') + '</td>'
       + '<td style="padding:10px 14px;font-size:11px;color:#9b958a">' + new Date(r.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>'
       + '</tr>').join('');
     vm.querySelector('#admin-loading').outerHTML = tbl
@@ -2358,7 +2375,7 @@ async function loadAdminView() {
       + '</tr></thead><tbody>' + (recent || '<tr><td colspan="5" style="padding:20px 14px;text-align:center;color:#9b958a">Sin solicitudes aún</td></tr>') + '</tbody></table>';
   } catch (e) {
     const loadEl = vm.querySelector('#admin-loading');
-    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + (e.message || 'colección aún no creada en Firestore') + '</p>';
+    if (loadEl) loadEl.innerHTML = '<p style="color:#C0392B">Error al cargar datos: ' + _esc(e.message || 'colección aún no creada en Firestore') + '</p>';
   }
 }
 
@@ -2611,6 +2628,7 @@ async function handleAuthSubmit(e) {
     closeAuthModal();
     if (typeof toast === 'function') toast('¡Bienvenido/a!');
   } catch (err) {
+    console.error('[auth] error code:', err.code, '| full error:', err);
     const map = {
       'auth/user-not-found':       'Email o contraseña incorrectos.',
       'auth/wrong-password':       'Email o contraseña incorrectos.',
@@ -2619,7 +2637,8 @@ async function handleAuthSubmit(e) {
       'auth/weak-password':        'La contraseña debe tener al menos 6 caracteres.',
       'auth/invalid-email':        'El email ingresado no es válido.',
     };
-    errEl.textContent = map[err.code] || ('Error: ' + err.message);
+    const friendly = map[err.code];
+    errEl.textContent = friendly || ('Error: ' + err.message + (err.code ? ' [' + err.code + ']' : ''));
     errEl.style.display = 'block';
   } finally {
     btn.textContent = login ? 'Ingresar' : 'Crear cuenta';
@@ -2632,8 +2651,9 @@ async function signInWithGoogle() {
     const _gProvider = new firebase.auth.GoogleAuthProvider();
     await fbAuth.signInWithPopup(_gProvider);
   } catch (err) {
+    console.error('[auth] google error code:', err.code, '| full error:', err);
     const errEl = document.getElementById('auth-error');
-    errEl.textContent = 'Error al conectar con Google. Intentá con email y contraseña.';
+    errEl.textContent = 'Error Google: ' + err.message + (err.code ? ' [' + err.code + ']' : '');
     errEl.style.display = 'block';
   }
 }
