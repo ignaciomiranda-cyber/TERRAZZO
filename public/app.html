@@ -2628,6 +2628,7 @@ async function handleAuthSubmit(e) {
     closeAuthModal();
     if (typeof toast === 'function') toast('¡Bienvenido/a!');
   } catch (err) {
+    console.error('[auth] error code:', err.code, '| full error:', err);
     const map = {
       'auth/user-not-found':       'Email o contraseña incorrectos.',
       'auth/wrong-password':       'Email o contraseña incorrectos.',
@@ -2636,7 +2637,8 @@ async function handleAuthSubmit(e) {
       'auth/weak-password':        'La contraseña debe tener al menos 6 caracteres.',
       'auth/invalid-email':        'El email ingresado no es válido.',
     };
-    errEl.textContent = map[err.code] || ('Error: ' + err.message);
+    const friendly = map[err.code];
+    errEl.textContent = friendly || ('Error: ' + err.message + (err.code ? ' [' + err.code + ']' : ''));
     errEl.style.display = 'block';
   } finally {
     btn.textContent = login ? 'Ingresar' : 'Crear cuenta';
@@ -2649,8 +2651,9 @@ async function signInWithGoogle() {
     const _gProvider = new firebase.auth.GoogleAuthProvider();
     await fbAuth.signInWithPopup(_gProvider);
   } catch (err) {
+    console.error('[auth] google error code:', err.code, '| full error:', err);
     const errEl = document.getElementById('auth-error');
-    errEl.textContent = 'Error al conectar con Google. Intentá con email y contraseña.';
+    errEl.textContent = 'Error Google: ' + err.message + (err.code ? ' [' + err.code + ']' : '');
     errEl.style.display = 'block';
   }
 }
