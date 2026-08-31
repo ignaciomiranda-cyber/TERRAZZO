@@ -1109,8 +1109,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }else{
         const bounds=window._explorarMapRef.getBounds();
         const visSet=new Set(window._explorarMarkerData.filter(({marker})=>window._explorarMapRef.hasLayer(marker)&&bounds.contains(marker.getLatLng())).map(({proj})=>proj));
+        const mappedProjs=new Set(window._explorarMarkerData.map(({proj})=>proj));
         projCards.forEach(c=>{
-          const inBounds=c._rmProject&&visSet.has(c._rmProject);
+          // Projects without a map marker (unknown/non-Córdoba location) are always visible
+          const hasMarker=c._rmProject&&mappedProjs.has(c._rmProject);
+          const inBounds=!hasMarker||(c._rmProject&&visSet.has(c._rmProject));
           const tagOk=activeFilter==='Todos'||c.getAttribute('data-tag')===activeFilter;
           const ok=inBounds&&tagOk;
           c.style.display=ok?'block':'none';
