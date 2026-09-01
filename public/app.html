@@ -1020,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tipos=[];
         snap.docs.forEach(doc=>{
           const p={id:doc.id,...doc.data()};
-          const media=p.portada_url?photoMedia(p.portada_url,'4/3'):(()=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;aspect-ratio:4/3;background:#E8E4DC';return d;})();
+          const media=p.portada_url?(()=>{const im=document.createElement('img');im.src=p.portada_url;im.loading='lazy';im.style.cssText='display:block;width:100%;height:auto';return im;})():(()=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;aspect-ratio:3/4;background:#E8E4DC';return d;})();
           const makeMain=p.portada_url?(()=>{const im=new Image();im.src=p.portada_url;im.style.cssText='display:block;width:100%';return im;}):(()=>{const d=document.createElement('div');d.style.cssText='display:block;width:100%;aspect-ratio:4/3;background:#E8E4DC;display:flex;align-items:center;justify-content:center';d.innerHTML='<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8C3B8" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';return d;});
           if(p.tipo)tipos.push(p.tipo);
           const card=mkCard(media,p.titulo,(p.ubicacion?p.ubicacion+' · ':'')+p.tipo,{
